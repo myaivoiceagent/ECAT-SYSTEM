@@ -359,7 +359,7 @@ elif st.session_state.page == "Live Examination":
         st.warning("No dynamic questions resolved.")
 
 # ------------------------------------------------------------------------
-# GRADE EVALUATION PROCESSING (LOCAL PURE CSS FIREWORKS - NO EXTERNAL LINKS)
+# GRADE EVALUATION PROCESSING (UNSAFE ALLOW HTML - FORCED FIREWORKS)
 # ------------------------------------------------------------------------
 elif st.session_state.page == "Grade Evaluation Processing":
     st.subheader("📊 Output Metric Breakdown")
@@ -403,74 +403,76 @@ elif st.session_state.page == "Grade Evaluation Processing":
             save_json("Result.json", results_db)
             st.session_state.result_saved = True
         
-        # 🔥 PURE LOCAL CSS/HTML FIREWORKS (Streamlit Cloud proof!)
-        import streamlit.components.v1 as html_components
-        html_components.html("""
+        # 🔥 FORCED INJECTION FIREWORKS VIA NATIVE MARKDOWN
+        st.markdown("""
         <style>
-            @keyframes explode {
+            @keyframes explode-sparks {
                 0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
-                100% { transform: translate(-50%, -50%) scale(1.5); opacity: 0; }
+                50% { opacity: 1; }
+                100% { transform: translate(-50%, -50%) scale(1.6); opacity: 0; }
             }
-            .firework-container {
+            .fw-box {
                 position: relative;
                 width: 100%;
-                height: 150px;
-                background: #000;
-                border-radius: 10px;
-                overflow: hidden;
+                background-color: #0e1117;
+                border: 2px solid #2e7d32;
+                border-radius: 12px;
+                padding: 30px;
                 text-align: center;
-                padding-top: 20px;
+                overflow: hidden;
+                margin-bottom: 25px;
+                box-shadow: 0px 4px 15px rgba(46, 125, 50, 0.3);
             }
-            .main-title {
-                color: #2e7d32;
-                font-family: sans-serif;
-                font-size: 28px;
+            .fw-title {
+                color: #4caf50 !important;
+                font-family: 'Courier New', Courier, monospace;
+                font-weight: bold;
+                font-size: 32px;
                 margin: 0;
-                position: relative;
-                z-index: 10;
+                letter-spacing: 3px;
+                text-shadow: 0px 0px 10px rgba(76, 175, 80, 0.6);
             }
-            .sub-title {
-                color: #a5d6a7;
+            .fw-sub {
+                color: #ffffff !important;
                 font-family: sans-serif;
-                margin: 5px 0 0 0;
-                position: relative;
-                z-index: 10;
+                font-size: 18px;
+                margin-top: 10px;
             }
-            .fw {
+            .sparkle {
                 position: absolute;
-                width: 10px;
-                height: 10px;
+                width: 12px;
+                height: 12px;
                 border-radius: 50%;
                 opacity: 0;
             }
-            /* Firework 1 */
-            .fw1 {
-                left: 20%; top: 50%; background: radial-gradient(circle, #ff1744 20%, transparent 60%);
-                box-shadow: 0 0 30px 20px #ff1744, -40px -40px 0 5px #ffea00, 40px -40px 0 5px #00e676, -40px 40px 0 5px #00e5ff, 40px 40px 0 5px #d500f9;
-                animation: explode 2s infinite ease-out;
+            .s1 {
+                left: 25%; top: 45%;
+                background: radial-gradient(circle, #ff1744 10%, transparent 70%);
+                box-shadow: 0 0 25px #ff1744, -35px -35px 0 #ffea00, 35px -35px 0 #00e676, -35px 35px 0 #00e5ff, 35px 35px 0 #d500f9;
+                animation: explode-sparks 2.2s infinite ease-in-out;
             }
-            /* Firework 2 */
-            .fw2 {
-                left: 80%; top: 40%; background: radial-gradient(circle, #00e5ff 20%, transparent 60%);
-                box-shadow: 0 0 30px 20px #00e5ff, -30px -50px 0 5px #ff1744, 50px -20px 0 5px #ffea00, -50px 30px 0 5px #00e676, 30px 50px 0 5px #ff00ff;
-                animation: explode 2.5s infinite ease-out 0.5s;
+            .s2 {
+                left: 75%; top: 35%;
+                background: radial-gradient(circle, #00e5ff 10%, transparent 70%);
+                box-shadow: 0 0 25px #00e5ff, -45px -20px 0 #ff1744, 45px -45px 0 #ffea00, -25px 45px 0 #00e676, 45px 25px 0 #ff00ff;
+                animation: explode-sparks 2.6s infinite ease-in-out 0.4s;
             }
-            /* Firework 3 */
-            .fw3 {
-                left: 50%; top: 70%; background: radial-gradient(circle, #ffea00 20%, transparent 60%);
-                box-shadow: 0 0 30px 20px #ffea00, -50px -10px 0 4px #00e5ff, 20px -50px 0 4px #ff1744, -20px 50px 0 4px #00e676, 50px 20px 0 4px #d500f9;
-                animation: explode 1.8s infinite ease-out 0.2s;
+            .s3 {
+                left: 50%; top: 65%;
+                background: radial-gradient(circle, #ffea00 10%, transparent 70%);
+                box-shadow: 0 0 25px #ffea00, -30px -40px 0 #d500f9, 40px -20px 0 #ff1744, -40px 30px 0 #00e5ff, 30px 40px 0 #00e676;
+                animation: explode-sparks 1.9s infinite ease-in-out 0.2s;
             }
         </style>
         
-        <div class="firework-container">
-            <h1 class="main-title">🎆 CONGRATULATIONS 🎆</h1>
-            <h3 class="sub-title">Test Completed Successfully!</h3>
-            <div class="fw fw1"></div>
-            <div class="fw fw2"></div>
-            <div class="fw fw3"></div>
+        <div class="fw-box">
+            <p class="fw-title">🎆 CONGRATULATIONS 🎆</p>
+            <p class="fw-sub">Test Completed and Evaluated Successfully!</p>
+            <div class="sparkle s1"></div>
+            <div class="sparkle s2"></div>
+            <div class="sparkle s3"></div>
         </div>
-        """, height=170)
+        """, unsafe_allow_html=True)
         
         st.success("Test Logged Safely in Central Registry Ledger Databases.")
         st.write("---")
