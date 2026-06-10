@@ -359,7 +359,7 @@ elif st.session_state.page == "Live Examination":
         st.warning("No dynamic questions resolved.")
 
 # ------------------------------------------------------------------------
-# GRADE EVALUATION PROCESSING (FIXED UNANSWERED MARKING & FIREWORKS)
+# GRADE EVALUATION PROCESSING (FIREWORKS ONLY - NO BALLOONS)
 # ------------------------------------------------------------------------
 elif st.session_state.page == "Grade Evaluation Processing":
     st.subheader("📊 Output Metric Breakdown")
@@ -369,15 +369,14 @@ elif st.session_state.page == "Grade Evaluation Processing":
     
     correct_count = 0
     wrong_count = 0
-    unanswered_count = 0  # 👈 Unanswered questions ko track karne ke liye
+    unanswered_count = 0  
     
     if questions:
         for idx, q in enumerate(questions, start=1):
-            # Agar user ne option select nahi kiya ya skip kiya toh use None milega
             user_choice = answers.get(idx, None)
             
             if user_choice is None:
-                unanswered_count += 1  # No marks added, no marks deducted
+                unanswered_count += 1  
             elif user_choice == q["Correct Answer"]:
                 correct_count += 1
             else:
@@ -386,8 +385,7 @@ elif st.session_state.page == "Grade Evaluation Processing":
         total_q = len(questions)
         total_marks = total_q * 4
         
-        # 🎯 ECAT Calculation Rules:
-        # Sahi ke +4, Galat ke -1, aur Unanswered ke 0 marks
+        # Sahi ke +4, Galat ke -1, Unanswered ke 0
         calculated_marks = (correct_count * 4) - (wrong_count * 1) 
         final_score = max(0, calculated_marks)
         
@@ -406,34 +404,35 @@ elif st.session_state.page == "Grade Evaluation Processing":
             save_json("Result.json", results_db)
             st.session_state.result_saved = True
         
-        # 🎈 Safe Built-in Animations
-        st.balloons()
-        
-        # 🎉 Fireworks/Confetti Blast Effect
+        # 🔥 Sirf aur sirf Fireworks/Confetti Blast (Balloons delete kar diye hain)
         import streamlit.components.v1 as html_components
         html_components.html("""
         <div style="text-align:center; padding: 10px;">
-            <h1 style="color: #2e7d32; font-family: sans-serif; font-size: 30px;">🎆 CONGRATULATIONS 🎆</h1>
+            <h1 style="color: #2e7d32; font-family: sans-serif; font-size: 32px; letter-spacing: 2px;">🎆 CONGRATULATIONS 🎆</h1>
             <h3 style="color: #1b5e20; font-family: sans-serif;">Test Completed Successfully!</h3>
         </div>
 
-        <script src="https://www.pexels.com/download/video/18686281/"></script>
+        <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
         <script>
-            var duration = 4000;
+            var duration = 5000; // 5 seconds tak fireworks chalenge
             var end = Date.now() + duration;
 
             (function frame() {
+                // Left side firework burst
                 confetti({
-                    particleCount: 5,
+                    particleCount: 7,
                     angle: 60,
-                    spread: 55,
-                    origin: { x: 0, y: 0.8 }
+                    spread: 60,
+                    origin: { x: 0, y: 0.8 },
+                    colors: ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff']
                 });
+                // Right side firework burst
                 confetti({
-                    particleCount: 5,
+                    particleCount: 7,
                     angle: 120,
-                    spread: 55,
-                    origin: { x: 1, y: 0.8 }
+                    spread: 60,
+                    origin: { x: 1, y: 0.8 },
+                    colors: ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff']
                 });
 
                 if (Date.now() < end) {
@@ -446,16 +445,15 @@ elif st.session_state.page == "Grade Evaluation Processing":
         st.success("Test Logged Safely in Central Registry Ledger Databases.")
         st.write("---")
         
-        # Performance Display Dashboard
+        # Result Dashboard
         st.markdown("### 🏆 Exam Metric Performance Summary")
         st.metric(label="Calculated Scale Output Grade", value=f"{final_score} / {total_marks}")
         
-        # 4 Columns layout to show Unanswered questions clearly
         col1, col2, col3, col4 = st.columns(4)
         col1.metric("Total Items", total_q)
         col2.metric("Correct ✔️", correct_count)
         col3.metric("Wrong ❌", wrong_count)
-        col4.metric("Unanswered ⚪", unanswered_count)  # 👈 Screen par bhi show hoga
+        col4.metric("Unanswered ⚪", unanswered_count)  
     else:
         st.error("Error generating score logs.")
 
