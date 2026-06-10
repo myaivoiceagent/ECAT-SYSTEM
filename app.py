@@ -359,7 +359,7 @@ elif st.session_state.page == "Live Examination":
         st.warning("No dynamic questions resolved.")
 
 # ------------------------------------------------------------------------
-# GRADE EVALUATION PROCESSING (WITH FIREWORKS/CONFETTI)
+# GRADE EVALUATION PROCESSING (FIXED UNANSWERED MARKING & FIREWORKS)
 # ------------------------------------------------------------------------
 elif st.session_state.page == "Grade Evaluation Processing":
     st.subheader("📊 Output Metric Breakdown")
@@ -369,18 +369,26 @@ elif st.session_state.page == "Grade Evaluation Processing":
     
     correct_count = 0
     wrong_count = 0
+    unanswered_count = 0  # 👈 Unanswered questions ko track karne ke liye
     
     if questions:
         for idx, q in enumerate(questions, start=1):
-            user_choice = answers.get(idx, "Unanswered")
-            if user_choice == q["Correct Answer"]:
+            # Agar user ne option select nahi kiya ya skip kiya toh use None milega
+            user_choice = answers.get(idx, None)
+            
+            if user_choice is None:
+                unanswered_count += 1  # No marks added, no marks deducted
+            elif user_choice == q["Correct Answer"]:
                 correct_count += 1
             else:
                 wrong_count += 1
                 
         total_q = len(questions)
         total_marks = total_q * 4
-        calculated_marks = (correct_count * 4) - (wrong_count * 4) 
+        
+        # 🎯 ECAT Calculation Rules:
+        # Sahi ke +4, Galat ke -1, aur Unanswered ke 0 marks
+        calculated_marks = (correct_count * 4) - (wrong_count * 1) 
         final_score = max(0, calculated_marks)
         
         if not st.session_state.result_saved:
@@ -398,10 +406,10 @@ elif st.session_state.page == "Grade Evaluation Processing":
             save_json("Result.json", results_db)
             st.session_state.result_saved = True
         
-        # 🎈 Method 1: Streamlit's Built-in Animations (Safe & Smooth)
+        # 🎈 Safe Built-in Animations
         st.balloons()
         
-        # 🎉 Method 2: Beautiful Fireworks/Confetti Blast Effect via HTML Components
+        # 🎉 Fireworks/Confetti Blast Effect
         import streamlit.components.v1 as html_components
         html_components.html("""
         <div style="text-align:center; padding: 10px;">
@@ -409,21 +417,18 @@ elif st.session_state.page == "Grade Evaluation Processing":
             <h3 style="color: #1b5e20; font-family: sans-serif;">Test Completed Successfully!</h3>
         </div>
 
-        <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+        <script src="https://www.pexels.com/download/video/18686281/"></script>
         <script>
-            // Continuous confetti firework blast for 4 seconds
             var duration = 4000;
             var end = Date.now() + duration;
 
             (function frame() {
-                // Left side launch
                 confetti({
                     particleCount: 5,
                     angle: 60,
                     spread: 55,
                     origin: { x: 0, y: 0.8 }
                 });
-                // Right side launch
                 confetti({
                     particleCount: 5,
                     angle: 120,
@@ -441,14 +446,16 @@ elif st.session_state.page == "Grade Evaluation Processing":
         st.success("Test Logged Safely in Central Registry Ledger Databases.")
         st.write("---")
         
-        # Performance Display
+        # Performance Display Dashboard
         st.markdown("### 🏆 Exam Metric Performance Summary")
         st.metric(label="Calculated Scale Output Grade", value=f"{final_score} / {total_marks}")
         
-        col1, col2, col3 = st.columns(3)
-        col1.metric("Total Items Evaluated", total_q)
-        col2.metric("Correct Answers", correct_count)
-        col3.metric("Wrong Answers", wrong_count)
+        # 4 Columns layout to show Unanswered questions clearly
+        col1, col2, col3, col4 = st.columns(4)
+        col1.metric("Total Items", total_q)
+        col2.metric("Correct ✔️", correct_count)
+        col3.metric("Wrong ❌", wrong_count)
+        col4.metric("Unanswered ⚪", unanswered_count)  # 👈 Screen par bhi show hoga
     else:
         st.error("Error generating score logs.")
 
