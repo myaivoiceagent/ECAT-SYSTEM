@@ -372,7 +372,6 @@ elif st.session_state.page == "ECAT Subject Selection":
                     st.session_state.quiz_answers = {}
                     st.session_state.quiz_submitted = False
                     st.session_state.page = "Live Examination"
-                    st.rerun()
                     st.session_state.start_time = datetime.datetime.now().timestamp()
                     st.session_state.page = "Live Examination"
                     st.rerun()
@@ -385,6 +384,10 @@ elif st.session_state.page == "Live Examination":
     # ------------------------------------------------------------------------
     total_allowed_seconds = 100 * 60  # 100 minutes = 6000 seconds
     current_time_stamp = datetime.datetime.now().timestamp()
+    if "start_time" not in st.session_state:
+        st.session_state.start_time = datetime.datetime.now().timestamp()
+
+
     elapsed_seconds = int(current_time_stamp - st.session_state.start_time)
     remaining_seconds = max(0, total_allowed_seconds - elapsed_seconds)
     
@@ -431,8 +434,25 @@ elif st.session_state.page == "Live Examination":
     # TIMER CODE KHATAM (Iske niche aapka baki ka questions wala code waise hi chalega)
     # ------------------------------------------------------------------------
 
-    # Aapka purana code jo questions display karta hai...
-    questions = st.session_state.active_quiz
+# Aapka purana code jo questions display karta hai...
+questions = st.session_state.active_quiz
+
+for idx, q in enumerate(questions, start=1):
+
+    st.write(f"### Q{idx}. {q['Question']}")
+
+    answer = st.radio(
+        "Choose Option",
+        ["A", "B", "C", "D"],
+        format_func=lambda x: f"{x}. {q['Options'][x]}",
+        key=f"q_{idx}"
+    )
+
+    st.session_state.quiz_answers[idx] = answer
+
+if st.button("Submit Test"):
+    st.session_state.page = "Grade Evaluation Processing"
+    st.rerun()
     # (Baki saara code niche chalne dein)
 
 elif st.session_state.page == "Grade Evaluation Processing":
@@ -470,9 +490,46 @@ elif st.session_state.page == "Grade Evaluation Processing":
         }]
     })
     save_json("Result.json", results_db)
+
+    if "result_saved" not in st.session_state:
+        results_db.append(...)
+        save_json("Result.json", results_db)
+        st.session_state.result_saved = True
     
     # Display Result Dashboard UI Card component blocks
-    st.balloons()
+    components.html("""
+    <div style="text-align:center;">
+    <h1>🎆 FIREWORKS 🎆</h1>
+    <h2>Test Completed Successfully!</h2>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script>
+    var duration = 5000;
+    var end = Date.now() + duration;
+
+    (function frame() {
+    confetti({
+        particleCount: 7,
+        angle: 60,
+        spread: 70,
+        origin: { x: 0 }
+    });
+
+    confetti({
+        particleCount: 7,
+        angle: 120,
+        spread: 70,
+        origin: { x: 1 }
+    });
+
+    if (Date.now() < end) {
+        requestAnimationFrame(frame);
+    }
+    }());
+    </script>
+    """, height=250)
     st.success("Test Logged Safely in Central Registry Ledger Databases.")
     
     st.markdown("### 🏆 Exam Metric Performance Summary")
