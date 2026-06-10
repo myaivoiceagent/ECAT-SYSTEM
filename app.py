@@ -359,7 +359,7 @@ elif st.session_state.page == "Live Examination":
         st.warning("No dynamic questions resolved.")
 
 # ------------------------------------------------------------------------
-# GRADE EVALUATION PROCESSING (UNSAFE ALLOW HTML - FORCED FIREWORKS)
+# GRADE EVALUATION PROCESSING (FULL SCREEN BLOCKBUSTER FIREWORKS)
 # ------------------------------------------------------------------------
 elif st.session_state.page == "Grade Evaluation Processing":
     st.subheader("📊 Output Metric Breakdown")
@@ -403,74 +403,90 @@ elif st.session_state.page == "Grade Evaluation Processing":
             save_json("Result.json", results_db)
             st.session_state.result_saved = True
         
-        # 🔥 FORCED INJECTION FIREWORKS VIA NATIVE MARKDOWN
+        # 🎆 FULL PAGE UTTER CHAOS FIREWORKS INJECTION
         st.markdown("""
         <style>
-            @keyframes explode-sparks {
-                0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+            @keyframes full-bang {
+                0% { transform: scale(0); opacity: 1; }
                 50% { opacity: 1; }
-                100% { transform: translate(-50%, -50%) scale(1.6); opacity: 0; }
+                100% { transform: scale(2.2); opacity: 0; }
             }
-            .fw-box {
-                position: relative;
-                width: 100%;
-                background-color: #0e1117;
-                border: 2px solid #2e7d32;
-                border-radius: 12px;
-                padding: 30px;
-                text-align: center;
+            /* Pure screen cover container */
+            .fullscreen-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
+                pointer-events: none; /* Taake user buttons par click kar sake */
+                z-index: 99999;
                 overflow: hidden;
-                margin-bottom: 25px;
-                box-shadow: 0px 4px 15px rgba(46, 125, 50, 0.3);
             }
-            .fw-title {
-                color: #4caf50 !important;
-                font-family: 'Courier New', Courier, monospace;
-                font-weight: bold;
-                font-size: 32px;
-                margin: 0;
-                letter-spacing: 3px;
-                text-shadow: 0px 0px 10px rgba(76, 175, 80, 0.6);
-            }
-            .fw-sub {
-                color: #ffffff !important;
-                font-family: sans-serif;
-                font-size: 18px;
-                margin-top: 10px;
-            }
-            .sparkle {
+            .giant-spark {
                 position: absolute;
-                width: 12px;
-                height: 12px;
+                width: 15px;
+                height: 15px;
                 border-radius: 50%;
                 opacity: 0;
             }
-            .s1 {
-                left: 25%; top: 45%;
-                background: radial-gradient(circle, #ff1744 10%, transparent 70%);
-                box-shadow: 0 0 25px #ff1744, -35px -35px 0 #ffea00, 35px -35px 0 #00e676, -35px 35px 0 #00e5ff, 35px 35px 0 #d500f9;
-                animation: explode-sparks 2.2s infinite ease-in-out;
+            /* Bomb 1 - Top Left */
+            .b1 {
+                left: 20%; top: 30%;
+                background: radial-gradient(circle, #ff1744 10%, transparent 60%);
+                box-shadow: 0 0 40px #ff1744, -70px -70px 0 #ffea00, 70px -70px 0 #00e676, -70px 70px 0 #00e5ff, 70px 70px 0 #d500f9, 0px -90px 0 #ff5722;
+                animation: full-bang 2.5s infinite ease-out;
             }
-            .s2 {
-                left: 75%; top: 35%;
-                background: radial-gradient(circle, #00e5ff 10%, transparent 70%);
-                box-shadow: 0 0 25px #00e5ff, -45px -20px 0 #ff1744, 45px -45px 0 #ffea00, -25px 45px 0 #00e676, 45px 25px 0 #ff00ff;
-                animation: explode-sparks 2.6s infinite ease-in-out 0.4s;
+            /* Bomb 2 - Top Right */
+            .b2 {
+                left: 80%; top: 25%;
+                background: radial-gradient(circle, #00e5ff 10%, transparent 60%);
+                box-shadow: 0 0 40px #00e5ff, -60px -40px 0 #ff1744, 60px -80px 0 #ffea00, -40px 80px 0 #00e676, 80px 40px 0 #ff00ff, -90px 0px 0 #9c27b0;
+                animation: full-bang 2.8s infinite ease-out 0.4s;
             }
-            .s3 {
-                left: 50%; top: 65%;
-                background: radial-gradient(circle, #ffea00 10%, transparent 70%);
-                box-shadow: 0 0 25px #ffea00, -30px -40px 0 #d500f9, 40px -20px 0 #ff1744, -40px 30px 0 #00e5ff, 30px 40px 0 #00e676;
-                animation: explode-sparks 1.9s infinite ease-in-out 0.2s;
+            /* Bomb 3 - Center Bottom */
+            .b3 {
+                left: 50%; top: 60%;
+                background: radial-gradient(circle, #ffea00 10%, transparent 60%);
+                box-shadow: 0 0 40px #ffea00, -80px -40px 0 #d500f9, 80px -40px 0 #ff1744, -50px 70px 0 #00e5ff, 50px 70px 0 #00e676, 0px -100px 0 #e91e63;
+                animation: full-bang 2.2s infinite ease-out 0.2s;
+            }
+            /* Bomb 4 - Extreme Left Bottom */
+            .b4 {
+                left: 10%; top: 70%;
+                background: radial-gradient(circle, #00e676 10%, transparent 60%);
+                box-shadow: 0 0 30px #00e676, -40px -40px 0 #ffea00, 40px -40px 0 #ff1744, 0px 50px 0 #00e5ff;
+                animation: full-bang 3s infinite ease-out 0.6s;
+            }
+            /* Bomb 5 - Extreme Right Bottom */
+            .b5 {
+                left: 90%; top: 65%;
+                background: radial-gradient(circle, #d500f9 10%, transparent 60%);
+                box-shadow: 0 0 30px #d500f9, -40px -40px 0 #00e5ff, 40px -40px 0 #00e676, 0px 50px 0 #ffea00;
+                animation: full-bang 3.2s infinite ease-out 0.8s;
+            }
+            
+            /* Box styling on page */
+            .banner-box {
+                background-color: #0e1117;
+                border: 2px solid #2e7d32;
+                border-radius: 12px;
+                padding: 25px;
+                text-align: center;
+                margin-bottom: 25px;
             }
         </style>
         
-        <div class="fw-box">
-            <p class="fw-title">🎆 CONGRATULATIONS 🎆</p>
-            <p class="fw-sub">Test Completed and Evaluated Successfully!</p>
-            <div class="sparkle s1"></div>
-            <div class="sparkle s2"></div>
-            <div class="sparkle s3"></div>
+        <div class="fullscreen-overlay">
+            <div class="giant-spark b1"></div>
+            <div class="giant-spark b2"></div>
+            <div class="giant-spark b3"></div>
+            <div class="giant-spark b4"></div>
+            <div class="giant-spark b5"></div>
+        </div>
+        
+        <div class="banner-box">
+            <h1 style="color: #4caf50 !important; font-family: sans-serif; font-weight: bold; margin:0;">🎆 CONGRATULATIONS 🎆</h1>
+            <p style="color: white !important; margin: 5px 0 0 0;">Your ECAT exam has been evaluated natively.</p>
         </div>
         """, unsafe_allow_html=True)
         
