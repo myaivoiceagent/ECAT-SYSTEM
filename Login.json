@@ -1,0 +1,22 @@
+[
+    {
+        "User ID": "42ed45ff-9664-4ace-b27b-35320788969e",
+        "User Name": "Zargham",
+        "Email": "juttpeak@gmail.com",
+        "Password": "1234_qwe@",
+        "Login": [
+            {
+                "Login Date & Time": {
+                    "Login Date": "09-06-2026",
+                    "Login Time": "20:16:53"
+                }
+            },
+            {
+                "Login Date & Time": {
+                    "Login Date": "09-06-2026",
+                    "Login Time": "23:44:44"
+                }
+            }
+        ]
+    }
+]
