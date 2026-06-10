@@ -135,7 +135,7 @@ elif st.session_state.page == "Admin Dashboard":
         
     st.write("---")
     
-    # Tab Layout for options 1 through 6
+    # Tab Layout for options 1 through 5
     t1, t2, t3, t4, t5 = st.tabs([
         "➕ Add/Manage Sections", 
         "📝 Add/Edit Questions", 
@@ -371,7 +371,6 @@ elif st.session_state.page == "ECAT Subject Selection":
                     st.session_state.active_quiz = all_questions
                     st.session_state.quiz_answers = {}
                     st.session_state.quiz_submitted = False
-                    st.session_state.page = "Live Examination"
                     st.session_state.start_time = datetime.datetime.now().timestamp()
                     st.session_state.page = "Live Examination"
                     st.rerun()
@@ -380,13 +379,13 @@ elif st.session_state.page == "Live Examination":
     student = st.session_state.logged_in_user
     
     # ------------------------------------------------------------------------
-    # ⏱️ 100-MINUTE TIMER CODE (YAHAN PASTE KAREIN)
+    # ⏱️ 100-MINUTE TIMER CODE
     # ------------------------------------------------------------------------
     total_allowed_seconds = 100 * 60  # 100 minutes = 6000 seconds
     current_time_stamp = datetime.datetime.now().timestamp()
+    
     if "start_time" not in st.session_state:
-        st.session_state.start_time = datetime.datetime.now().timestamp()
-
+        st.session_state.start_time = current_time_stamp
 
     elapsed_seconds = int(current_time_stamp - st.session_state.start_time)
     remaining_seconds = max(0, total_allowed_seconds - elapsed_seconds)
@@ -430,30 +429,40 @@ elif st.session_state.page == "Live Examination":
         st.rerun()
         
     st.write("---")
+
     # ------------------------------------------------------------------------
-    # TIMER CODE KHATAM (Iske niche aapka baki ka questions wala code waise hi chalega)
+    # 📝 QUESTIONS DISPLAY LOGIC WITH SAFETY VALIDATION
     # ------------------------------------------------------------------------
+    questions = st.session_state.active_quiz
 
-# Aapka purana code jo questions display karta hai...
-questions = st.session_state.active_quiz
+    if questions is not None:
+        for idx, q in enumerate(questions, start=1):
+            st.write(f"### Q{idx}. {q['Question']}")
 
-for idx, q in enumerate(questions, start=1):
+            # Get current selected answer if it exists
+            current_answer = st.session_state.quiz_answers.get(idx, None)
+            
+            # Setup default index for radio button
+            default_index = ["A", "B", "C", "D"].index(current_answer) if current_answer in ["A", "B", "C", "D"] else 0
 
-    st.write(f"### Q{idx}. {q['Question']}")
+            answer = st.radio(
+                "Choose Option",
+                ["A", "B", "C", "D"],
+                index=default_index,
+                format_func=lambda x: f"{x}. {q['Options'][x]}",
+                key=f"q_{idx}"
+            )
 
-    answer = st.radio(
-        "Choose Option",
-        ["A", "B", "C", "D"],
-        format_func=lambda x: f"{x}. {q['Options'][x]}",
-        key=f"q_{idx}"
-    )
+            st.session_state.quiz_answers[idx] = answer
 
-    st.session_state.quiz_answers[idx] = answer
-
-if st.button("Submit Test"):
-    st.session_state.page = "Grade Evaluation Processing"
-    st.rerun()
-    # (Baki saara code niche chalne dein)
+        if st.button("Submit Test", type="primary"):
+            st.session_state.page = "Grade Evaluation Processing"
+            st.rerun()
+    else:
+        st.warning("⚠️ No active exam session found. Please start test properly via selection portal.")
+        if st.button("Go to Main Menu"):
+            st.session_state.page = "Main Menu"
+            st.rerun()
 
 elif st.session_state.page == "Grade Evaluation Processing":
     st.subheader("📊 Output Metric Breakdown")
@@ -465,84 +474,87 @@ elif st.session_state.page == "Grade Evaluation Processing":
     correct_count = 0
     wrong_count = 0
     
-    for idx, q in enumerate(questions, start=1):
-        user_choice = answers.get(idx, "Unanswered")
-        if user_choice == q["Correct Answer"]:
-            correct_count += 1
-        else:
-            wrong_count += 1
-            
-    total_q = len(questions)
-    total_marks = total_q * 4
-    calculated_marks = (correct_count * 4) - (wrong_count * 1) # Applied standard engineering negative weighting layout logic adjustments
-    final_score = max(0, calculated_marks)
-    
-    # Append to Result.json database layout structure
-    results_db = load_json("Result.json")
-    results_db.append({
-        "USER ID": student["User ID"],
-        "User Name": student["User Name"],
-        "User Email": student["Email"],
-        "User Result": [{
-            "Total Questions": total_q,
-            "Total Marks": total_marks,
-            "Obtained Marks": final_score
-        }]
-    })
-    save_json("Result.json", results_db)
+    if questions is not None:
+        for idx, q in enumerate(questions, start=1):
+            user_choice = answers.get(idx, "Unanswered")
+            if user_choice == q["Correct Answer"]:
+                correct_count += 1
+            else:
+                wrong_count += 1
+                
+        total_q = len(questions)
+        total_marks = total_q * 4
+        calculated_marks = (correct_count * 4) - (wrong_count * 1) 
+        final_score = max(0, calculated_marks)
+        
+        # Append to Result.json database safely without duplication
+        if "result_saved" not in st.session_state or not st.session_state.result_saved:
+            results_db = load_json("Result.json")
+            results_db.append({
+                "USER ID": student["User ID"],
+                "User Name": student["User Name"],
+                "User Email": student["Email"],
+                "User Result": [{
+                    "Total Questions": total_q,
+                    "Total Marks": total_marks,
+                    "Obtained Marks": final_score
+                }]
+            })
+            save_json("Result.json", results_db)
+            st.session_state.result_saved = True
+        
+        # Display Result Dashboard UI
+        components.html("""
+        <div style="text-align:center;">
+        <h1 style="color: #2e7d32;">🎆 CONGRATULATIONS 🎆</h1>
+        <h2>Test Completed Successfully!</h2>
+        </div>
 
-    if "result_saved" not in st.session_state:
-        results_db.append(...)
-        save_json("Result.json", results_db)
-        st.session_state.result_saved = True
-    
-    # Display Result Dashboard UI Card component blocks
-    components.html("""
-    <div style="text-align:center;">
-    <h1>🎆 FIREWORKS 🎆</h1>
-    <h2>Test Completed Successfully!</h2>
-    </div>
+        <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+        <script>
+        var duration = 4000;
+        var end = Date.now() + duration;
 
-    <script>
-    var duration = 5000;
-    var end = Date.now() + duration;
+        (function frame() {
+        confetti({
+            particleCount: 5,
+            angle: 60,
+            spread: 55,
+            origin: { x: 0 }
+        });
 
-    (function frame() {
-    confetti({
-        particleCount: 7,
-        angle: 60,
-        spread: 70,
-        origin: { x: 0 }
-    });
+        confetti({
+            particleCount: 5,
+            angle: 120,
+            spread: 55,
+            origin: { x: 1 }
+        });
 
-    confetti({
-        particleCount: 7,
-        angle: 120,
-        spread: 70,
-        origin: { x: 1 }
-    });
+        if (Date.now() < end) {
+            requestAnimationFrame(frame);
+        }
+        }());
+        </script>
+        """, height=180)
+        
+        st.success("Test Logged Safely in Central Registry Ledger Databases.")
+        st.markdown("### 🏆 Exam Metric Performance Summary")
+        st.metric(label="Calculated Scale Output Grade", value=f"{final_score} / {total_marks}")
+        
+        col1, col2, col3 = st.columns(3)
+        col1.metric("Total Items Evaluated", total_q)
+        col2.metric("True Positives (Correct)", correct_count)
+        col3.metric("Falsified Weights (Wrong)", wrong_count)
+    else:
+        st.error("No assessment history available to parse scores.")
 
-    if (Date.now() < end) {
-        requestAnimationFrame(frame);
-    }
-    }());
-    </script>
-    """, height=250)
-    st.success("Test Logged Safely in Central Registry Ledger Databases.")
-    
-    st.markdown("### 🏆 Exam Metric Performance Summary")
-    st.metric(label="Calculated Scale Output Grade", value=f"{final_score} / {total_marks}")
-    
-    col1, col2, col3 = st.columns(3)
-    col1.metric("Total Items Evaluated", total_q)
-    col2.metric("True Positives (Correct)", correct_count)
-    col3.metric("Falsified Weights (Wrong)", wrong_count)
-    
     if st.button("Return Main Portal Home"):
         st.session_state.page = "Main Menu"
         st.session_state.active_quiz = None
         st.session_state.quiz_answers = {}
         st.session_state.logged_in_user = None
+        st.session_state.result_saved = False
+        if "start_time" in st.session_state:
+            del st.session_state.start_time
         st.rerun()
