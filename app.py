@@ -5,7 +5,7 @@ import random
 import uuid
 import re
 import streamlit as st
-import streamlit.components.v1 as components
+import streamlit.components.v1 as st_components  # Aliased to prevent overwriting
 
 # --------------------------------------------------
 # CONFIGURATION & STATE INITIALIZATION
@@ -16,11 +16,11 @@ st.set_page_config(page_title="UET-ECAT Test Portal", page_icon="📝", layout="
 if "page" not in st.session_state:
     st.session_state.page = "Main Menu"
 if "logged_in_user" not in st.session_state:
-    st.session_state.logged_in_user = None  # Holds user data dict
+    st.session_state.logged_in_user = None  
 if "active_quiz" not in st.session_state:
-    st.session_state.active_quiz = None  # Holds shuffled questions list
+    st.session_state.active_quiz = None  
 if "quiz_answers" not in st.session_state:
-    st.session_state.quiz_answers = {}  # Tracks user options selected
+    st.session_state.quiz_answers = {}  
 if "quiz_submitted" not in st.session_state:
     st.session_state.quiz_submitted = False
 
@@ -60,7 +60,6 @@ def save_json(filename, data):
 # WEB VIEWS & UI
 # --------------------------------------------------
 
-# Header Logo/Title
 st.title("🎓 UET-ECAT Test Management Portal")
 st.write("---")
 
@@ -135,7 +134,6 @@ elif st.session_state.page == "Admin Dashboard":
         
     st.write("---")
     
-    # Tab Layout for options 1 through 5
     t1, t2, t3, t4, t5 = st.tabs([
         "➕ Add/Manage Sections", 
         "📝 Add/Edit Questions", 
@@ -208,7 +206,6 @@ elif st.session_state.page == "Admin Dashboard":
                 
                 if st.button("Delete Question", type="primary"):
                     target_sec["Questions"] = [q for q in target_sec["Questions"] if q["Question No"] != q_no]
-                    # Renumber remaining questions
                     for idx, q in enumerate(target_sec["Questions"], start=1):
                         q["Question No"] = idx
                     save_json("Quizz.json", quizz_data)
@@ -353,12 +350,10 @@ elif st.session_state.page == "ECAT Subject Selection":
                 st.error("Constraint Violation: You must select exactly 3 items.")
             else:
                 all_questions = []
-                # Compile English core requirements (Max 10 sample)
                 eng_sec = next((s for s in quizz_data if s["Section"].lower() == "english"), None)
                 if eng_sec and eng_sec["Questions"]:
                     all_questions.extend(random.sample(eng_sec["Questions"], min(10, len(eng_sec["Questions"]))))
                     
-                # Compile custom branch requirements (Max 30 sample each)
                 for track in chosen_tracks:
                     t_sec = next(s for s in quizz_data if s["Section"] == track)
                     if t_sec["Questions"]:
@@ -381,7 +376,7 @@ elif st.session_state.page == "Live Examination":
     # ------------------------------------------------------------------------
     # ⏱️ 100-MINUTE TIMER CODE
     # ------------------------------------------------------------------------
-    total_allowed_seconds = 100 * 60  # 100 minutes = 6000 seconds
+    total_allowed_seconds = 100 * 60  
     current_time_stamp = datetime.datetime.now().timestamp()
     
     if "start_time" not in st.session_state:
@@ -421,7 +416,8 @@ elif st.session_state.page == "Live Examination":
     </script>
     """
     
-    timer_signal = components.html(timer_html, height=100, scroller=False)
+    # Using aliased st_components here to avoid core rendering bugs
+    timer_signal = st_components.html(timer_html, height=100, scroller=False)
     
     if timer_signal == "timeout" or remaining_seconds <= 0:
         st.error("⏰ Time's Up! Auto-submitting your paper...")
@@ -431,7 +427,7 @@ elif st.session_state.page == "Live Examination":
     st.write("---")
 
     # ------------------------------------------------------------------------
-    # 📝 QUESTIONS DISPLAY LOGIC WITH SAFETY VALIDATION
+    # 📝 QUESTIONS DISPLAY LOGIC
     # ------------------------------------------------------------------------
     questions = st.session_state.active_quiz
 
@@ -439,10 +435,7 @@ elif st.session_state.page == "Live Examination":
         for idx, q in enumerate(questions, start=1):
             st.write(f"### Q{idx}. {q['Question']}")
 
-            # Get current selected answer if it exists
-            current_answer = st.session_state.quiz_answers.get(idx, None)
-            
-            # Setup default index for radio button
+            current_answer = st.session_state.quiz_answers.get(idx, "A")
             default_index = ["A", "B", "C", "D"].index(current_answer) if current_answer in ["A", "B", "C", "D"] else 0
 
             answer = st.radio(
@@ -487,7 +480,6 @@ elif st.session_state.page == "Grade Evaluation Processing":
         calculated_marks = (correct_count * 4) - (wrong_count * 1) 
         final_score = max(0, calculated_marks)
         
-        # Append to Result.json database safely without duplication
         if "result_saved" not in st.session_state or not st.session_state.result_saved:
             results_db = load_json("Result.json")
             results_db.append({
@@ -503,8 +495,7 @@ elif st.session_state.page == "Grade Evaluation Processing":
             save_json("Result.json", results_db)
             st.session_state.result_saved = True
         
-        # Display Result Dashboard UI
-        components.html("""
+        st_components.html("""
         <div style="text-align:center;">
         <h1 style="color: #2e7d32;">🎆 CONGRATULATIONS 🎆</h1>
         <h2>Test Completed Successfully!</h2>
