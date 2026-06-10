@@ -296,7 +296,9 @@ elif st.session_state.page == "ECAT Subject Selection":
                     st.session_state.page = "Live Examination"
                     st.rerun()
 
-# LIVE EXAMINATION (ONE-BY-ONE WITH NAVIGATION & LUNCH BOX SYSTEM)
+# ------------------------------------------------------------------------
+# LIVE EXAMINATION (FIXED: QUESTIONS TOP, MATRIX BOTTOM)
+# ------------------------------------------------------------------------
 elif st.session_state.page == "Live Examination":
     student = st.session_state.logged_in_user
     questions = st.session_state.active_quiz
@@ -326,34 +328,9 @@ elif st.session_state.page == "Live Examination":
         q = questions[current_idx]
         display_no = current_idx + 1
 
-        # Sidebar/Top Grid for Paper Status Navigation
-        st.write("**📋 Exam Question Navigator Matrix:**")
-        
-        # Displaying grid matrix in rows of 10
-        grid_cols = st.columns(10)
-        for i in range(len(questions)):
-            col_pos = i % 10
-            btn_no = i + 1
-            
-            # Decide color layout based on state rules
-            if i in st.session_state.saved_questions:
-                btn_label = f"🔒{btn_no}"  # Locked
-                disabled_state = True
-            elif i in st.session_state.skipped_questions:
-                btn_label = f"🟡{btn_no}"  # Skipped (Yellow Alert)
-                disabled_state = False
-            else:
-                btn_label = f"📄{btn_no}"  # Fresh Unopened
-                disabled_state = False
-                
-            with grid_cols[col_pos]:
-                if st.button(btn_label, key=f"nav_btn_{i}", disabled=disabled_state, use_container_width=True):
-                    st.session_state.current_q_index = i
-                    st.rerun()
-
+        # 1️⃣ QUESTIONS AND OPTIONS (STAYS ON TOP)
         st.markdown(f"#### **Question {display_no} of {len(questions)}**")
         
-        # Lock status indicator banner
         if current_idx in st.session_state.saved_questions:
             st.warning("🔒 This question has been locked and saved. You cannot modify it.")
             st.write(f"**{q['Question']}**")
@@ -383,10 +360,8 @@ elif st.session_state.page == "Live Examination":
                     if answer is not None:
                         st.session_state.quiz_answers[display_no] = answer
                         st.session_state.saved_questions.add(current_idx)
-                        # Remove from skipped if it was there
                         st.session_state.skipped_questions.discard(current_idx)
                         
-                        # Advance automatically if possible
                         if current_idx < len(questions) - 1:
                             st.session_state.current_q_index += 1
                         st.rerun()
@@ -400,7 +375,6 @@ elif st.session_state.page == "Live Examination":
                         st.session_state.current_q_index += 1
                     st.rerun()
 
-        # Footer Action Row
         st.write("---")
         col_foot = st.columns([2, 2, 2])
         with col_foot[0]:
@@ -415,10 +389,37 @@ elif st.session_state.page == "Live Examination":
             if st.button("🛑 Submit Entire Test", type="primary", use_container_width=True):
                 st.session_state.page = "Grade Evaluation Processing"
                 st.rerun()
+
+        # 2️⃣ NAVIGATION MATRIX BOX (STAYS AT THE BOTTOM)
+        st.write("")
+        st.write("---")
+        st.write("**📋 Exam Question Navigator Matrix:**")
+        
+        grid_cols = st.columns(10)
+        for i in range(len(questions)):
+            col_pos = i % 10
+            btn_no = i + 1
+            
+            if i in st.session_state.saved_questions:
+                btn_label = f"🔒{btn_no}"  
+                disabled_state = True
+            elif i in st.session_state.skipped_questions:
+                btn_label = f"🟡{btn_no}"  
+                disabled_state = False
+            else:
+                btn_label = f"📄{btn_no}"  
+                disabled_state = False
+                
+            with grid_cols[col_pos]:
+                if st.button(btn_label, key=f"nav_btn_{i}", disabled=disabled_state, use_container_width=True):
+                    st.session_state.current_q_index = i
+                    st.rerun()
     else:
         st.warning("No dynamic questions resolved.")
 
-# GRADE EVALUATION PROCESSING (REALISTIC LINE BURST ULTRA FIREWORKS)
+# ------------------------------------------------------------------------
+# GRADE EVALUATION PROCESSING (COMPONENTS LAYER FIXED FOR FIREWORKS)
+# ------------------------------------------------------------------------
 elif st.session_state.page == "Grade Evaluation Processing":
     st.subheader("📊 Output Metric Breakdown")
     questions = st.session_state.active_quiz
@@ -460,8 +461,9 @@ elif st.session_state.page == "Grade Evaluation Processing":
             save_json("Result.json", results_db)
             st.session_state.result_saved = True
         
-        # 🎆 ULTRA-REALISTIC HIGH RESOLUTION FIREWORKS EFFECT
-        st.markdown("""
+        # Safe Isolation using Native Component Framework
+        import streamlit.components.v1 as html_components
+        html_components.html("""
         <style>
             @keyframes trail {
                 0% { top: 100%; opacity: 1; width: 4px; height: 30px; }
@@ -474,10 +476,15 @@ elif st.session_state.page == "Grade Evaluation Processing":
                 80% { opacity: 1; }
                 100% { transform: rotate(var(--angle)) translateY(var(--distance)); opacity: 0; width: 2px; height: 15px; }
             }
+            body {
+                background-color: #0e1117;
+                margin: 0;
+                overflow: hidden;
+            }
             .fw-universe {
-                position: fixed;
-                top: 0; left: 0; width: 100vw; height: 100vh;
-                pointer-events: none; z-index: 99999; overflow: hidden;
+                position: relative;
+                width: 100%;
+                height: 180px;
             }
             .firework-shell {
                 position: absolute;
@@ -498,52 +505,54 @@ elif st.session_state.page == "Grade Evaluation Processing":
                 transform-origin: top center;
                 animation: particle-explode 3s infinite cubic-bezier(0.1, 0.8, 0.3, 1);
             }
-            /* Specific Positions & Timing setups */
-            .fw-one { --left-x: 25%; --burst-top: 25%; animation-delay: 0s; }
-            .fw-two { --left-x: 75%; --burst-top: 30%; animation-delay: 0.8s; }
-            .fw-three { --left-x: 50%; --burst-top: 45%; animation-delay: 1.5s; }
+            .fw-one { --left-x: 20%; --burst-top: 20%; animation-delay: 0s; }
+            .fw-two { --left-x: 80%; --burst-top: 25%; animation-delay: 0.7s; }
+            .fw-three { --left-x: 50%; --burst-top: 35%; animation-delay: 1.4s; }
+            
+            .banner-box {
+                border: 2px solid #2e7d32;
+                border-radius: 12px;
+                padding: 20px;
+                text-align: center;
+                font-family: sans-serif;
+            }
         </style>
+        
+        <div class="banner-box">
+            <h1 style="color: #4caf50; margin:0; font-size: 28px;">🎆 CONGRATULATIONS 🎆</h1>
+            <p style="color: white; margin: 5px 0 0 0;">Your ECAT exam has been evaluated successfully.</p>
+        </div>
         
         <div class="fw-universe">
             <div class="firework-shell fw-one" style="background: #ffeb3b;"></div>
             <div class="burst-center fw-one">
-                <div class="spark-line" style="--angle: 0deg; --distance: 120px; --color: #ff1744;"></div>
-                <div class="spark-line" style="--angle: 45deg; --distance: 130px; --color: #ffeb3b;"></div>
-                <div class="spark-line" style="--angle: 90deg; --distance: 110px; --color: #2196f3;"></div>
-                <div class="spark-line" style="--angle: 135deg; --distance: 140px; --color: #4caf50;"></div>
-                <div class="spark-line" style="--angle: 180deg; --distance: 125px; --color: #e91e63;"></div>
-                <div class="spark-line" style="--angle: 225deg; --distance: 135px; --color: #00e5ff;"></div>
-                <div class="spark-line" style="--angle: 270deg; --distance: 115px; --color: #ff9100;"></div>
-                <div class="spark-line" style="--angle: 315deg; --distance: 125px; --color: #bee3db;"></div>
+                <div class="spark-line" style="--angle: 0deg; --distance: 100px; --color: #ff1744;"></div>
+                <div class="spark-line" style="--angle: 60deg; --distance: 90px; --color: #ffeb3b;"></div>
+                <div class="spark-line" style="--angle: 120deg; --distance: 110px; --color: #2196f3;"></div>
+                <div class="spark-line" style="--angle: 180deg; --distance: 100px; --color: #4caf50;"></div>
+                <div class="spark-line" style="--angle: 240deg; --distance: 95px; --color: #e91e63;"></div>
+                <div class="spark-line" style="--angle: 300deg; --distance: 105px; --color: #00e5ff;"></div>
             </div>
 
             <div class="firework-shell fw-two" style="background: #00e676;"></div>
             <div class="burst-center fw-two">
-                <div class="spark-line" style="--angle: 15deg; --distance: 140px; --color: #00e5ff;"></div>
-                <div class="spark-line" style="--angle: 65deg; --distance: 110px; --color: #ffea00;"></div>
-                <div class="spark-line" style="--angle: 115deg; --distance: 150px; --color: #d500f9;"></div>
-                <div class="spark-line" style="--angle: 165deg; --distance: 130px; --color: #ff1744;"></div>
-                <div class="spark-line" style="--angle: 215deg; --distance: 120px; --color: #00e676;"></div>
-                <div class="spark-line" style="--angle: 265deg; --distance: 145px; --color: #ffff00;"></div>
-                <div class="spark-line" style="--angle: 305deg; --distance: 125px; --color: #ff5722;"></div>
+                <div class="spark-line" style="--angle: 30deg; --distance: 110px; --color: #00e5ff;"></div>
+                <div class="spark-line" style="--angle: 90deg; --distance: 85px; --color: #ffea00;"></div>
+                <div class="spark-line" style="--angle: 150deg; --distance: 120px; --color: #d500f9;"></div>
+                <div class="spark-line" style="--angle: 210deg; --distance: 95px; --color: #ff1744;"></div>
+                <div class="spark-line" style="--angle: 270deg; --distance: 100px; --color: #00e676;"></div>
+                <div class="spark-line" style="--angle: 330deg; --distance: 115px; --color: #ffff00;"></div>
             </div>
 
             <div class="firework-shell fw-three" style="background: #e0f2f1;"></div>
             <div class="burst-center fw-three">
-                <div class="spark-line" style="--angle: 30deg; --distance: 100px; --color: #e91e63;"></div>
-                <div class="spark-line" style="--angle: 80deg; --distance: 150px; --color: #00e5ff;"></div>
-                <div class="spark-line" style="--angle: 140deg; --distance: 120px; --color: #ffea00;"></div>
-                <div class="spark-line" style="--angle: 200deg; --distance: 130px; --color: #76ff03;"></div>
-                <div class="spark-line" style="--angle: 260deg; --distance: 110px; --color: #f50057;"></div>
-                <div class="spark-line" style="--angle: 320deg; --distance: 140px; --color: #2979ff;"></div>
+                <div class="spark-line" style="--angle: 45deg; --distance: 90px; --color: #e91e63;"></div>
+                <div class="spark-line" style="--angle: 135deg; --distance: 110px; --color: #00e5ff;"></div>
+                <div class="spark-line" style="--angle: 225deg; --distance: 100px; --color: #ffea00;"></div>
+                <div class="spark-line" style="--angle: 315deg; --distance: 105px; --color: #76ff03;"></div>
             </div>
         </div>
-        
-        <div style="background-color: #0e1117; border: 2px solid #2e7d32; border-radius: 12px; padding: 25px; text-align: center; margin-bottom: 25px;">
-            <h1 style="color: #4caf50 !important; font-family: sans-serif; font-weight: bold; margin:0;">🎆 CONGRATULATIONS 🎆</h1>
-            <p style="color: white !important; margin: 5px 0 0 0;">Your ECAT exam has been evaluated with production-grade protocols.</p>
-        </div>
-        """, unsafe_allow_html=True)
+        """, height=340)
         
         st.success("Test Logged Safely in Central Registry Ledger Databases.")
         st.write("---")
