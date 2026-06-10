@@ -3,7 +3,6 @@ import json
 import datetime
 import random
 import uuid
-import re
 import streamlit as st
 
 # --------------------------------------------------
@@ -20,12 +19,17 @@ if "active_quiz" not in st.session_state:
     st.session_state.active_quiz = None  
 if "quiz_answers" not in st.session_state:
     st.session_state.quiz_answers = {}  
+if "saved_questions" not in st.session_state:
+    st.session_state.saved_questions = set()  # Tracks locked questions
+if "skipped_questions" not in st.session_state:
+    st.session_state.skipped_questions = set()  # Tracks skipped questions
+if "current_q_index" not in st.session_state:
+    st.session_state.current_q_index = 0
 if "quiz_submitted" not in st.session_state:
     st.session_state.quiz_submitted = False
 if "result_saved" not in st.session_state:
     st.session_state.result_saved = False
 
-# Helper to automatically verify file structures exist
 def init_json_file(filename):
     if not os.path.exists(filename) or os.stat(filename).st_size == 0:
         with open(filename, "w") as f:
@@ -36,7 +40,6 @@ init_json_file("Login.json")
 init_json_file("Quizz.json")
 init_json_file("Result.json")
 
-# Ensure Default Admin exists
 with open("Admin.json", "r") as f:
     admins = json.load(f)
 if not any(a.get("Admin Name") == "Zargham - Ullah" for a in admins):
@@ -48,7 +51,6 @@ if not any(a.get("Admin Name") == "Zargham - Ullah" for a in admins):
     with open("Admin.json", "w") as f:
         json.dump(admins, f, indent=4)
 
-# Helper functions for data management
 def load_json(filename):
     with open(filename, "r") as f:
         return json.load(f)
@@ -286,16 +288,18 @@ elif st.session_state.page == "ECAT Subject Selection":
                     random.shuffle(all_questions)
                     st.session_state.active_quiz = all_questions
                     st.session_state.quiz_answers = {}
+                    st.session_state.saved_questions = set()
+                    st.session_state.skipped_questions = set()
+                    st.session_state.current_q_index = 0
                     st.session_state.quiz_submitted = False
                     st.session_state.start_time = datetime.datetime.now().timestamp()
                     st.session_state.page = "Live Examination"
                     st.rerun()
 
-# ------------------------------------------------------------------------
-# LIVE EXAMINATION (SMOOTH TIMER & UNSELECTED OPTIONS)
-# ------------------------------------------------------------------------
+# LIVE EXAMINATION (ONE-BY-ONE WITH NAVIGATION & LUNCH BOX SYSTEM)
 elif st.session_state.page == "Live Examination":
     student = st.session_state.logged_in_user
+    questions = st.session_state.active_quiz
     
     if "start_time" not in st.session_state:
         st.session_state.start_time = datetime.datetime.now().timestamp()
@@ -307,60 +311,114 @@ elif st.session_state.page == "Live Examination":
     
     st.markdown(f"### 📝 Live Exam Branch (Candidate: **{student['User Name']}**)")
     
-    # ⏱️ Smooth Live Timer Section using Streamlit's structural layout
     if remaining <= 0:
         st.error("⏰ Time Limit Reached! Auto-evaluating responses...")
         st.session_state.page = "Grade Evaluation Processing"
         st.rerun()
     else:
         mins, secs = divmod(remaining, 60)
-        # Danger alert box showing real-time countdown nicely
         st.error(f"⏱️ **Time Remaining: {int(mins):02d}:{int(secs):02d}**")
         
     st.write("---")
-    questions = st.session_state.active_quiz
 
     if questions:
-        for idx, q in enumerate(questions, start=1):
-            st.write(f"**Q{idx}. {q['Question']}**")
+        current_idx = st.session_state.current_q_index
+        q = questions[current_idx]
+        display_no = current_idx + 1
+
+        # Sidebar/Top Grid for Paper Status Navigation
+        st.write("**📋 Exam Question Navigator Matrix:**")
+        
+        # Displaying grid matrix in rows of 10
+        grid_cols = st.columns(10)
+        for i in range(len(questions)):
+            col_pos = i % 10
+            btn_no = i + 1
             
-            # Check if user already answered this previously during a rerun
-            current_ans = st.session_state.quiz_answers.get(idx, None)
-            
-            if current_ans in ["A", "B", "C", "D"]:
-                default_idx = ["A", "B", "C", "D"].index(current_ans)
+            # Decide color layout based on state rules
+            if i in st.session_state.saved_questions:
+                btn_label = f"🔒{btn_no}"  # Locked
+                disabled_state = True
+            elif i in st.session_state.skipped_questions:
+                btn_label = f"🟡{btn_no}"  # Skipped (Yellow Alert)
+                disabled_state = False
             else:
-                default_idx = None  # 👈 Yeh line options ko pehle se select hone se rokegi!
+                btn_label = f"📄{btn_no}"  # Fresh Unopened
+                disabled_state = False
+                
+            with grid_cols[col_pos]:
+                if st.button(btn_label, key=f"nav_btn_{i}", disabled=disabled_state, use_container_width=True):
+                    st.session_state.current_q_index = i
+                    st.rerun()
+
+        st.markdown(f"#### **Question {display_no} of {len(questions)}**")
+        
+        # Lock status indicator banner
+        if current_idx in st.session_state.saved_questions:
+            st.warning("🔒 This question has been locked and saved. You cannot modify it.")
+            st.write(f"**{q['Question']}**")
+            saved_ans = st.session_state.quiz_answers.get(display_no, "A")
+            st.info(f"Your Locked Response: Option {saved_ans}. {q['Options'][saved_ans]}")
+        else:
+            if current_idx in st.session_state.skipped_questions:
+                st.warning("⚠️ You skipped this question earlier. You can solve it now!")
+
+            st.write(f"**{q['Question']}**")
+            current_ans = st.session_state.quiz_answers.get(display_no, None)
+            default_idx = ["A", "B", "C", "D"].index(current_ans) if current_ans in ["A", "B", "C", "D"] else None
 
             answer = st.radio(
-                f"Select option for question {idx}:", 
+                f"Select option for question {display_no}:", 
                 ["A", "B", "C", "D"], 
-                index=default_idx, # 👈 index=None hoga toh default khali rahega
+                index=default_idx,
                 format_func=lambda x: f"{x}. {q['Options'][x]}",
-                key=f"live_q_{idx}"
+                key=f"live_q_{display_no}"
             )
             
-            # Save the answer only if the user actually clicked something
-            if answer is not None:
-                st.session_state.quiz_answers[idx] = answer
             st.write("")
+            col_actions = st.columns([2, 2, 2])
+            
+            with col_actions[0]:
+                if st.button("💾 Save & Next", type="primary", use_container_width=True):
+                    if answer is not None:
+                        st.session_state.quiz_answers[display_no] = answer
+                        st.session_state.saved_questions.add(current_idx)
+                        # Remove from skipped if it was there
+                        st.session_state.skipped_questions.discard(current_idx)
+                        
+                        # Advance automatically if possible
+                        if current_idx < len(questions) - 1:
+                            st.session_state.current_q_index += 1
+                        st.rerun()
+                    else:
+                        st.error("Please choose an answer before locking or choose Skip.")
+            
+            with col_actions[1]:
+                if st.button("🟡 Skip Question", use_container_width=True):
+                    st.session_state.skipped_questions.add(current_idx)
+                    if current_idx < len(questions) - 1:
+                        st.session_state.current_q_index += 1
+                    st.rerun()
 
-        # Add a manual refresh button so they can update the timer anytime, 
-        # or it will automatically update whenever they answer any question!
-        col_submit, col_ref = st.columns([4, 1])
-        with col_submit:
-            if st.button("Submit Test", type="primary", use_container_width=True):
-                st.session_state.page = "Grade Evaluation Processing"
+        # Footer Action Row
+        st.write("---")
+        col_foot = st.columns([2, 2, 2])
+        with col_foot[0]:
+            if st.button("⬅️ Previous Question", disabled=(current_idx == 0), use_container_width=True):
+                st.session_state.current_q_index -= 1
                 st.rerun()
-        with col_ref:
-            if st.button("🔄 Refresh Timer", use_container_width=True):
+        with col_foot[1]:
+            if st.button("Next Question ➡️", disabled=(current_idx == len(questions) - 1), use_container_width=True):
+                st.session_state.current_q_index += 1
+                st.rerun()
+        with col_foot[2]:
+            if st.button("🛑 Submit Entire Test", type="primary", use_container_width=True):
+                st.session_state.page = "Grade Evaluation Processing"
                 st.rerun()
     else:
         st.warning("No dynamic questions resolved.")
 
-# ------------------------------------------------------------------------
-# GRADE EVALUATION PROCESSING (STREAMLINED MINIMAL FIREWORKS)
-# ------------------------------------------------------------------------
+# GRADE EVALUATION PROCESSING (REALISTIC LINE BURST ULTRA FIREWORKS)
 elif st.session_state.page == "Grade Evaluation Processing":
     st.subheader("📊 Output Metric Breakdown")
     questions = st.session_state.active_quiz
@@ -384,7 +442,7 @@ elif st.session_state.page == "Grade Evaluation Processing":
                 
         total_q = len(questions)
         total_marks = total_q * 4
-        calculated_marks = (correct_count * 4) - (wrong_count * 4) 
+        calculated_marks = (correct_count * 4) - (wrong_count * 1) 
         final_score = max(0, calculated_marks)
         
         if not st.session_state.result_saved:
@@ -402,69 +460,97 @@ elif st.session_state.page == "Grade Evaluation Processing":
             save_json("Result.json", results_db)
             st.session_state.result_saved = True
         
-        # 🎆 STREAMLINED MINIMAL FIREWORKS INJECTION (No Over-powering)
+        # 🎆 ULTRA-REALISTIC HIGH RESOLUTION FIREWORKS EFFECT
         st.markdown("""
         <style>
-            @keyframes smooth-firework {
-                0% { transform: scale(0); opacity: 1; }
-                100% { transform: scale(1.8); opacity: 0; }
+            @keyframes trail {
+                0% { top: 100%; opacity: 1; width: 4px; height: 30px; }
+                40% { width: 4px; height: 4px; opacity: 1; }
+                50% { top: var(--burst-top); opacity: 0; }
+                100% { top: var(--burst-top); opacity: 0; }
             }
-            .firework-overlay {
+            @keyframes particle-explode {
+                0% { transform: rotate(var(--angle)) translateY(0); opacity: 1; width: 4px; height: 4px; }
+                80% { opacity: 1; }
+                100% { transform: rotate(var(--angle)) translateY(var(--distance)); opacity: 0; width: 2px; height: 15px; }
+            }
+            .fw-universe {
                 position: fixed;
-                top: 0;
-                left: 0;
-                width: 100vw;
-                height: 100vh;
-                pointer-events: none;
-                z-index: 99999;
-                overflow: hidden;
+                top: 0; left: 0; width: 100vw; height: 100vh;
+                pointer-events: none; z-index: 99999; overflow: hidden;
             }
-            .refined-spark {
+            .firework-shell {
                 position: absolute;
-                width: 12px;
-                height: 12px;
-                border-radius: 50%;
-                opacity: 0;
+                left: var(--left-x);
+                width: 5px; height: 5px;
+                animation: trail 3s infinite linear;
             }
-            /* Bomb 1 - Top Center (Just below title) */
-            .b1 {
-                left: 50%; top: 15%;
-                background: radial-gradient(circle, #ffea00 10%, transparent 60%);
-                box-shadow: 0 0 35px #ffea00, -50px -50px 0 #00e5ff, 50px -50px 0 #ffea00, -50px 50px 0 #00e5ff;
-                animation: smooth-firework 2s infinite ease-out;
+            .burst-center {
+                position: absolute;
+                left: var(--left-x);
+                top: var(--burst-top);
+                animation: trail 3s infinite linear;
             }
-            /* Bomb 2 - Top Right (Above metrics) */
-            .b2 {
-                left: 80%; top: 10%;
-                background: radial-gradient(circle, #00e5ff 10%, transparent 60%);
-                box-shadow: 0 0 30px #00e5ff, -40px -40px 0 #ffea00, 40px -40px 0 #00e5ff;
-                animation: smooth-firework 2.4s infinite ease-out 0.4s;
+            .spark-line {
+                position: absolute;
+                top: 0; left: 0;
+                background: linear-gradient(to bottom, var(--color), transparent);
+                transform-origin: top center;
+                animation: particle-explode 3s infinite cubic-bezier(0.1, 0.8, 0.3, 1);
             }
-            /* Bomb 3 - Center Bottom (Below metrics) */
-            .b3 {
-                left: 50%; top: 60%;
-                background: radial-gradient(circle, #00e5ff 10%, transparent 60%);
-                box-shadow: 0 0 35px #00e5ff, -60px -30px 0 #ffea00, 60px -30px 0 #00e5ff, 0px 60px 0 #ffea00;
-                animation: smooth-firework 2s infinite ease-out 0.2s;
-            }
+            /* Specific Positions & Timing setups */
+            .fw-one { --left-x: 25%; --burst-top: 25%; animation-delay: 0s; }
+            .fw-two { --left-x: 75%; --burst-top: 30%; animation-delay: 0.8s; }
+            .fw-three { --left-x: 50%; --burst-top: 45%; animation-delay: 1.5s; }
         </style>
         
-        <div class="firework-overlay">
-            <div class="refined-spark b1"></div>
-            <div class="refined-spark b2"></div>
-            <div class="refined-spark b3"></div>
+        <div class="fw-universe">
+            <div class="firework-shell fw-one" style="background: #ffeb3b;"></div>
+            <div class="burst-center fw-one">
+                <div class="spark-line" style="--angle: 0deg; --distance: 120px; --color: #ff1744;"></div>
+                <div class="spark-line" style="--angle: 45deg; --distance: 130px; --color: #ffeb3b;"></div>
+                <div class="spark-line" style="--angle: 90deg; --distance: 110px; --color: #2196f3;"></div>
+                <div class="spark-line" style="--angle: 135deg; --distance: 140px; --color: #4caf50;"></div>
+                <div class="spark-line" style="--angle: 180deg; --distance: 125px; --color: #e91e63;"></div>
+                <div class="spark-line" style="--angle: 225deg; --distance: 135px; --color: #00e5ff;"></div>
+                <div class="spark-line" style="--angle: 270deg; --distance: 115px; --color: #ff9100;"></div>
+                <div class="spark-line" style="--angle: 315deg; --distance: 125px; --color: #bee3db;"></div>
+            </div>
+
+            <div class="firework-shell fw-two" style="background: #00e676;"></div>
+            <div class="burst-center fw-two">
+                <div class="spark-line" style="--angle: 15deg; --distance: 140px; --color: #00e5ff;"></div>
+                <div class="spark-line" style="--angle: 65deg; --distance: 110px; --color: #ffea00;"></div>
+                <div class="spark-line" style="--angle: 115deg; --distance: 150px; --color: #d500f9;"></div>
+                <div class="spark-line" style="--angle: 165deg; --distance: 130px; --color: #ff1744;"></div>
+                <div class="spark-line" style="--angle: 215deg; --distance: 120px; --color: #00e676;"></div>
+                <div class="spark-line" style="--angle: 265deg; --distance: 145px; --color: #ffff00;"></div>
+                <div class="spark-line" style="--angle: 305deg; --distance: 125px; --color: #ff5722;"></div>
+            </div>
+
+            <div class="firework-shell fw-three" style="background: #e0f2f1;"></div>
+            <div class="burst-center fw-three">
+                <div class="spark-line" style="--angle: 30deg; --distance: 100px; --color: #e91e63;"></div>
+                <div class="spark-line" style="--angle: 80deg; --distance: 150px; --color: #00e5ff;"></div>
+                <div class="spark-line" style="--angle: 140deg; --distance: 120px; --color: #ffea00;"></div>
+                <div class="spark-line" style="--angle: 200deg; --distance: 130px; --color: #76ff03;"></div>
+                <div class="spark-line" style="--angle: 260deg; --distance: 110px; --color: #f50057;"></div>
+                <div class="spark-line" style="--angle: 320deg; --distance: 140px; --color: #2979ff;"></div>
+            </div>
+        </div>
+        
+        <div style="background-color: #0e1117; border: 2px solid #2e7d32; border-radius: 12px; padding: 25px; text-align: center; margin-bottom: 25px;">
+            <h1 style="color: #4caf50 !important; font-family: sans-serif; font-weight: bold; margin:0;">🎆 CONGRATULATIONS 🎆</h1>
+            <p style="color: white !important; margin: 5px 0 0 0;">Your ECAT exam has been evaluated with production-grade protocols.</p>
         </div>
         """, unsafe_allow_html=True)
         
-        # Display Status
         st.success("Test Logged Safely in Central Registry Ledger Databases.")
         st.write("---")
         
-        # Performance Display Dashboard
         st.markdown("### 🏆 Exam Metric Performance Summary")
         st.metric(label="Calculated Scale Output Grade", value=f"{final_score} / {total_marks}")
         
-        # 4 Columns layout to show Unanswered questions clearly
         col1, col2, col3, col4 = st.columns(4)
         col1.metric("Total Items", total_q)
         col2.metric("Correct ✔️", correct_count)
@@ -477,6 +563,9 @@ elif st.session_state.page == "Grade Evaluation Processing":
         st.session_state.page = "Main Menu"
         st.session_state.active_quiz = None
         st.session_state.quiz_answers = {}
+        st.session_state.saved_questions = set()
+        st.session_state.skipped_questions = set()
+        st.session_state.current_q_index = 0
         st.session_state.logged_in_user = None
         st.session_state.result_saved = False
         if "start_time" in st.session_state:
