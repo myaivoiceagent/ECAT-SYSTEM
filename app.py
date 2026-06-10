@@ -359,7 +359,7 @@ elif st.session_state.page == "Live Examination":
         st.warning("No dynamic questions resolved.")
 
 # ------------------------------------------------------------------------
-# GRADE EVALUATION PROCESSING (FIREWORKS ONLY - NO BALLOONS)
+# GRADE EVALUATION PROCESSING (LOCAL PURE CSS FIREWORKS - NO EXTERNAL LINKS)
 # ------------------------------------------------------------------------
 elif st.session_state.page == "Grade Evaluation Processing":
     st.subheader("📊 Output Metric Breakdown")
@@ -385,7 +385,6 @@ elif st.session_state.page == "Grade Evaluation Processing":
         total_q = len(questions)
         total_marks = total_q * 4
         
-        # Sahi ke +4, Galat ke -1, Unanswered ke 0
         calculated_marks = (correct_count * 4) - (wrong_count * 1) 
         final_score = max(0, calculated_marks)
         
@@ -404,43 +403,74 @@ elif st.session_state.page == "Grade Evaluation Processing":
             save_json("Result.json", results_db)
             st.session_state.result_saved = True
         
-        # 🔥 Sirf aur sirf Fireworks/Confetti Blast (Balloons delete kar diye hain)
+        # 🔥 PURE LOCAL CSS/HTML FIREWORKS (Streamlit Cloud proof!)
         import streamlit.components.v1 as html_components
         html_components.html("""
-        <div style="text-align:center; padding: 10px;">
-            <h1 style="color: #2e7d32; font-family: sans-serif; font-size: 32px; letter-spacing: 2px;">🎆 CONGRATULATIONS 🎆</h1>
-            <h3 style="color: #1b5e20; font-family: sans-serif;">Test Completed Successfully!</h3>
+        <style>
+            @keyframes explode {
+                0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+                100% { transform: translate(-50%, -50%) scale(1.5); opacity: 0; }
+            }
+            .firework-container {
+                position: relative;
+                width: 100%;
+                height: 150px;
+                background: #000;
+                border-radius: 10px;
+                overflow: hidden;
+                text-align: center;
+                padding-top: 20px;
+            }
+            .main-title {
+                color: #2e7d32;
+                font-family: sans-serif;
+                font-size: 28px;
+                margin: 0;
+                position: relative;
+                z-index: 10;
+            }
+            .sub-title {
+                color: #a5d6a7;
+                font-family: sans-serif;
+                margin: 5px 0 0 0;
+                position: relative;
+                z-index: 10;
+            }
+            .fw {
+                position: absolute;
+                width: 10px;
+                height: 10px;
+                border-radius: 50%;
+                opacity: 0;
+            }
+            /* Firework 1 */
+            .fw1 {
+                left: 20%; top: 50%; background: radial-gradient(circle, #ff1744 20%, transparent 60%);
+                box-shadow: 0 0 30px 20px #ff1744, -40px -40px 0 5px #ffea00, 40px -40px 0 5px #00e676, -40px 40px 0 5px #00e5ff, 40px 40px 0 5px #d500f9;
+                animation: explode 2s infinite ease-out;
+            }
+            /* Firework 2 */
+            .fw2 {
+                left: 80%; top: 40%; background: radial-gradient(circle, #00e5ff 20%, transparent 60%);
+                box-shadow: 0 0 30px 20px #00e5ff, -30px -50px 0 5px #ff1744, 50px -20px 0 5px #ffea00, -50px 30px 0 5px #00e676, 30px 50px 0 5px #ff00ff;
+                animation: explode 2.5s infinite ease-out 0.5s;
+            }
+            /* Firework 3 */
+            .fw3 {
+                left: 50%; top: 70%; background: radial-gradient(circle, #ffea00 20%, transparent 60%);
+                box-shadow: 0 0 30px 20px #ffea00, -50px -10px 0 4px #00e5ff, 20px -50px 0 4px #ff1744, -20px 50px 0 4px #00e676, 50px 20px 0 4px #d500f9;
+                animation: explode 1.8s infinite ease-out 0.2s;
+            }
+        </style>
+        
+        <div class="firework-container">
+            <h1 class="main-title">🎆 CONGRATULATIONS 🎆</h1>
+            <h3 class="sub-title">Test Completed Successfully!</h3>
+            <div class="fw fw1"></div>
+            <div class="fw fw2"></div>
+            <div class="fw fw3"></div>
         </div>
-
-        <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-        <script>
-            var duration = 5000; // 5 seconds tak fireworks chalenge
-            var end = Date.now() + duration;
-
-            (function frame() {
-                // Left side firework burst
-                confetti({
-                    particleCount: 7,
-                    angle: 60,
-                    spread: 60,
-                    origin: { x: 0, y: 0.8 },
-                    colors: ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff']
-                });
-                // Right side firework burst
-                confetti({
-                    particleCount: 7,
-                    angle: 120,
-                    spread: 60,
-                    origin: { x: 1, y: 0.8 },
-                    colors: ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff']
-                });
-
-                if (Date.now() < end) {
-                    requestAnimationFrame(frame);
-                }
-            }());
-        </script>
-        """, height=180)
+        """, height=170)
         
         st.success("Test Logged Safely in Central Registry Ledger Databases.")
         st.write("---")
