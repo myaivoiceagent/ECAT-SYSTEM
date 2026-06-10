@@ -5,6 +5,7 @@ import random
 import uuid
 import re
 import streamlit as st
+import streamlit.components.v1 as components
 
 # --------------------------------------------------
 # CONFIGURATION & STATE INITIALIZATION
@@ -372,38 +373,67 @@ elif st.session_state.page == "ECAT Subject Selection":
                     st.session_state.quiz_submitted = False
                     st.session_state.page = "Live Examination"
                     st.rerun()
+                    st.session_state.start_time = datetime.datetime.now().timestamp()
+                    st.session_state.page = "Live Examination"
+                    st.rerun()
 
 elif st.session_state.page == "Live Examination":
-    st.subheader("📝 Live Examination Environment")
     student = st.session_state.logged_in_user
-    st.write(f"Candidate Profile: **{student['User Name']}** ({student['Email']})")
-    st.write("---")
     
-    questions = st.session_state.active_quiz
+    # ------------------------------------------------------------------------
+    # ⏱️ 100-MINUTE TIMER CODE (YAHAN PASTE KAREIN)
+    # ------------------------------------------------------------------------
+    total_allowed_seconds = 100 * 60  # 100 minutes = 6000 seconds
+    current_time_stamp = datetime.datetime.now().timestamp()
+    elapsed_seconds = int(current_time_stamp - st.session_state.start_time)
+    remaining_seconds = max(0, total_allowed_seconds - elapsed_seconds)
     
-    # Renders question forms in sequence onto the page layout
-    for idx, q in enumerate(questions, start=1):
-        st.markdown(f"**Question {idx}:** {q['Question']}")
-        options_dict = q["Options"]
+    st.markdown(f"### 📝 Live Examination Environment (Candidate: **{student['User Name']}**)")
+    
+    timer_html = f"""
+    <div style="background-color: #ffebee; padding: 15px; border-radius: 8px; border: 2px solid #ef5350; text-align: center; margin-bottom: 20px;">
+        <span style="font-size: 16px; color: #c62828; font-weight: bold; font-family: sans-serif;">🚨 TIME REMAINING: </span>
+        <span id="countdown-clock" style="font-size: 24px; color: #b71c1c; font-weight: bold; font-family: monospace;">--:--</span>
+    </div>
+
+    <script>
+        var timeLeft = {remaining_seconds};
+        var timerDisplay = document.getElementById('countdown-clock');
         
-        # Build layout option keys
-        display_options = [f"{k}: {v}" for k, v in options_dict.items()]
-        
-        # Retain previous choices across layout updates via internal key anchors
-        saved_choice = st.radio(
-            f"Select Option for Q{idx}:", 
-            display_options, 
-            index=None,
-            key=f"q_ui_{idx}"
-        )
-        if saved_choice:
-            chosen_key = saved_choice.split(":")[0]
-            st.session_state.quiz_answers[idx] = chosen_key
-        st.write("---")
-        
-    if st.button("Submit Final Script", type="primary"):
+        function updateTimer() {{
+            if (timeLeft <= 0) {{
+                timerDisplay.innerHTML = "00:00 - TIME OVER!";
+                window.parent.postMessage({{type: 'streamlit:setComponentValue', value: 'timeout'}}, '*');
+                clearInterval(intervalInstance);
+            }} else {{
+                var minutes = Math.floor(timeLeft / 60);
+                var seconds = timeLeft % 60;
+                if (minutes < 10) minutes = "0" + minutes;
+                if (seconds < 10) seconds = "0" + seconds;
+                timerDisplay.innerHTML = minutes + ":" + seconds;
+                timeLeft--;
+            }}
+        }}
+        updateTimer();
+        var intervalInstance = setInterval(updateTimer, 1000);
+    </script>
+    """
+    
+    timer_signal = components.html(timer_html, height=100, scroller=False)
+    
+    if timer_signal == "timeout" or remaining_seconds <= 0:
+        st.error("⏰ Time's Up! Auto-submitting your paper...")
         st.session_state.page = "Grade Evaluation Processing"
         st.rerun()
+        
+    st.write("---")
+    # ------------------------------------------------------------------------
+    # TIMER CODE KHATAM (Iske niche aapka baki ka questions wala code waise hi chalega)
+    # ------------------------------------------------------------------------
+
+    # Aapka purana code jo questions display karta hai...
+    questions = st.session_state.active_quiz
+    # (Baki saara code niche chalne dein)
 
 elif st.session_state.page == "Grade Evaluation Processing":
     st.subheader("📊 Output Metric Breakdown")
