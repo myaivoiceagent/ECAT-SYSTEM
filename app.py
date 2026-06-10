@@ -359,7 +359,7 @@ elif st.session_state.page == "Live Examination":
         st.warning("No dynamic questions resolved.")
 
 # ------------------------------------------------------------------------
-# GRADE EVALUATION PROCESSING (FULL SCREEN BLOCKBUSTER FIREWORKS)
+# GRADE EVALUATION PROCESSING (STREAMLINED MINIMAL FIREWORKS)
 # ------------------------------------------------------------------------
 elif st.session_state.page == "Grade Evaluation Processing":
     st.subheader("📊 Output Metric Breakdown")
@@ -384,8 +384,7 @@ elif st.session_state.page == "Grade Evaluation Processing":
                 
         total_q = len(questions)
         total_marks = total_q * 4
-        
-        calculated_marks = (correct_count * 4) - (wrong_count * 1) 
+        calculated_marks = (correct_count * 4) - (wrong_count * 4) 
         final_score = max(0, calculated_marks)
         
         if not st.session_state.result_saved:
@@ -403,100 +402,69 @@ elif st.session_state.page == "Grade Evaluation Processing":
             save_json("Result.json", results_db)
             st.session_state.result_saved = True
         
-        # 🎆 FULL PAGE UTTER CHAOS FIREWORKS INJECTION
+        # 🎆 STREAMLINED MINIMAL FIREWORKS INJECTION (No Over-powering)
         st.markdown("""
         <style>
-            @keyframes full-bang {
+            @keyframes smooth-firework {
                 0% { transform: scale(0); opacity: 1; }
-                50% { opacity: 1; }
-                100% { transform: scale(2.2); opacity: 0; }
+                100% { transform: scale(1.8); opacity: 0; }
             }
-            /* Pure screen cover container */
-            .fullscreen-overlay {
+            .firework-overlay {
                 position: fixed;
                 top: 0;
                 left: 0;
                 width: 100vw;
                 height: 100vh;
-                pointer-events: none; /* Taake user buttons par click kar sake */
+                pointer-events: none;
                 z-index: 99999;
                 overflow: hidden;
             }
-            .giant-spark {
+            .refined-spark {
                 position: absolute;
-                width: 15px;
-                height: 15px;
+                width: 12px;
+                height: 12px;
                 border-radius: 50%;
                 opacity: 0;
             }
-            /* Bomb 1 - Top Left */
+            /* Bomb 1 - Top Center (Just below title) */
             .b1 {
-                left: 20%; top: 30%;
-                background: radial-gradient(circle, #ff1744 10%, transparent 60%);
-                box-shadow: 0 0 40px #ff1744, -70px -70px 0 #ffea00, 70px -70px 0 #00e676, -70px 70px 0 #00e5ff, 70px 70px 0 #d500f9, 0px -90px 0 #ff5722;
-                animation: full-bang 2.5s infinite ease-out;
+                left: 50%; top: 15%;
+                background: radial-gradient(circle, #ffea00 10%, transparent 60%);
+                box-shadow: 0 0 35px #ffea00, -50px -50px 0 #00e5ff, 50px -50px 0 #ffea00, -50px 50px 0 #00e5ff;
+                animation: smooth-firework 2s infinite ease-out;
             }
-            /* Bomb 2 - Top Right */
+            /* Bomb 2 - Top Right (Above metrics) */
             .b2 {
-                left: 80%; top: 25%;
+                left: 80%; top: 10%;
                 background: radial-gradient(circle, #00e5ff 10%, transparent 60%);
-                box-shadow: 0 0 40px #00e5ff, -60px -40px 0 #ff1744, 60px -80px 0 #ffea00, -40px 80px 0 #00e676, 80px 40px 0 #ff00ff, -90px 0px 0 #9c27b0;
-                animation: full-bang 2.8s infinite ease-out 0.4s;
+                box-shadow: 0 0 30px #00e5ff, -40px -40px 0 #ffea00, 40px -40px 0 #00e5ff;
+                animation: smooth-firework 2.4s infinite ease-out 0.4s;
             }
-            /* Bomb 3 - Center Bottom */
+            /* Bomb 3 - Center Bottom (Below metrics) */
             .b3 {
                 left: 50%; top: 60%;
-                background: radial-gradient(circle, #ffea00 10%, transparent 60%);
-                box-shadow: 0 0 40px #ffea00, -80px -40px 0 #d500f9, 80px -40px 0 #ff1744, -50px 70px 0 #00e5ff, 50px 70px 0 #00e676, 0px -100px 0 #e91e63;
-                animation: full-bang 2.2s infinite ease-out 0.2s;
-            }
-            /* Bomb 4 - Extreme Left Bottom */
-            .b4 {
-                left: 10%; top: 70%;
-                background: radial-gradient(circle, #00e676 10%, transparent 60%);
-                box-shadow: 0 0 30px #00e676, -40px -40px 0 #ffea00, 40px -40px 0 #ff1744, 0px 50px 0 #00e5ff;
-                animation: full-bang 3s infinite ease-out 0.6s;
-            }
-            /* Bomb 5 - Extreme Right Bottom */
-            .b5 {
-                left: 90%; top: 65%;
-                background: radial-gradient(circle, #d500f9 10%, transparent 60%);
-                box-shadow: 0 0 30px #d500f9, -40px -40px 0 #00e5ff, 40px -40px 0 #00e676, 0px 50px 0 #ffea00;
-                animation: full-bang 3.2s infinite ease-out 0.8s;
-            }
-            
-            /* Box styling on page */
-            .banner-box {
-                background-color: #0e1117;
-                border: 2px solid #2e7d32;
-                border-radius: 12px;
-                padding: 25px;
-                text-align: center;
-                margin-bottom: 25px;
+                background: radial-gradient(circle, #00e5ff 10%, transparent 60%);
+                box-shadow: 0 0 35px #00e5ff, -60px -30px 0 #ffea00, 60px -30px 0 #00e5ff, 0px 60px 0 #ffea00;
+                animation: smooth-firework 2s infinite ease-out 0.2s;
             }
         </style>
         
-        <div class="fullscreen-overlay">
-            <div class="giant-spark b1"></div>
-            <div class="giant-spark b2"></div>
-            <div class="giant-spark b3"></div>
-            <div class="giant-spark b4"></div>
-            <div class="giant-spark b5"></div>
-        </div>
-        
-        <div class="banner-box">
-            <h1 style="color: #4caf50 !important; font-family: sans-serif; font-weight: bold; margin:0;">🎆 CONGRATULATIONS 🎆</h1>
-            <p style="color: white !important; margin: 5px 0 0 0;">Your ECAT exam has been evaluated natively.</p>
+        <div class="firework-overlay">
+            <div class="refined-spark b1"></div>
+            <div class="refined-spark b2"></div>
+            <div class="refined-spark b3"></div>
         </div>
         """, unsafe_allow_html=True)
         
+        # Display Status
         st.success("Test Logged Safely in Central Registry Ledger Databases.")
         st.write("---")
         
-        # Result Dashboard
+        # Performance Display Dashboard
         st.markdown("### 🏆 Exam Metric Performance Summary")
         st.metric(label="Calculated Scale Output Grade", value=f"{final_score} / {total_marks}")
         
+        # 4 Columns layout to show Unanswered questions clearly
         col1, col2, col3, col4 = st.columns(4)
         col1.metric("Total Items", total_q)
         col2.metric("Correct ✔️", correct_count)
