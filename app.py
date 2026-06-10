@@ -291,11 +291,12 @@ elif st.session_state.page == "ECAT Subject Selection":
                     st.session_state.page = "Live Examination"
                     st.rerun()
 
-# LIVE EXAMINATION (ULTRA-SAFE NO-IFRAME PYTHON TIMER)
+# ------------------------------------------------------------------------
+# LIVE EXAMINATION (SMOOTH TIMER & UNSELECTED OPTIONS)
+# ------------------------------------------------------------------------
 elif st.session_state.page == "Live Examination":
     student = st.session_state.logged_in_user
     
-    # Absolute fallbacks for missing state
     if "start_time" not in st.session_state:
         st.session_state.start_time = datetime.datetime.now().timestamp()
         
@@ -304,16 +305,16 @@ elif st.session_state.page == "Live Examination":
     elapsed = int(current_time_stamp - st.session_state.start_time)
     remaining = max(0, total_allowed_seconds - elapsed)
     
-    # Render countdown header
-    mins, secs = divmod(remaining, 60)
     st.markdown(f"### 📝 Live Exam Branch (Candidate: **{student['User Name']}**)")
     
-    # Safe auto-refresh system container without iframe dependencies
+    # ⏱️ Smooth Live Timer Section using Streamlit's structural layout
     if remaining <= 0:
         st.error("⏰ Time Limit Reached! Auto-evaluating responses...")
         st.session_state.page = "Grade Evaluation Processing"
         st.rerun()
     else:
+        mins, secs = divmod(remaining, 60)
+        # Danger alert box showing real-time countdown nicely
         st.error(f"⏱️ **Time Remaining: {int(mins):02d}:{int(secs):02d}**")
         
     st.write("---")
@@ -322,26 +323,44 @@ elif st.session_state.page == "Live Examination":
     if questions:
         for idx, q in enumerate(questions, start=1):
             st.write(f"**Q{idx}. {q['Question']}**")
-            current_ans = st.session_state.quiz_answers.get(idx, "A")
-            default_idx = ["A", "B", "C", "D"].index(current_ans) if current_ans in ["A", "B", "C", "D"] else 0
             
+            # Check if user already answered this previously during a rerun
+            current_ans = st.session_state.quiz_answers.get(idx, None)
+            
+            if current_ans in ["A", "B", "C", "D"]:
+                default_idx = ["A", "B", "C", "D"].index(current_ans)
+            else:
+                default_idx = None  # 👈 Yeh line options ko pehle se select hone se rokegi!
+
             answer = st.radio(
                 f"Select option for question {idx}:", 
                 ["A", "B", "C", "D"], 
-                index=default_idx, 
+                index=default_idx, # 👈 index=None hoga toh default khali rahega
                 format_func=lambda x: f"{x}. {q['Options'][x]}",
                 key=f"live_q_{idx}"
             )
-            st.session_state.quiz_answers[idx] = answer
+            
+            # Save the answer only if the user actually clicked something
+            if answer is not None:
+                st.session_state.quiz_answers[idx] = answer
             st.write("")
 
-        if st.button("Submit Test", type="primary"):
-            st.session_state.page = "Grade Evaluation Processing"
-            st.rerun()
+        # Add a manual refresh button so they can update the timer anytime, 
+        # or it will automatically update whenever they answer any question!
+        col_submit, col_ref = st.columns([4, 1])
+        with col_submit:
+            if st.button("Submit Test", type="primary", use_container_width=True):
+                st.session_state.page = "Grade Evaluation Processing"
+                st.rerun()
+        with col_ref:
+            if st.button("🔄 Refresh Timer", use_container_width=True):
+                st.rerun()
     else:
         st.warning("No dynamic questions resolved.")
 
-# GRADE EVALUATION PROCESSING
+# ------------------------------------------------------------------------
+# GRADE EVALUATION PROCESSING (WITH FIREWORKS/CONFETTI)
+# ------------------------------------------------------------------------
 elif st.session_state.page == "Grade Evaluation Processing":
     st.subheader("📊 Output Metric Breakdown")
     questions = st.session_state.active_quiz
@@ -361,7 +380,7 @@ elif st.session_state.page == "Grade Evaluation Processing":
                 
         total_q = len(questions)
         total_marks = total_q * 4
-        calculated_marks = (correct_count * 4) - (wrong_count * 1) 
+        calculated_marks = (correct_count * 4) - (wrong_count * 4) 
         final_score = max(0, calculated_marks)
         
         if not st.session_state.result_saved:
@@ -379,7 +398,51 @@ elif st.session_state.page == "Grade Evaluation Processing":
             save_json("Result.json", results_db)
             st.session_state.result_saved = True
         
+        # 🎈 Method 1: Streamlit's Built-in Animations (Safe & Smooth)
+        st.balloons()
+        
+        # 🎉 Method 2: Beautiful Fireworks/Confetti Blast Effect via HTML Components
+        import streamlit.components.v1 as html_components
+        html_components.html("""
+        <div style="text-align:center; padding: 10px;">
+            <h1 style="color: #2e7d32; font-family: sans-serif; font-size: 30px;">🎆 CONGRATULATIONS 🎆</h1>
+            <h3 style="color: #1b5e20; font-family: sans-serif;">Test Completed Successfully!</h3>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+        <script>
+            // Continuous confetti firework blast for 4 seconds
+            var duration = 4000;
+            var end = Date.now() + duration;
+
+            (function frame() {
+                // Left side launch
+                confetti({
+                    particleCount: 5,
+                    angle: 60,
+                    spread: 55,
+                    origin: { x: 0, y: 0.8 }
+                });
+                // Right side launch
+                confetti({
+                    particleCount: 5,
+                    angle: 120,
+                    spread: 55,
+                    origin: { x: 1, y: 0.8 }
+                });
+
+                if (Date.now() < end) {
+                    requestAnimationFrame(frame);
+                }
+            }());
+        </script>
+        """, height=180)
+        
         st.success("Test Logged Safely in Central Registry Ledger Databases.")
+        st.write("---")
+        
+        # Performance Display
+        st.markdown("### 🏆 Exam Metric Performance Summary")
         st.metric(label="Calculated Scale Output Grade", value=f"{final_score} / {total_marks}")
         
         col1, col2, col3 = st.columns(3)
@@ -389,7 +452,7 @@ elif st.session_state.page == "Grade Evaluation Processing":
     else:
         st.error("Error generating score logs.")
 
-    if st.button("Return Main Portal Home"):
+    if st.button("Return Main Portal Home", type="secondary", use_container_width=True):
         st.session_state.page = "Main Menu"
         st.session_state.active_quiz = None
         st.session_state.quiz_answers = {}
