@@ -209,34 +209,53 @@ elif st.session_state.page == "Admin Dashboard":
         users = admin_load_json("Login.json")
         
         if users:
-            # 🛠️ Loop chala kar har user ki details aur delete button render karenge
+            # 📊 Header Row for the Custom Table
+            h_id, h_name, h_email, h_pass, h_time, h_act = st.columns([1.2, 2, 2.5, 1.8, 2.2, 1.3])
+            with h_id: st.markdown("**ID**")
+            with h_name: st.markdown("**Name**")
+            with h_email: st.markdown("**Email**")
+            with h_pass: st.markdown("**Password**")
+            with h_time: st.markdown("**Last Login 🕒**")
+            with h_act: st.markdown("**Action**")
+            st.markdown("<hr style='margin:2px 0px 8px 0px;'>", unsafe_allow_html=True)
+
+            # 🛠️ Loop chala kar saari details ek line mein set kar di hain
             for idx, u in enumerate(users):
-                col1, col2, col3, col4 = st.columns([2, 3, 3, 1.5])
+                col1, col2, col3, col4, col5, col6 = st.columns([1.2, 2, 2.5, 1.8, 2.2, 1.3])
                 
+                # Handle UUID placeholder fix if needed
+                u_id = u.get("User ID", "N/A")
+                if "function uuid4" in str(u_id):
+                    u_id = f"USR-{idx+1:03d}"
+
                 with col1:
-                    st.write(f"**{u.get('User Name', 'N/A')}**")
+                    st.text(u_id)
                 with col2:
-                    st.write(f"📧 {u.get('Email', 'N/A')}")
+                    st.text(u.get("User Name", "N/A"))
                 with col3:
-                    st.write(f"🕒 {u.get('Last Login', 'Not Logged In Yet')}")
+                    st.text(u.get("Email", "N/A"))
                 with col4:
+                    st.text(u.get("Password", "N/A"))
+                with col5:
+                    st.text(u.get("Last Login", "Not Logged In"))
+                with col6:
                     # 🗑️ REMOVE BUTTON
-                    if st.button("❌ Remove", key=f"del_usr_{idx}"):
+                    if st.button("❌ Remove", key=f"del_usr_final_{idx}", use_container_width=True):
                         target_email = u.get("Email")
                         target_name = u.get("User Name")
                         
-                        # 1. Login.json se nikalo
+                        # 1. Login.json se remove kiya
                         new_users_list = [usr for usr in users if usr.get("Email") != target_email]
                         admin_save_json("Login.json", new_users_list)
                         
-                        # 2. Result.json se bhi sara data delete karo taake clean wipe ho
+                        # 2. Result.json se bhi cleanly wipe kiya
                         results = admin_load_json("Result.json")
                         new_results_list = [r for r in results if r.get("User Email") != target_email]
                         admin_save_json("Result.json", new_results_list)
                         
-                        st.success(f"{target_name} ka data mukammal delete ho gaya!")
+                        st.success(f"🎉 {target_name} ka account aur saara data delete ho gaya!")
                         st.rerun()
-                st.write("---")
+                st.write("") # Choti si spacing rows ke beech mein
         else:
             st.info("No registered users found.")
 
