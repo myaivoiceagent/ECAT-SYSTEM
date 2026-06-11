@@ -7,102 +7,102 @@ import streamlit as st
 import streamlit.components.v1 as components
 
 
+
 def play_fireworks():
-    fireworks_js = """
-    <div style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 9999999;">
-        <canvas id="canvas"></canvas>
+    fireworks_html = """
+    <div style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 999999; margin: 0; padding: 0;">
+        <canvas id="fireworksCanvas" style="width: 100%; height: 100%; display: block;"></canvas>
     </div>
     <script>
-    const canvas = document.getElementById('canvas');
+    const canvas = document.getElementById('fireworksCanvas');
     const ctx = canvas.getContext('2d');
     
-    // Direct window measurements instead of window.top to bypass security sandboxing
+    // Dynamic screen sizing
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
     
     let particles = [];
-
+    
     class Particle {
         constructor(x, y, color) {
-            this.x = x; 
-            this.y = y; 
+            this.x = x;
+            this.y = y;
             this.color = color;
-            this.radius = Math.random() * 4 + 1;
-            this.velocity = { 
-                x: (Math.random() - 0.5) * 12, 
-                y: (Math.random() - 0.5) * 12 
+            this.radius = Math.random() * 3 + 1;
+            this.velocity = {
+                x: (Math.random() - 0.5) * 12,
+                y: (Math.random() - 0.5) * 12
             };
             this.alpha = 1;
         }
         draw() {
-            ctx.save(); 
-            ctx.globalAlpha = this.alpha; 
+            ctx.save();
+            ctx.globalAlpha = this.alpha;
             ctx.beginPath();
             ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
-            ctx.fillStyle = this.color; 
-            ctx.fill(); 
+            ctx.fillStyle = this.color;
+            ctx.fill();
             ctx.restore();
         }
         update() {
-            this.velocity.y += 0.05; 
-            this.x += this.velocity.x; 
+            this.velocity.y += 0.05;
+            this.x += this.velocity.x;
             this.y += this.velocity.y;
             this.alpha -= 0.015;
         }
     }
-
-    function spawnFirework() {
-        const x = Math.random() * canvas.width; 
+    
+    function createFirework() {
+        const x = Math.random() * canvas.width;
         const y = Math.random() * (canvas.height * 0.5);
-        const colors = ['#FF1493', '#00FFFF', '#FFD700', '#FF4500', '#7FFF00', '#9400D3', '#00FF00'];
+        const colors = ['#FF1493', '#00FFFF', '#FFD700', '#FF4500', '#7FFF00', '#9400D3'];
         const color = colors[Math.floor(Math.random() * colors.length)];
-        for (let i = 0; i < 60; i++) { 
-            particles.push(new Particle(x, y, color)); 
+        for (let i = 0; i < 50; i++) {
+            particles.push(new Particle(x, y, color));
         }
     }
-
-    // Immediate bursts
-    spawnFirework();
-    spawnFirework();
-    spawnFirework();
     
-    let interval = setInterval(spawnFirework, 300);
-    setTimeout(() => { clearInterval(interval); }, 6000);
-
-    function animate() {
+    // Instant initial bursts on loading
+    createFirework();
+    createFirework();
+    
+    let timer = setInterval(createFirework, 350);
+    setTimeout(() => { clearInterval(timer); }, 5000);
+    
+    function runLoop() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        particles.forEach((p, i) => { 
-            if (p.alpha <= 0) { 
-                particles.splice(i, 1); 
-            } else { 
-                p.update(); 
-                p.draw(); 
-            } 
+        particles.forEach((p, index) => {
+            if (p.alpha <= 0) {
+                particles.splice(index, 1);
+            } else {
+                p.update();
+                p.draw();
+            }
         });
-        requestAnimationFrame(animate);
+        requestAnimationFrame(runLoop);
     }
-    animate();
+    runLoop();
     </script>
     <style>
-        body, html { margin: 0; padding: 0; overflow: hidden; background: transparent; }
+        body, html { margin: 0; padding: 0; background: transparent; overflow: hidden; }
     </style>
     """
-    # Using specific height and negative margins via custom CSS container to break out layout boundaries
-    st.components.v1.html(fireworks_js, height=1, width=1)
+    # 1 height framework block parameters are updated here to allow cloud injection
+    st.components.v1.html(fireworks_html, height=1, width=1)
     
-    # Adding a global injector to expand the iframe container styling inside Streamlit's structural layout
+    # Global override target injector to push element layers to the main dashboard screen surface
     st.markdown(
         """
         <style>
             iframe[title="streamlit_components.v1.html"] {
-                position: fixed;
-                top: 0;
-                left: 0;
+                position: fixed !important;
+                top: 0 !important;
+                left: 0 !important;
                 width: 100vw !important;
                 height: 100vh !important;
-                pointer-events: none;
-                z-index: 999999;
-                border: none;
+                pointer-events: none !important;
+                z-index: 999999 !important;
+                border: none !important;
             }
         </style>
         """,
