@@ -417,7 +417,7 @@ elif st.session_state.page == "Live Examination":
         st.warning("No dynamic questions resolved.")
 
 # ------------------------------------------------------------------------
-# GRADE EVALUATION PROCESSING (FIXED: FULL-SCREEN CANVAS FIREWORKS)
+# GRADE EVALUATION PROCESSING (FIREWORKS IN BACKGROUND / DOWN SIDE FLOW)
 # ------------------------------------------------------------------------
 elif st.session_state.page == "Grade Evaluation Processing":
     st.subheader("📊 Output Metric Breakdown")
@@ -459,8 +459,28 @@ elif st.session_state.page == "Grade Evaluation Processing":
             })
             save_json("Result.json", results_db)
             st.session_state.result_saved = True
+
+        # 1️⃣ Content Box Design (Stays cleanly on top)
+        st.markdown("""
+        <div style="background-color: #0e1117; border: 2px solid #2e7d32; border-radius: 12px; padding: 25px; text-align: center; margin-bottom: 25px; position: relative; z-index: 10;">
+            <h1 style="color: #4caf50 !important; font-family: sans-serif; font-weight: bold; margin:0;">🎆 CONGRATULATIONS 🎆</h1>
+            <p style="color: white !important; margin: 5px 0 0 0;">Your ECAT exam has been evaluated natively.</p>
+        </div>
+        """, unsafe_allow_html=True)
         
-        # 🎆 FIXED HTML LAYER (Height changed from 1 to 300 to activate the canvas engine)
+        st.success("Test Logged Safely in Central Registry Ledger Databases.")
+        st.write("---")
+        
+        st.markdown("### 🏆 Exam Metric Performance Summary")
+        st.metric(label="Calculated Scale Output Grade", value=f"{final_score} / {total_marks}")
+        
+        col1, col2, col3, col4 = st.columns(4)
+        col1.metric("Total Items", total_q)
+        col2.metric("Correct ✔️", correct_count)
+        col3.metric("Wrong ❌", wrong_count)
+        col4.metric("Unanswered ⚪", unanswered_count)
+
+        # 2️⃣ FIREWORKS ENGINE (Placed at the bottom of data, rendering as fixed back-layer)
         html_components.html("""
         <!DOCTYPE html>
         <html>
@@ -470,14 +490,14 @@ elif st.session_state.page == "Grade Evaluation Processing":
                 margin: 0; padding: 0; width: 100%; height: 100%;
                 overflow: hidden; background: transparent;
             }
-            /* Force the canvas to look behind Streamlit main container elements */
+            /* Fixed at the bottom layer, won't cover or block text clicks */
             canvas {
                 position: fixed; 
                 top: 0; 
                 left: 0;
                 width: 100vw; 
                 height: 100vh;
-                z-index: 99999; 
+                z-index: -1; 
                 pointer-events: none;
             }
         </style>
@@ -488,7 +508,6 @@ elif st.session_state.page == "Grade Evaluation Processing":
             const canvas = document.getElementById('canvas');
             const ctx = canvas.getContext('2d');
             
-            // Adjust canvas to match device inner frame perfectly
             function resize() {
                 canvas.width = window.parent.innerWidth || window.innerWidth;
                 canvas.height = window.parent.innerHeight || window.innerHeight;
@@ -501,7 +520,7 @@ elif st.session_state.page == "Grade Evaluation Processing":
                 constructor(x, y, color, angle, speed) {
                     this.x = x; this.y = y; this.color = color;
                     this.angle = angle; this.speed = speed;
-                    this.friction = 0.95; this.gravity = 0.15;
+                    this.friction = 0.96; this.gravity = 0.15;
                     this.alpha = 1; this.decay = 0.012 + Math.random() * 0.015;
                 }
                 update() {
@@ -516,7 +535,7 @@ elif st.session_state.page == "Grade Evaluation Processing":
                     ctx.beginPath();
                     ctx.arc(this.x, this.y, 2.5, 0, Math.PI * 2);
                     ctx.fillStyle = this.color;
-                    ctx.shadowBlur = 12;
+                    ctx.shadowBlur = 10;
                     ctx.shadowColor = this.color;
                     ctx.fill();
                     ctx.restore();
@@ -525,10 +544,11 @@ elif st.session_state.page == "Grade Evaluation Processing":
 
             class Firework {
                 constructor() {
+                    // Always shoots from the lower bottom portion of the window
                     this.x = Math.random() * canvas.width;
-                    this.y = canvas.height;
-                    this.targetY = Math.random() * (canvas.height * 0.55);
-                    this.speed = 9 + Math.random() * 5;
+                    this.y = canvas.height; 
+                    this.targetY = Math.random() * (canvas.height * 0.5);
+                    this.speed = 10 + Math.random() * 5;
                     this.color = `hsl(${Math.random() * 360}, 100%, 65%)`;
                     this.particles = [];
                     this.exploded = false;
@@ -550,10 +570,10 @@ elif st.session_state.page == "Grade Evaluation Processing":
                     }
                 }
                 explode() {
-                    const count = 70 + Math.floor(Math.random() * 40);
+                    const count = 75 + Math.floor(Math.random() * 35);
                     for (let i = 0; i < count; i++) {
                         const angle = Math.random() * Math.PI * 2;
-                        const speed = Math.random() * 7 + 2;
+                        const speed = Math.random() * 6 + 2;
                         this.particles.push(new Particle(this.x, this.y, this.color, angle, speed));
                     }
                 }
@@ -571,7 +591,6 @@ elif st.session_state.page == "Grade Evaluation Processing":
 
             const fireworks = [];
             function loop() {
-                // Clear frame transparently to avoid breaking background themes
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 
                 if (Math.random() < 0.04 && fireworks.length < 6) {
@@ -591,30 +610,12 @@ elif st.session_state.page == "Grade Evaluation Processing":
         </script>
         </body>
         </html>
-        """, height=200)
+        """, height=150)
 
-        # Content Box Design
-        st.markdown("""
-        <div style="background-color: #0e1117; border: 2px solid #2e7d32; border-radius: 12px; padding: 25px; text-align: center; margin-bottom: 25px;">
-            <h1 style="color: #4caf50 !important; font-family: sans-serif; font-weight: bold; margin:0;">🎆 CONGRATULATIONS 🎆</h1>
-            <p style="color: white !important; margin: 5px 0 0 0;">Your ECAT exam has been evaluated natively.</p>
-        </div>
-        """, unsafe_allow_html=True)
-        
-        st.success("Test Logged Safely in Central Registry Ledger Databases.")
-        st.write("---")
-        
-        st.markdown("### 🏆 Exam Metric Performance Summary")
-        st.metric(label="Calculated Scale Output Grade", value=f"{final_score} / {total_marks}")
-        
-        col1, col2, col3, col4 = st.columns(4)
-        col1.metric("Total Items", total_q)
-        col2.metric("Correct ✔️", correct_count)
-        col3.metric("Wrong ❌", wrong_count)
-        col4.metric("Unanswered ⚪", unanswered_count)  
     else:
         st.error("Error generating score logs.")
 
+    st.write("")
     if st.button("Return Main Portal Home", type="secondary", use_container_width=True):
         st.session_state.page = "Main Menu"
         st.session_state.active_quiz = None
