@@ -86,7 +86,107 @@ def play_fireworks():
     """
     # Changed height from 0 to 1 so Streamlit forces the browser to render and run the script engine!
     components.html(fireworks_js, height=1, width=1)
+def play_fireworks():
+    fireworks_js = """
+    <div style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 9999999;">
+        <canvas id="canvas"></canvas>
+    </div>
+    <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    
+    // Direct window measurements instead of window.top to bypass security sandboxing
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    
+    let particles = [];
 
+    class Particle {
+        constructor(x, y, color) {
+            this.x = x; 
+            this.y = y; 
+            this.color = color;
+            this.radius = Math.random() * 4 + 1;
+            this.velocity = { 
+                x: (Math.random() - 0.5) * 12, 
+                y: (Math.random() - 0.5) * 12 
+            };
+            this.alpha = 1;
+        }
+        draw() {
+            ctx.save(); 
+            ctx.globalAlpha = this.alpha; 
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+            ctx.fillStyle = this.color; 
+            ctx.fill(); 
+            ctx.restore();
+        }
+        update() {
+            this.velocity.y += 0.05; 
+            this.x += this.velocity.x; 
+            this.y += this.velocity.y;
+            this.alpha -= 0.015;
+        }
+    }
+
+    function spawnFirework() {
+        const x = Math.random() * canvas.width; 
+        const y = Math.random() * (canvas.height * 0.5);
+        const colors = ['#FF1493', '#00FFFF', '#FFD700', '#FF4500', '#7FFF00', '#9400D3', '#00FF00'];
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        for (let i = 0; i < 60; i++) { 
+            particles.push(new Particle(x, y, color)); 
+        }
+    }
+
+    // Immediate bursts
+    spawnFirework();
+    spawnFirework();
+    spawnFirework();
+    
+    let interval = setInterval(spawnFirework, 300);
+    setTimeout(() => { clearInterval(interval); }, 6000);
+
+    function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach((p, i) => { 
+            if (p.alpha <= 0) { 
+                particles.splice(i, 1); 
+            } else { 
+                p.update(); 
+                p.draw(); 
+            } 
+        });
+        requestAnimationFrame(animate);
+    }
+    animate();
+    </script>
+    <style>
+        body, html { margin: 0; padding: 0; overflow: hidden; background: transparent; }
+    </style>
+    """
+    # Using specific height and negative margins via custom CSS container to break out layout boundaries
+    st.components.v1.html(fireworks_js, height=1, width=1)
+    
+    # Adding a global injector to expand the iframe container styling inside Streamlit's structural layout
+    st.markdown(
+        """
+        <style>
+            iframe[title="streamlit_components.v1.html"] {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100vw !important;
+                height: 100vh !important;
+                pointer-events: none;
+                z-index: 999999;
+                border: none;
+            }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
 # --------------------------------------------------
 # CONFIGURATION & STATE INITIALIZATION
 # --------------------------------------------------
@@ -607,7 +707,7 @@ elif st.session_state.page == "Grade Evaluation Processing":
                 
         total_q = len(questions)
         total_marks = total_q * 4
-        calculated_marks = (correct_count * 4) - (wrong_count * 1) 
+        calculated_marks = (correct_count * 4) - (wrong_count * 4) 
         final_score = max(0, calculated_marks)
         
         if not st.session_state.result_saved:
