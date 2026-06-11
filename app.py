@@ -60,6 +60,26 @@ def save_json(filename, data):
     with open(filename, "w") as f:
         json.dump(data, f, indent=4)
 
+def get_stream_name(selected_subjects_list):
+    if not selected_subjects_list:
+        return "General Test"
+    
+    # Saare selected subjects ko lowercase mein check karne ke liye string banaya
+    subs_str = "".join([str(s).lower() for s in selected_subjects_list])
+    
+    if "math" in subs_str and "physics" in subs_str and ("computer" in subs_str or "cs" in subs_str or "ics" in subs_str):
+        return "ICS - Physics"
+    elif "math" in subs_str and "physics" in subs_str and "chemistry" in subs_str:
+        return "FSc Pre. Engineering"
+    elif "math" in subs_str and "statistics" in subs_str and ("computer" in subs_str or "cs" in subs_str):
+        return "ICS - Statistics"
+    elif "biology" in subs_str and "physics" in subs_str and "chemistry" in subs_str:
+        return "FSc Pre Medical"
+    elif "math" in subs_str and "statistics" in subs_str and "physics" in subs_str:
+        return "General Science"
+        
+    return "Custom Stream"
+
 # --------------------------------------------------
 # WEB VIEWS & UI ROUTER
 # --------------------------------------------------
@@ -467,9 +487,9 @@ elif st.session_state.page == "ECAT Test Login":
         st.session_state.page = "Main Menu"
         st.rerun()
 
-# ECAT SUBJECT SELECTION
+# # ECAT SUBJECT SELECTION
 elif st.session_state.page == "ECAT Subject Selection":
-    st.subheader("📚 Subject Selection Criteria")
+    st.subheader("📝 Subject Selection Criteria")
     quizz_data = load_json("Quizz.json")
     available_subjects = [s["Section"] for s in quizz_data if s["Section"].lower() != "english"]
     
@@ -477,6 +497,19 @@ elif st.session_state.page == "ECAT Subject Selection":
         st.error("Database needs at least 3 subjects alternative to English.")
     else:
         chosen_tracks = st.multiselect("Pick exactly 3 branches:", available_subjects)
+        
+        # ------------------------------------------------------------------------
+        # 📚 💡 STEP 2: DYNAMIC COMBINATION STREAM BANNER HERE
+        # ------------------------------------------------------------------------
+        if chosen_tracks:
+            # English ko manually add kiya kyunki mapping criteria mein English shaamil hai
+            full_user_selection = chosen_tracks + ["English"]
+            user_stream = get_stream_name(full_user_selection)
+            
+            # Student ko website par live banner dikhega
+            st.info(f"📚 **Your Stream Group:** {user_stream}")
+        # ------------------------------------------------------------------------
+
         if st.button("Assemble Test Matrix"):
             if len(chosen_tracks) != 3:
                 st.error("Select exactly 3 items.")
@@ -674,25 +707,26 @@ elif st.session_state.page == "Grade Evaluation Processing":
         if not st.session_state.result_saved:
             results_db = load_json("Result.json")
             
-            # 🕒 Pakistan ka current time catch karne ke liye function lagaya
+            # 🕒 Pakistan Computer Time
             from datetime import datetime, timedelta
             pkt_now = datetime.utcnow() + timedelta(hours=5)
             current_login = pkt_now.strftime("%I:%M %p (%d-%b)")
             
-            # Subject detector lagaya
-            user_selected_subject = "Not Selected"
-            possible_keys = ["selected_subject", "subject", "chosen_subject", "active_subject"]
-            for key in possible_keys:
-                if key in st.session_state and st.session_state[key]:
-                    user_selected_subject = st.session_state[key]
-                    break
+            # 📚 Stream Mapping Logic
+            detected_stream = "General Test"
             
+            # local context variables se checks lagaye
+            if 'chosen_tracks' in locals() and chosen_tracks:
+                detected_stream = get_stream_name(chosen_tracks + ["English"])
+            elif "selected_subjects" in st.session_state and st.session_state.selected_subjects:
+                detected_stream = get_stream_name(st.session_state.selected_subjects)
+                
             results_db.append({
                 "USER ID": student.get("User ID", "N/A"),
                 "User Name": student.get("User Name", "N/A"),
                 "User Email": student.get("Email", "N/A"),
-                "Login Time": current_login,  # 🕒 Yeh exact computer wala sahi time save karega
-                "Selected Subject": user_selected_subject,
+                "Login Time": current_login,
+                "Selected Subject": detected_stream,  # Yahan auto mapping group save hoga (e.g., ICS - Physics)
                 "User Result": [{
                     "Total Questions": total_q,
                     "Total Marks": total_marks,
