@@ -260,40 +260,57 @@ elif st.session_state.page == "Admin Dashboard":
         else:
             st.info("No candidates have evaluated or logged exams yet.")
 
-# # STUDENT AUTHENTICATION
+# STUDENT AUTHENTICATION
 elif st.session_state.page == "Student Auth Menu":
     st.subheader("🔑 Student Registration & Login")
     
-    # 1. Radio buttons mein teesra option add kar diya
     mode = st.radio("Action:", ["User Login", "Create Account", "Forget Password"])
     
+    # Python ka apna json library import kiya backup ke liye
+    import json
+    import os
+
+    # 🛠️ SAFE FILE LOADER (Direct Python Implementation)
+    def force_load_login():
+        if not os.path.exists("Login.json"):
+            return []
+        try:
+            with open("Login.json", "r") as f:
+                content = f.read().strip()
+                return json.loads(content) if content else []
+        except Exception:
+            return []
+
+    # 🛠️ SAFE FILE SAVER (Direct Python Implementation)
+    def force_save_login(data):
+        with open("Login.json", "w") as f:
+            json.dump(data, f, indent=4)
+
+    # ------------------------------------------------------------------------
+    # 🔓 USER LOGIN LOGIC
+    # ------------------------------------------------------------------------
     if mode == "User Login":
-        # .strip() lagaya taake agar copy-paste mein koi extra space aa jaye toh auto-delete ho jaye
         login_email = st.text_input("Email:").strip()
         login_user = st.text_input("Username:").strip()
         login_pass = st.text_input("Password:", type="password").strip()
         
         if st.button("Log In"):
-            users = load_json("Login.json")
+            users = force_load_login()  # Direct load kiya
             found = False
             for u in users:
-                # 💡 SAFE KEYS SCANNER: Dono space aur bina space wali keys check karega taake fail na ho
-                db_email = str(u.get("Email", u.get("email", ""))).strip().lower()
-                db_user = str(u.get("User Name", u.get("Username", u.get("User Name", "")))).strip().lower()
-                db_pass = str(u.get("Password", u.get("password", ""))).strip()
+                db_email = str(u.get("Email", "")).strip().lower()
+                db_user = str(u.get("User Name", "")).strip().lower()
+                db_pass = str(u.get("Password", "")).strip()
                 
-                # Sab ko lowercase (choti abc) mein match kiya taake capital letters ka rola khatam ho
                 if db_email == login_email.lower() and db_user == login_user.lower() and db_pass == login_pass:
                     found = True
                     
-                    # 🕒 Timestamp generated safely
                     from datetime import datetime
                     current_time = datetime.now().strftime("%I:%M %p (%d-%b)")
                     st.session_state["login_time"] = current_time
                     
-                    # File update configuration
                     u["Last Login"] = current_time  
-                    save_json("Login.json", users)
+                    force_save_login(users) # Force save updated list
                     
                     st.session_state.logged_in_user = u  
                     st.session_state.page = "Main Menu"
@@ -302,19 +319,17 @@ elif st.session_state.page == "Student Auth Menu":
             if not found:
                 st.error("❌ Invalid Credentials. Email, Username ya Password ghalt hai!")
 
+    # ------------------------------------------------------------------------
+    # 📝 CREATE ACCOUNT LOGIC
+    # ------------------------------------------------------------------------
     elif mode == "Create Account":
         reg_email = st.text_input("Email:").strip()
         reg_name = st.text_input("Full Name:").strip()
         reg_pass = st.text_input("Password:", type="password").strip()
         
         if st.button("Register"):
-            # File load ki
-            users = load_json("Login.json")
+            users = force_load_login()
             
-            # Agar file bilkul khali ya corrupt hai, toh usay khali list [] bana do
-            if not isinstance(users, list):
-                users = []
-                
             if not reg_email or not reg_name or not reg_pass:
                 st.error("❌ Saari fields ko bharna zaroori hai!")
             elif len(reg_pass) < 6:
@@ -323,7 +338,6 @@ elif st.session_state.page == "Student Auth Menu":
                 st.error("❌ Yeh Email pehle se registered hai!")
             else:
                 import uuid
-                # Naya user data structure jo login code ke sath 100% match karta hai
                 new_user = {
                     "User ID": str(uuid.uuid4())[:8],
                     "User Name": reg_name,
@@ -333,12 +347,14 @@ elif st.session_state.page == "Student Auth Menu":
                 }
                 
                 users.append(new_user)
-                save_json("Login.json", users) # File mein write kiya
+                force_save_login(users) # Direct file ke andar write ho gaya
                 
-                st.success("🎉 Account Created Successfully! Ab 'User Login' par ja kar login karein.")
-                st.rerun()()
+                st.success("🎉 Account Created Successfully! Ab 'User Login' tab par ja kar login karein.")
+                st.rerun()
 
-    # 2. Forget Password ka naya sections yahan handle ho rha hai
+    # ------------------------------------------------------------------------
+    # 🔄 FORGET PASSWORD LOGIC
+    # ------------------------------------------------------------------------
     elif mode == "Forget Password":
         st.write("---")
         st.markdown("#### 🔄 Recover Your Password")
@@ -347,11 +363,11 @@ elif st.session_state.page == "Student Auth Menu":
         
         if st.button("Retrieve Password 🔍", type="primary", use_container_width=True):
             if forget_email and forget_name:
-                users_list = load_json("Login.json")
+                users_list = force_load_login()
                 found_user = None
                 
                 for u in users_list:
-                    if u.get("Email").lower() == forget_email.strip().lower() and u.get("User Name").lower() == forget_name.strip().lower():
+                    if str(u.get("Email")).lower() == forget_email.strip().lower() and str(u.get("User Name")).lower() == forget_name.strip().lower():
                         found_user = u
                         break
                         
