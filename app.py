@@ -436,7 +436,7 @@ elif st.session_state.page == "Live Examination":
 
 
 # ------------------------------------------------------------------------
-# GRADE EVALUATION PROCESSING (REALISTIC DOWNSIDE INTERACTIVE FIREWORKS)
+# GRADE EVALUATION PROCESSING (FIXED: 100% VIEWABLE METRICS & BUTTONS)
 # ------------------------------------------------------------------------
 elif st.session_state.page == "Grade Evaluation Processing":
     st.subheader("📊 Output Metric Breakdown")
@@ -461,7 +461,7 @@ elif st.session_state.page == "Grade Evaluation Processing":
                 
         total_q = len(questions)
         total_marks = total_q * 4
-        calculated_marks = (correct_count * 4) - (wrong_count * 4) 
+        calculated_marks = (correct_count * 4) - (wrong_count * 1) 
         final_score = max(0, calculated_marks)
         
         if not st.session_state.result_saved:
@@ -479,7 +479,7 @@ elif st.session_state.page == "Grade Evaluation Processing":
             save_json("Result.json", results_db)
             st.session_state.result_saved = True
 
-        # 1️⃣ FIRST: SCORE METRICS PERFORMANCE SHOW (ALWAYS ON TOP)
+        # 1️⃣ SCORE METRICS PERFORMANCE (ALWAYS VISIBLE ON TOP)
         st.success("Test Logged Safely in Central Registry Ledger Databases.")
         st.write("---")
         
@@ -494,152 +494,137 @@ elif st.session_state.page == "Grade Evaluation Processing":
         
         st.write("---")
 
-        # 2️⃣ SECOND: RE-ENFORCED DOWNSIDE LOGIC PACKS
+        # 2️⃣ DYNAMIC CONDITIONAL EFFECTS ON DOWNSIDE (OVERLAY LOGIC)
         if final_score >= 100:
-            # 🎆 HIGH-GRADE PRODUCTION ENGINE WITH GRAVITY EXPLOSIONS (TRUE FULL-SCREEN BACKGROUND)
-            html_components.html("""
-            <!DOCTYPE html>
-            <html>
-            <head>
-            <style>
-                html, body {
-                    margin: 0; padding: 0; width: 100%; height: 100%;
-                    overflow: hidden; background: transparent;
-                }
-                canvas {
-                    position: fixed; 
-                    top: 0; left: 0;
-                    width: 100vw; height: 100vh;
-                    z-index: -1; 
-                    pointer-events: none;
-                }
-            </style>
-            </head>
-            <body>
-            <canvas id="skyCanvas"></canvas>
-            <script>
-                const canvas = document.getElementById('skyCanvas');
-                const ctx = canvas.getContext('2d');
-                
-                function resize() {
-                    canvas.width = window.parent.innerWidth || window.innerWidth;
-                    canvas.height = window.parent.innerHeight || window.innerHeight;
-                }
-                window.addEventListener('resize', resize);
-                window.addEventListener('load', resize);
-                resize();
-
-                class Spark {
-                    constructor(x, y, color) {
-                        this.x = x; this.y = y; this.color = color;
-                        // Random circular vectors
-                        const angle = Math.random() * Math.PI * 2;
-                        const speed = Math.random() * 5 + 1.5;
-                        this.vx = Math.cos(angle) * speed;
-                        this.vy = Math.sin(angle) * speed;
-                        
-                        this.friction = 0.95; 
-                        this.gravity = 0.12; 
-                        this.alpha = 1; 
-                        this.decay = 0.01 + Math.random() * 0.015;
-                    }
-                    update() {
-                        this.vx *= this.friction;
-                        this.vy *= this.friction;
-                        this.vy += this.gravity;
-                        this.x += this.vx;
-                        this.y += this.vy;
-                        this.alpha -= this.decay;
-                    }
-                    draw() {
-                        ctx.save();
-                        ctx.globalAlpha = this.alpha;
-                        ctx.beginPath();
-                        ctx.arc(this.x, this.y, 2.2, 0, Math.PI * 2);
-                        ctx.fillStyle = this.color;
-                        // High glow physics factor
-                        ctx.shadowBlur = 8;
-                        ctx.shadowColor = this.color;
-                        ctx.fill();
-                        ctx.restore();
-                    }
-                }
-
-                class Rocket {
-                    constructor() {
-                        this.x = Math.random() * canvas.width;
-                        this.y = canvas.height;
-                        this.targetY = Math.random() * (canvas.height * 0.45) + 50;
-                        this.speed = 11 + Math.random() * 4;
-                        this.color = `hsl(${Math.random() * 360}, 100%, 60%)`;
-                        this.sparks = [];
-                        this.exploded = false;
-                    }
-                    update() {
-                        if (!this.exploded) {
-                            this.y -= this.speed;
-                            if (this.y <= this.targetY) {
-                                this.exploded = true;
-                                this.createExplosion();
-                            }
-                        } else {
-                            for (let i = this.sparks.length - 1; i >= 0; i--) {
-                                this.sparks[i].update();
-                                if (this.sparks[i].alpha <= 0) this.sparks.splice(i, 1);
-                            }
-                        }
-                    }
-                    createExplosion() {
-                        const count = 80 + Math.floor(Math.random() * 40);
-                        for (let i = 0; i < count; i++) {
-                            this.sparks.push(new Spark(this.x, this.y, this.color));
-                        }
-                    }
-                    draw() {
-                        if (!this.exploded) {
-                            ctx.beginPath();
-                            ctx.arc(this.x, this.y, 3, 0, Math.PI * 2);
-                            ctx.fillStyle = '#ffffff';
-                            ctx.fill();
-                        } else {
-                            this.sparks.forEach(s => s.draw());
-                        }
-                    }
-                }
-
-                const launcherArray = [];
-                function runLoop() {
-                    ctx.clearRect(0, 0, canvas.width, canvas.height);
-                    
-                    if (Math.random() < 0.05 && launcherArray.length < 7) {
-                        launcherArray.push(new Rocket());
-                    }
-                    
-                    for (let i = launcherArray.length - 1; i >= 0; i--) {
-                        launcherArray[i].update();
-                        launcherArray[i].draw();
-                        if (launcherArray[i].exploded && launcherArray[i].sparks.length === 0) {
-                            launcherArray.splice(i, 1);
-                        }
-                    }
-                    requestAnimationFrame(runLoop);
-                }
-                runLoop();
-            </script>
-            </body>
-            </html>
-            """, height=220)
-
-            # Congratulations Card
+            # Full Screen Background Fireworks without Iframe blockages
             st.markdown("""
-            <div style="background-color: #0e1117; border: 2px solid #2e7d32; border-radius: 12px; padding: 25px; text-align: center; margin-top: 20px;">
+            <div class="fw-canvas-container">
+                <canvas id="canvasSky"></canvas>
+            </div>
+            
+            <div style="background-color: #0e1117; border: 2px solid #2e7d32; border-radius: 12px; padding: 25px; text-align: center; margin-top: 15px; position: relative; z-index: 10;">
                 <h1 style="color: #4caf50 !important; font-family: sans-serif; font-weight: bold; margin:0;">🎆 CONGRATULATIONS 🎆</h1>
                 <p style="color: white !important; margin: 5px 0 0 0;">Excellent work! You have successfully passed the threshold.</p>
             </div>
+
+            <style>
+                .fw-canvas-container {
+                    position: fixed;
+                    top: 0; left: 0;
+                    width: 100vw; height: 100vh;
+                    pointer-events: none;
+                    z-index: 0; /* Behind Streamlit text and buttons */
+                    overflow: hidden;
+                }
+                #canvasSky {
+                    width: 100%; height: 100%;
+                }
+            </style>
+
+            <script>
+                (function() {
+                    const canvas = document.getElementById('canvasSky');
+                    if (!canvas) return;
+                    const ctx = canvas.getContext('2d');
+                    
+                    function resize() {
+                        canvas.width = window.innerWidth;
+                        canvas.height = window.innerHeight;
+                    }
+                    window.addEventListener('resize', resize);
+                    resize();
+
+                    class Particle {
+                        constructor(x, y, color) {
+                            this.x = x; this.y = y; this.color = color;
+                            const angle = Math.random() * Math.PI * 2;
+                            const speed = Math.random() * 5 + 2;
+                            this.vx = Math.cos(angle) * speed;
+                            this.vy = Math.sin(angle) * speed;
+                            this.friction = 0.95; this.gravity = 0.12;
+                            this.alpha = 1; this.decay = 0.012 + Math.random() * 0.015;
+                        }
+                        update() {
+                            this.vx *= this.friction; this.vy *= this.friction;
+                            this.vy += this.gravity;
+                            this.x += this.vx; this.y += this.vy;
+                            this.alpha -= this.decay;
+                        }
+                        draw() {
+                            ctx.save();
+                            ctx.globalAlpha = this.alpha;
+                            ctx.beginPath();
+                            ctx.arc(this.x, this.y, 2.5, 0, Math.PI * 2);
+                            ctx.fillStyle = this.color;
+                            ctx.shadowBlur = 8; ctx.shadowColor = this.color;
+                            ctx.fill();
+                            ctx.restore();
+                        }
+                    }
+
+                    class Rocket {
+                        constructor() {
+                            this.x = Math.random() * canvas.width;
+                            this.y = canvas.height;
+                            this.targetY = Math.random() * (canvas.height * 0.5) + 40;
+                            this.speed = 10 + Math.random() * 4;
+                            this.color = `hsl(${Math.random() * 360}, 100%, 60%)`;
+                            this.sparks = []; this.exploded = false;
+                        }
+                        update() {
+                            if (!this.exploded) {
+                                this.y -= this.speed;
+                                if (this.y <= this.targetY) {
+                                    this.exploded = true;
+                                    this.explode();
+                                }
+                            } else {
+                                for (let i = this.sparks.length - 1; i >= 0; i--) {
+                                    this.sparks[i].update();
+                                    if (this.sparks[i].alpha <= 0) this.sparks.splice(i, 1);
+                                }
+                            }
+                        }
+                        explode() {
+                            const count = 70 + Math.floor(Math.random() * 30);
+                            for (let i = 0; i < count; i++) {
+                                this.sparks.push(new Particle(this.x, this.y, this.color));
+                            }
+                        }
+                        draw() {
+                            if (!this.exploded) {
+                                ctx.beginPath();
+                                ctx.arc(this.x, this.y, 3, 0, Math.PI * 2);
+                                ctx.fillStyle = '#ffffff';
+                                ctx.fill();
+                            } else {
+                                this.sparks.forEach(s => s.draw());
+                            }
+                        }
+                    }
+
+                    const rockets = [];
+                    function loop() {
+                        ctx.clearRect(0, 0, canvas.width, canvas.height);
+                        if (Math.random() < 0.04 && rockets.length < 6) {
+                            rockets.push(new Rocket());
+                        }
+                        for (let i = rockets.length - 1; i >= 0; i--) {
+                            rockets[i].update();
+                            rockets[i].draw();
+                            if (rockets[i].exploded && rockets[i].sparks.length === 0) {
+                                rockets.splice(i, 1);
+                            }
+                        }
+                        requestAnimationFrame(loop);
+                    }
+                    loop();
+                })();
+            </script>
             """, unsafe_allow_html=True)
             
         else:
-            # 😭 Crying Face Card downside
+            # Crying Face Layer downside without iframe blockages
             st.markdown("""
             <style>
                 @keyframes tear-drop {
@@ -653,7 +638,9 @@ elif st.session_state.page == "Grade Evaluation Processing":
                     border-radius: 12px; 
                     padding: 25px; 
                     text-align: center; 
-                    margin-top: 20px;
+                    margin-top: 15px;
+                    position: relative;
+                    z-index: 10;
                 }
                 .sad-emoji-wrapper {
                     font-size: 70px;
@@ -684,6 +671,7 @@ elif st.session_state.page == "Grade Evaluation Processing":
     else:
         st.error("Error generating score logs.")
 
+    # 3️⃣ RETURN HOME BUTTON (GUARANTEED VISIBILITY AT THE VERY BOTTOM)
     st.write("")
     if st.button("Return Main Portal Home", type="secondary", use_container_width=True):
         st.session_state.page = "Main Menu"
