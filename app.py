@@ -124,44 +124,49 @@ elif st.session_state.page == "Admin Login":
             st.rerun()
 
 # ------------------------------------------------------------------------
-# ADMIN DASHBOARD PORTAL (SHOW USER DETAILS TO ADMIN ONLY)
+# ADMIN DASHBOARD PORTAL (PARSES NESTED LOGS SECURELY FOR ADMIN VIEW ONLY)
 # ------------------------------------------------------------------------
 elif st.session_state.page == "Admin Dashboard":
     st.title("🛡️ Central Administration Registry Portal")
     st.write("Review all evaluated native candidate records below.")
     st.write("---")
     
-    # Load candidate details safely
-    import pandas as pd
     results_data = load_json("Result.json")
     
     if results_data:
-        # Convert JSON structure to an elegant dataframe
-        df = pd.DataFrame(results_data)
+        flattened_list = []
         
-        # Display total candidate count metrics
+        # Safe breakdown of JSON records
+        for row in results_data:
+            # Handle nested list structure smoothly
+            res_list = row.get("User Result", [{}])
+            res = res_list[0] if isinstance(res_list, list) and len(res_list) > 0 else {}
+            
+            flattened_list.append({
+                "User ID": row.get("USER ID", "N/A"),
+                "Student Name": row.get("User Name", "N/A"),
+                "Email Address": row.get("User Email", "N/A"),
+                "Total Qs": res.get("Total Questions", 0),
+                "Max Marks": res.get("Total Marks", 0),
+                "Score Obtained": res.get("Obtained Marks", 0),
+                "Correct ✔️": res.get("Correct Answers", 0),
+                "Wrong ❌": res.get("Wrong Answers", 0)
+            })
+            
+        import pandas as pd
+        df = pd.DataFrame(flattened_list)
+        
         st.metric("Total Checked Submissions", len(df))
-        
-        # Format columns cleanly for Admin View
         st.markdown("### 📋 Student Performance Master Ledger")
+        
         st.dataframe(
             df, 
-            column_config={
-                "USER ID": "User ID",
-                "User Name": "Student Name",
-                "User Email": "Email Address",
-                "Total Questions": "Total Qs",
-                "Total Marks": "Max Marks",
-                "Obtained Marks": "Score Obtained",
-                "Correct Answers": "Correct ✔️",
-                "Wrong Answers": "Wrong ❌"
-            },
             use_container_width=True,
             hide_index=True
         )
         
-        # Option to clear or reset logs if needed
-        if st.button("🧹 Clear Submission Logs", type="secondary"):
+        st.write("")
+        if st.button("实时 Data Clean Registry Logs (Reset Database)", type="secondary"):
             save_json("Result.json", [])
             st.success("Ledger database cleared successfully!")
             st.rerun()
@@ -169,45 +174,8 @@ elif st.session_state.page == "Admin Dashboard":
     else:
         st.info("No candidates have evaluated or logged exams yet.")
         
+    st.write("")
     if st.button("Back to Main Portal Menu", use_container_width=True):
-        st.session_state.page = "Main Menu"
-        st.rerun()
-
-# STUDENT AUTHENTICATION
-elif st.session_state.page == "Student Auth Menu":
-    st.subheader("🧑 Student Registration & Login")
-    mode = st.radio("Action:", ["User Login", "Create Account"])
-    
-    if mode == "User Login":
-        login_email = st.text_input("Email:")
-        login_user = st.text_input("Username:")
-        login_pass = st.text_input("Password:", type="password")
-        if st.button("Log In"):
-            users = load_json("Login.json")
-            found = False
-            for u in users:
-                if u["Email"].lower() == login_email.lower() and u["User Name"].lower() == login_user.lower() and u["Password"] == login_pass:
-                    found = True
-                    st.session_state.page = "Main Menu"
-                    st.success("Login Successful!")
-                    st.rerun()
-            if not found:
-                st.error("Invalid Credentials.")
-    else:
-        reg_email = st.text_input("Email:")
-        reg_name = st.text_input("Full Name:")
-        reg_pass = st.text_input("Password:", type="password")
-        if st.button("Register"):
-            users = load_json("Login.json")
-            if len(reg_pass) < 6:
-                st.error("Min 6 chars required.")
-            elif any(u["Email"].lower() == reg_email.lower() for u in users):
-                st.error("Email taken.")
-            else:
-                users.append({"User ID": str(uuid.uuid4()), "User Name": reg_name, "Email": reg_email, "Password": reg_pass, "Login": []})
-                save_json("Login.json", users)
-                st.success("Registered Successfully!")
-    if st.button("Back"):
         st.session_state.page = "Main Menu"
         st.rerun()
 
@@ -410,7 +378,7 @@ elif st.session_state.page == "Live Examination":
 
 
 # ------------------------------------------------------------------------
-# GRADE EVALUATION PROCESSING (FINAL CLEAN FIX: NO CODE BLOCKING)
+# GRADE EVALUATION PROCESSING (STUDENT VIEW - CLEAN & WORKING)
 # ------------------------------------------------------------------------
 elif st.session_state.page == "Grade Evaluation Processing":
     st.subheader("📊 Output Metric Breakdown")
@@ -438,6 +406,7 @@ elif st.session_state.page == "Grade Evaluation Processing":
         calculated_marks = (correct_count * 4) - (wrong_count * 1) 
         final_score = max(0, calculated_marks)
         
+        # 💾 DATA IS SAVED IN CORRECT FORMAT FOR ADMIN
         if not st.session_state.result_saved:
             results_db = load_json("Result.json")
             results_db.append({
@@ -447,25 +416,15 @@ elif st.session_state.page == "Grade Evaluation Processing":
                 "User Result": [{
                     "Total Questions": total_q,
                     "Total Marks": total_marks,
-                    "Obtained Marks": final_score
+                    "Obtained Marks": final_score,
+                    "Correct Answers": correct_count,
+                    "Wrong Answers": wrong_count
                 }]
             })
             save_json("Result.json", results_db)
             st.session_state.result_saved = True
 
-        # 👤 1️⃣ CANDIDATE PROFILE DETAILS CARD (ALWAYS ON TOP)
-        st.markdown(f"""
-        <div style="background-color: #1e293b; border-left: 5px solid #3b82f6; border-radius: 8px; padding: 15px; margin-bottom: 20px;">
-            <h4 style="margin: 0; color: #3b82f6;">👤 Candidate Profile & Session Info</h4>
-            <p style="margin: 5px 0 0 0; color: #cbd5e1; font-size: 14px;">
-                <strong>Name:</strong> {student['User Name']} | 
-                <strong>ID:</strong> {student['User ID']} | 
-                <strong>Email:</strong> {student['Email']}
-            </p>
-        </div>
-        """, unsafe_allow_html=True)
-
-        # 🏆 2️⃣ EXAM PERFORMANCE SUMMARY METRICS
+        # 🏆 EXAM METRICS FOR STUDENT (NO PERSONAL DETAILS SHOWING HERE)
         st.success("Test Logged Safely in Central Registry Ledger Databases.")
         st.write("---")
         
@@ -480,102 +439,51 @@ elif st.session_state.page == "Grade Evaluation Processing":
         
         st.write("---")
 
-        # 🎬 3️⃣ CONDITION PACKS: DOWNSIDE EFFECTS WITH SEGREGATED IFRAME LAYER
+        # Downside Effects Based on 100 Threshold
         if final_score >= 100:
-            # Clean Congratulations Card
-            st.markdown("""
-            <div style="background-color: #0e1117; border: 2px solid #2e7d32; border-radius: 12px; padding: 25px; text-align: center; margin-top: 15px; margin-bottom: 15px;">
-                <h1 style="color: #4caf50 !important; font-family: sans-serif; font-weight: bold; margin:0;">🎆 CONGRATULATIONS 🎆</h1>
-                <p style="color: white !important; margin: 5px 0 0 0;">Excellent work! You have successfully passed the threshold.</p>
-            </div>
-            """, unsafe_allow_html=True)
-            
-            # True Full-Screen Safe Canvas Fireworks Iframe Component
             html_components.html("""
             <!DOCTYPE html>
             <html>
             <head>
             <style>
                 html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: transparent; }
-                canvas {
-                    position: fixed; top: 0; left: 0;
-                    width: 100vw; height: 100vh;
-                    z-index: -1; pointer-events: none;
-                }
+                canvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; pointer-events: none; }
             </style>
             </head>
             <body>
             <canvas id="canvasSky"></canvas>
             <script>
-                const canvas = document.getElementById('canvasSky');
-                const ctx = canvas.getContext('2d');
-                function resize() {
-                    canvas.width = window.parent.innerWidth || window.innerWidth;
-                    canvas.height = window.parent.innerHeight || window.innerHeight;
-                }
+                const canvas = document.getElementById('canvasSky'); const ctx = canvas.getContext('2d');
+                function resize() { canvas.width = window.parent.innerWidth || window.innerWidth; canvas.height = window.parent.innerHeight || window.innerHeight; }
                 window.addEventListener('resize', resize); window.addEventListener('load', resize); resize();
-
                 class Spark {
                     constructor(x, y, color) {
                         this.x = x; this.y = y; this.color = color;
-                        const angle = Math.random() * Math.PI * 2;
-                        const speed = Math.random() * 6 + 2;
-                        this.vx = Math.cos(angle) * speed;
-                        this.vy = Math.sin(angle) * speed;
-                        this.friction = 0.95; this.gravity = 0.15;
-                        this.alpha = 1; this.decay = 0.012 + Math.random() * 0.015;
+                        const angle = Math.random() * Math.PI * 2; const speed = Math.random() * 5 + 2;
+                        this.vx = Math.cos(angle) * speed; this.vy = Math.sin(angle) * speed;
+                        this.friction = 0.95; this.gravity = 0.12; this.alpha = 1; this.decay = 0.012 + Math.random() * 0.015;
                     }
-                    update() {
-                        this.vx *= this.friction; this.vy *= this.friction; this.vy += this.gravity;
-                        this.x += this.vx; this.y += this.vy; this.alpha -= this.decay;
-                    }
-                    draw() {
-                        ctx.save(); ctx.globalAlpha = this.alpha; ctx.beginPath();
-                        ctx.arc(this.x, this.y, 2.5, 0, Math.PI * 2);
-                        ctx.fillStyle = this.color; ctx.shadowBlur = 10; ctx.shadowColor = this.color;
-                        ctx.fill(); ctx.restore();
-                    }
+                    update() { this.vx *= this.friction; this.vy *= this.friction; this.vy += this.gravity; this.x += this.vx; this.y += this.vy; this.alpha -= this.decay; }
+                    draw() { ctx.save(); ctx.globalAlpha = this.alpha; ctx.beginPath(); ctx.arc(this.x, this.y, 2.5, 0, Math.PI * 2); ctx.fillStyle = this.color; ctx.shadowBlur = 8; ctx.shadowColor = this.color; ctx.fill(); ctx.restore(); }
                 }
-
                 class Rocket {
                     constructor() {
                         this.x = Math.random() * canvas.width; this.y = canvas.height;
-                        this.targetY = Math.random() * (canvas.height * 0.5) + 50;
-                        this.speed = 11 + Math.random() * 4;
-                        this.color = `hsl(${Math.random() * 360}, 100%, 60%)`;
-                        this.sparks = []; this.exploded = false;
+                        this.targetY = Math.random() * (canvas.height * 0.5) + 40; this.speed = 10 + Math.random() * 4;
+                        this.color = `hsl(${Math.random() * 360}, 100%, 60%)`; this.sparks = []; this.exploded = false;
                     }
                     update() {
-                        if (!this.exploded) {
-                            this.y -= this.speed;
-                            if (this.y <= this.targetY) { this.exploded = true; this.explode(); }
-                        } else {
-                            for (let i = this.sparks.length - 1; i >= 0; i--) {
-                                this.sparks[i].update();
-                                if (this.sparks[i].alpha <= 0) this.sparks.splice(i, 1);
-                            }
-                        }
+                        if (!this.exploded) { this.y -= this.speed; if (this.y <= this.targetY) { this.exploded = true; this.explode(); } }
+                        else { for (let i = this.sparks.length - 1; i >= 0; i--) { this.sparks[i].update(); if (this.sparks[i].alpha <= 0) this.sparks.splice(i, 1); } }
                     }
-                    explode() {
-                        const count = 80 + Math.floor(Math.random() * 30);
-                        for (let i = 0; i < count; i++) this.sparks.push(new Spark(this.x, this.y, this.color));
-                    }
-                    draw() {
-                        if (!this.exploded) {
-                            ctx.beginPath(); ctx.arc(this.x, this.y, 3, 0, Math.PI * 2);
-                            ctx.fillStyle = '#ffffff'; ctx.fill();
-                        } else { this.sparks.forEach(s => s.draw()); }
-                    }
+                    explode() { const count = 70 + Math.floor(Math.random() * 30); for (let i = 0; i < count; i++) this.sparks.push(new Spark(this.x, this.y, this.color)); }
+                    draw() { if (!this.exploded) { ctx.beginPath(); ctx.arc(this.x, this.y, 3, 0, Math.PI * 2); ctx.fillStyle = '#ffffff'; ctx.fill(); } else { this.sparks.forEach(s => s.draw()); } }
                 }
-
                 const rockets = [];
                 function loop() {
                     ctx.clearRect(0, 0, canvas.width, canvas.height);
                     if (Math.random() < 0.04 && rockets.length < 6) rockets.push(new Rocket());
-                    for (let i = rockets.length - 1; i >= 0; i--) {
-                        rockets[i].update(); rockets[i].draw();
-                        if (rockets[i].exploded && rockets[i].sparks.length === 0) rockets.splice(i, 1);
-                    }
+                    for (let i = rockets.length - 1; i >= 0; i--) { rockets[i].update(); rockets[i].draw(); if (rockets[i].exploded && rockets[i].sparks.length === 0) rockets.splice(i, 1); }
                     requestAnimationFrame(loop);
                 }
                 loop();
@@ -584,44 +492,25 @@ elif st.session_state.page == "Grade Evaluation Processing":
             </html>
             """, height=250)
             
+            st.markdown("""
+            <div style="background-color: #0e1117; border: 2px solid #2e7d32; border-radius: 12px; padding: 25px; text-align: center; margin-top: 15px;">
+                <h1 style="color: #4caf50 !important; font-family: sans-serif; font-weight: bold; margin:0;">🎆 CONGRATULATIONS 🎆</h1>
+                <p style="color: white !important; margin: 5px 0 0 0;">Excellent work! You have successfully passed the threshold.</p>
+            </div>
+            """, unsafe_allow_html=True)
+            
         else:
-            # Crying Face Banner placed down below the metrics cleanly via CSS animation
             st.markdown("""
             <style>
-                @keyframes tear-drop {
-                    0% { transform: translateY(0) scale(1); opacity: 1; }
-                    80% { opacity: 1; }
-                    100% { transform: translateY(40px) scale(0.5); opacity: 0; }
-                }
-                .crying-container {
-                    background-color: #0e1117; 
-                    border: 2px solid #d32f2f; 
-                    border-radius: 12px; 
-                    padding: 25px; 
-                    text-align: center; 
-                    margin-top: 15px;
-                }
-                .sad-emoji-wrapper {
-                    font-size: 70px;
-                    position: relative;
-                    display: inline-block;
-                    line-height: 1;
-                }
-                .tear {
-                    position: absolute;
-                    font-size: 24px;
-                    animation: tear-drop 1.5s infinite linear;
-                }
+                @keyframes tear-drop { 0% { transform: translateY(0) scale(1); opacity: 1; } 80% { opacity: 1; } 100% { transform: translateY(40px) scale(0.5); opacity: 0; } }
+                .crying-container { background-color: #0e1117; border: 2px solid #d32f2f; border-radius: 12px; padding: 25px; text-align: center; margin-top: 15px; }
+                .sad-emoji-wrapper { font-size: 70px; position: relative; display: inline-block; line-height: 1; }
+                .tear { position: absolute; font-size: 24px; animation: tear-drop 1.5s infinite linear; }
                 .tear-left { left: 10px; top: 45px; animation-delay: 0s; }
                 .tear-right { right: 10px; top: 45px; animation-delay: 0.7s; }
             </style>
-            
             <div class="crying-container">
-                <div class="sad-emoji-wrapper">
-                    😢
-                    <span class="tear tear-left">💧</span>
-                    <span class="tear tear-right">💧</span>
-                </div>
+                <div class="sad-emoji-wrapper">😢<span class="tear tear-left">💧</span><span class="tear tear-right">💧</span></div>
                 <h1 style="color: #d32f2f !important; font-family: sans-serif; font-weight: bold; margin: 10px 0 0 0;">BETTER LUCK NEXT TIME!</h1>
                 <p style="color: white !important; margin: 5px 0 0 0;">Score is below 100. Hard work pays off, keep practicing!</p>
             </div>
@@ -630,7 +519,6 @@ elif st.session_state.page == "Grade Evaluation Processing":
     else:
         st.error("Error generating score logs.")
 
-    # 4️⃣ BUTTON IS TOTALLY OUTSIDE LAYOUT (ALWAYS WORKS)
     st.write("")
     if st.button("Return Main Portal Home", type="secondary", use_container_width=True):
         st.session_state.page = "Main Menu"
@@ -641,6 +529,5 @@ elif st.session_state.page == "Grade Evaluation Processing":
         st.session_state.current_q_index = 0
         st.session_state.logged_in_user = None
         st.session_state.result_saved = False
-        if "start_time" in st.session_state:
-            del st.session_state.start_time
+        if "start_time" in st.session_state: del st.session_state.start_time
         st.rerun()
