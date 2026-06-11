@@ -209,11 +209,11 @@ elif st.session_state.page == "Admin Dashboard":
                 res_list = r.get("User Result", [{}])
                 res = res_list[0] if isinstance(res_list, list) and len(res_list) > 0 else {}
                 
-                # Full details aur results ko map kar diya taake table kharab na ho
                 flattened_results.append({
                     "User ID": r.get("USER ID", "N/A"),
                     "Student Name": r.get("User Name", "N/A"),
                     "Email Address": r.get("User Email", "N/A"),
+                    "Login/Test Time 🕒": r.get("Login Time", "N/A"),  # 🕒 Column added for admin
                     "Total Qs": res.get("Total Questions", 0),
                     "Max Marks": res.get("Total Marks", 0),
                     "Score Obtained": res.get("Obtained Marks", 0),
@@ -250,13 +250,18 @@ elif st.session_state.page == "Student Auth Menu":
             for u in users:
                 if u["Email"].lower() == login_email.lower() and u["User Name"].lower() == login_user.lower() and u["Password"] == login_pass:
                     found = True
+                    
+                    # 🕒 LOGIN TIME RECORD KARNE KE LIYE LIVE TIMESTAMP
+                    from datetime import datetime
+                    st.session_state.login_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                    
                     st.session_state.page = "Main Menu"
-                    st.session_state.logged_in_user = u  # Session state load ki
+                    st.session_state.logged_in_user = u  
                     st.success("Login Successful!")
                     st.rerun()
             if not found:
                 st.error("Invalid Credentials.")
-                
+
     elif mode == "Create Account":
         reg_email = st.text_input("Email:")
         reg_name = st.text_input("Full Name:")
@@ -538,10 +543,15 @@ elif st.session_state.page == "Grade Evaluation Processing":
         
         if not st.session_state.result_saved:
             results_db = load_json("Result.json")
+            
+            # Login time check karne ke liye variable
+            current_login = st.session_state.get("login_time", "N/A")
+            
             results_db.append({
                 "USER ID": student["User ID"],
                 "User Name": student["User Name"],
                 "User Email": student["Email"],
+                "Login Time": current_login,  # 🕒 Yeh nayi line add ho gayi hai
                 "User Result": [{
                     "Total Questions": total_q,
                     "Total Marks": total_marks,
