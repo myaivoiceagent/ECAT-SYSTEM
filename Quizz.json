@@ -15,7 +15,7 @@
             },
             {
                 "Question No": 2,
-                "Question": "The value of lim(x\u21920) sin(5x)/tan(2x) is",
+                "Question": "The value of lim(x\u21920) [sin(5x)/tan(2x)] is:",
                 "Options": {
                     "A": "5/2",
                     "B": "2/5",
@@ -28,12 +28,12 @@
                 "Question No": 3,
                 "Question": "If f(x)=x^3\u22126x^2+9x+1, then the local maximum occurs at:",
                 "Options": {
-                    "A": "x = 1",
-                    "B": "x = 3",
-                    "C": "x = 0",
-                    "D": "x = 2"
+                    "A": "x=2",
+                    "B": "x=3",
+                    "C": "x=0",
+                    "D": "x=1"
                 },
-                "Correct Answer": "A"
+                "Correct Answer": "D"
             },
             {
                 "Question No": 4,
@@ -50,34 +50,34 @@
                 "Question No": 5,
                 "Question": "The sum of the first 20 terms of the A.P. 7,11,15,... is:",
                 "Options": {
-                    "A": "900",
-                    "B": "820",
-                    "C": "760",
-                    "D": "640"
+                    "A": "830",
+                    "B": "960",
+                    "C": "720",
+                    "D": "900"
                 },
-                "Correct Answer": "A"
+                "Correct Answer": "D"
             },
             {
                 "Question No": 6,
                 "Question": "If nC2 = 45, then n = ?",
                 "Options": {
-                    "A": "9",
-                    "B": "10",
-                    "C": "11",
-                    "D": "12"
+                    "A": "12",
+                    "B": "11",
+                    "C": "10",
+                    "D": "9"
                 },
-                "Correct Answer": "B"
+                "Correct Answer": "C"
             },
             {
                 "Question No": 7,
                 "Question": "The coefficient of x^4 in (2+x)^6 is:",
                 "Options": {
-                    "A": "240",
-                    "B": "120",
-                    "C": "60",
+                    "A": "120",
+                    "B": "60",
+                    "C": "240",
                     "D": "15"
                 },
-                "Correct Answer": "A"
+                "Correct Answer": "C"
             },
             {
                 "Question No": 8,
@@ -108,7 +108,7 @@
                     "A": "3 x 4",
                     "B": "2 x 3",
                     "C": "4 x 3",
-                    "D": "Not defined"
+                    "D": "Not Defined"
                 },
                 "Correct Answer": "A"
             },
@@ -138,7 +138,7 @@
                 "Question No": 13,
                 "Question": "If y=x^x, then dy/dx equals:",
                 "Options": {
-                    "A": "x^x",
+                    "A": "x ^ x",
                     "B": "x^x(1+lnx)",
                     "C": "1+lnx",
                     "D": "xlnx"
@@ -163,7 +163,7 @@
                     "A": "30\u00b0",
                     "B": "45\u00b0",
                     "C": "90\u00b0",
-                    "D": "180\u00b0"
+                    "D": "180"
                 },
                 "Correct Answer": "C"
             },
@@ -281,10 +281,10 @@
                 "Question No": 26,
                 "Question": "The equation of the tangent to y=x\u00b2 at x=1 is:",
                 "Options": {
-                    "A": "y = x + 1",
-                    "B": "y = 2x - 1",
-                    "C": "y = 2x + 1",
-                    "D": "y = x - 1"
+                    "A": "y=x+1",
+                    "B": "y=2x-1",
+                    "C": "y=2x+1",
+                    "D": "y=x-1"
                 },
                 "Correct Answer": "B"
             },
@@ -335,6 +335,676 @@
         ]
     },
     {
+        "Section": "Physics",
+        "Questions": [
+            {
+                "Question No": 1,
+                "Question": "A projectile is fired with speed u at an angle \u03b8. Its maximum range occurs when \u03b8 is:",
+                "Options": {
+                    "A": "30\u00b0",
+                    "B": "45\u00b0",
+                    "C": "60\u00b0",
+                    "D": "90\u00b0"
+                },
+                "Correct Answer": "B"
+            },
+            {
+                "Question No": 2,
+                "Question": "The dimensional formula of Planck's constant is:",
+                "Options": {
+                    "A": "[ML\u00b2T\u207b\u00b9]",
+                    "B": "[ML\u00b2T\u207b\u00b2]",
+                    "C": "[MLT\u207b\u00b9]",
+                    "D": "[ML\u00b2T\u207b\u00b3]"
+                },
+                "Correct Answer": "A"
+            },
+            {
+                "Question No": 3,
+                "Question": "The escape velocity from Earth is approximately:",
+                "Options": {
+                    "A": "7.9 km/s",
+                    "B": "9.8 km/s",
+                    "C": "11.2 km/s",
+                    "D": "15 km/s"
+                },
+                "Correct Answer": "C"
+            },
+            {
+                "Question No": 4,
+                "Question": "For simple harmonic motion, acceleration is proportional to:",
+                "Options": {
+                    "A": "Velocity",
+                    "B": "Time",
+                    "C": "Displacement",
+                    "D": "Amplitude"
+                },
+                "Correct Answer": "C"
+            },
+            {
+                "Question No": 5,
+                "Question": "The moment of inertia of a solid sphere about its diameter is:",
+                "Options": {
+                    "A": "(2/5)MR\u00b2",
+                    "B": "(2/3)MR\u00b2",
+                    "C": "(1/2)MR\u00b2",
+                    "D": "(7/5)MR\u00b2"
+                },
+                "Correct Answer": "A"
+            },
+            {
+                "Question No": 6,
+                "Question": "The SI unit of surface tension is:",
+                "Options": {
+                    "A": "N/m",
+                    "B": "Nm",
+                    "C": "Pa",
+                    "D": "J/m"
+                },
+                "Correct Answer": "A"
+            },
+            {
+                "Question No": 7,
+                "Question": "In Bernoulli's equation, the quantity P + \u00bd\u03c1v\u00b2 + \u03c1gh remains:",
+                "Options": {
+                    "A": "Variable",
+                    "B": "Infinite",
+                    "C": "Constant",
+                    "D": "Zero"
+                },
+                "Correct Answer": "C"
+            },
+            {
+                "Question No": 8,
+                "Question": "The efficiency of a Carnot engine operating between 600K and 300K is:",
+                "Options": {
+                    "A": "25%",
+                    "B": "50%",
+                    "C": "75%",
+                    "D": "100%"
+                },
+                "Correct Answer": "B"
+            },
+            {
+                "Question No": 9,
+                "Question": "The rms value of AC current is related to peak current by:",
+                "Options": {
+                    "A": "I\u2080/2",
+                    "B": "\u221a2 I\u2080",
+                    "C": "I\u2080/\u221a2",
+                    "D": "2I\u2080"
+                },
+                "Correct Answer": "C"
+            },
+            {
+                "Question No": 10,
+                "Question": "A body moving in a circle with constant speed has:",
+                "Options": {
+                    "A": "Zero Acceleration",
+                    "B": "Tangential Acceleration only",
+                    "C": "Centripetal Acceleration",
+                    "D": "No force Acting"
+                },
+                "Correct Answer": "C"
+            },
+            {
+                "Question No": 11,
+                "Question": "The electric field inside a conductor in electrostatic equilibrium is:",
+                "Options": {
+                    "A": "Maximum",
+                    "B": "Minimum",
+                    "C": "Infinite",
+                    "D": "Zero"
+                },
+                "Correct Answer": "D"
+            },
+            {
+                "Question No": 12,
+                "Question": "The capacitance of a parallel plate capacitor increases when:",
+                "Options": {
+                    "A": "Plate seperation increases",
+                    "B": "plate area decreases",
+                    "C": "Plate area increases",
+                    "D": "Voltage increases"
+                },
+                "Correct Answer": "C"
+            },
+            {
+                "Question No": 13,
+                "Question": "The magnetic field at the center of a circular loop is proportional to:",
+                "Options": {
+                    "A": "r",
+                    "B": "1/R",
+                    "C": "R\u00b2",
+                    "D": "1/R\u00b2"
+                },
+                "Correct Answer": "B"
+            },
+            {
+                "Question No": 14,
+                "Question": "The SI unit of magnetic flux is:",
+                "Options": {
+                    "A": "Tesla",
+                    "B": "Henry",
+                    "C": "Weber",
+                    "D": "Gauss"
+                },
+                "Correct Answer": "C"
+            },
+            {
+                "Question No": 15,
+                "Question": "Lenz's law is based on conservation of:",
+                "Options": {
+                    "A": "Charge",
+                    "B": "Mass",
+                    "C": "Momentum",
+                    "D": "Energy"
+                },
+                "Correct Answer": "D"
+            },
+            {
+                "Question No": 16,
+                "Question": "The resolving power of a microscope increases when wavelength:",
+                "Options": {
+                    "A": "Increases",
+                    "B": "Decreases",
+                    "C": "Remains Constant",
+                    "D": "Becomes Infinite"
+                },
+                "Correct Answer": "B"
+            },
+            {
+                "Question No": 17,
+                "Question": "The work function of a metal is 2eV. The threshold wavelength is closest to:",
+                "Options": {
+                    "A": "620 nm",
+                    "B": "310 nm",
+                    "C": "1240 nm",
+                    "D": "2480 nm"
+                },
+                "Correct Answer": "A"
+            },
+            {
+                "Question No": 18,
+                "Question": "The de Broglie wavelength is inversely proportional to:",
+                "Options": {
+                    "A": "Energy",
+                    "B": "Mass",
+                    "C": "Momentum",
+                    "D": "Velocity"
+                },
+                "Correct Answer": "C"
+            },
+            {
+                "Question No": 19,
+                "Question": "In Bohr's model, angular momentum is quantized in multiples of:",
+                "Options": {
+                    "A": "h",
+                    "B": "h/2\u03c0",
+                    "C": "2\u03c0h",
+                    "D": "h\u00b2"
+                },
+                "Correct Answer": "B"
+            },
+            {
+                "Question No": 20,
+                "Question": "The half-life of a radioactive substance is 10 days. After 30 days the remaining fraction is:",
+                "Options": {
+                    "A": "1/2",
+                    "B": "1/4",
+                    "C": "1/8",
+                    "D": "1/16"
+                },
+                "Correct Answer": "C"
+            },
+            {
+                "Question No": 21,
+                "Question": "The energy stored in an inductor is:",
+                "Options": {
+                    "A": "\u00bdLI\u00b2",
+                    "B": "LI\u00b2",
+                    "C": "\u00bdCV\u00b2",
+                    "D": "IV"
+                },
+                "Correct Answer": "A"
+            },
+            {
+                "Question No": 22,
+                "Question": "The quality factor of a resonant circuit is a measure of:",
+                "Options": {
+                    "A": "Power",
+                    "B": "Selectivity",
+                    "C": "Resistence",
+                    "D": "Current"
+                },
+                "Correct Answer": "B"
+            },
+            {
+                "Question No": 23,
+                "Question": "The critical angle exists only when light travels from:",
+                "Options": {
+                    "A": "Rarer to denser medium",
+                    "B": "Denser to rarer medium",
+                    "C": "Vaccum to air",
+                    "D": "Air to vaccum"
+                },
+                "Correct Answer": "B"
+            },
+            {
+                "Question No": 24,
+                "Question": "The binding energy per nucleon is maximum for:",
+                "Options": {
+                    "A": "Hydrogen",
+                    "B": "Uranium",
+                    "C": "Iron",
+                    "D": "Helium"
+                },
+                "Correct Answer": "C"
+            },
+            {
+                "Question No": 25,
+                "Question": "The drift velocity of electrons in a conductor is typically:",
+                "Options": {
+                    "A": "Very large",
+                    "B": "Close to speed of light",
+                    "C": "Very small",
+                    "D": "Infinite"
+                },
+                "Correct Answer": "C"
+            },
+            {
+                "Question No": 26,
+                "Question": "A transformer works on the principle of:",
+                "Options": {
+                    "A": "Self Induction",
+                    "B": "Mutual Induction",
+                    "C": "Electrolysis",
+                    "D": "Photoelectric Effect"
+                },
+                "Correct Answer": "B"
+            },
+            {
+                "Question No": 27,
+                "Question": "The phase difference between voltage and current in a pure capacitor is:",
+                "Options": {
+                    "A": "0\u00b0",
+                    "B": "45\u00b0",
+                    "C": "90\u00b0",
+                    "D": "180\u00b0"
+                },
+                "Correct Answer": "C"
+            },
+            {
+                "Question No": 28,
+                "Question": "The stopping potential in photoelectric effect depends upon:",
+                "Options": {
+                    "A": "Intensity only",
+                    "B": "Frequency only",
+                    "C": "Area of metal",
+                    "D": "Distance from source"
+                },
+                "Correct Answer": "B"
+            },
+            {
+                "Question No": 29,
+                "Question": "For an ideal gas undergoing an isothermal process:",
+                "Options": {
+                    "A": "PV\u00b2 = constant",
+                    "B": "P/T = constant",
+                    "C": "PV = constant",
+                    "D": "V/T = constant"
+                },
+                "Correct Answer": "C"
+            },
+            {
+                "Question No": 30,
+                "Question": "The impedance of a pure resistor is:",
+                "Options": {
+                    "A": "XL",
+                    "B": "XC",
+                    "C": "R",
+                    "D": "\u221a(R\u00b2+X\u00b2)"
+                },
+                "Correct Answer": "C"
+            }
+        ]
+    },
+    {
+        "Section": "Computer Science",
+        "Questions": [
+            {
+                "Question No": 1,
+                "Question": "Which of the following is a high-level programming language?",
+                "Options": {
+                    "A": "Machine Language",
+                    "B": "Assembly Language",
+                    "C": "Python",
+                    "D": "Binary"
+                },
+                "Correct Answer": "C"
+            },
+            {
+                "Question No": 2,
+                "Question": "Which symbol is used for comments in Python?",
+                "Options": {
+                    "A": "3",
+                    "B": "4",
+                    "C": "5",
+                    "D": "error"
+                },
+                "Correct Answer": "B"
+            },
+            {
+                "Question No": 3,
+                "Question": "Which operator is used to access the value stored at an address in C++?",
+                "Options": {
+                    "A": "&",
+                    "B": "*",
+                    "C": "%",
+                    "D": "3"
+                },
+                "Correct Answer": "B"
+            },
+            {
+                "Question No": 4,
+                "Question": "Which loop is guaranteed to execute at least once?",
+                "Options": {
+                    "A": "for",
+                    "B": "while do - while",
+                    "C": "nested loop",
+                    "D": "while"
+                },
+                "Correct Answer": "B"
+            },
+            {
+                "Question No": 5,
+                "Question": "Which function is used to open a file in C?",
+                "Options": {
+                    "A": "open() ",
+                    "B": "fileopen()",
+                    "C": "fopen()",
+                    "D": "read()"
+                },
+                "Correct Answer": "C"
+            },
+            {
+                "Question No": 6,
+                "Question": "A pointer stores:",
+                "Options": {
+                    "A": "A value",
+                    "B": "A character",
+                    "C": "An address",
+                    "D": "A file"
+                },
+                "Correct Answer": "C"
+            },
+            {
+                "Question No": 7,
+                "Question": "Which keyword is used to define a structure in C?",
+                "Options": {
+                    "A": "record",
+                    "B": "struct",
+                    "C": "class",
+                    "D": "union"
+                },
+                "Correct Answer": "B"
+            },
+            {
+                "Question No": 8,
+                "Question": "The first element of an array arr is accessed as:",
+                "Options": {
+                    "A": "arr[1]",
+                    "B": "arr[0]",
+                    "C": "arr[-1]",
+                    "D": "arr(first)"
+                },
+                "Correct Answer": "B"
+            },
+            {
+                "Question No": 9,
+                "Question": "A database is a:",
+                "Options": {
+                    "A": "Collection of programs",
+                    "B": "collection of realated data",
+                    "C": "collection of hardware",
+                    "D": "collection of networks"
+                },
+                "Correct Answer": "B"
+            },
+            {
+                "Question No": 10,
+                "Question": "DBMS stands for:",
+                "Options": {
+                    "A": "Database Management System",
+                    "B": "Data Backup Manangement System",
+                    "C": "Database Memory System",
+                    "D": "Data Base Machine System"
+                },
+                "Correct Answer": "A"
+            },
+            {
+                "Question No": 11,
+                "Question": "A row in a database table is called:",
+                "Options": {
+                    "A": "Field",
+                    "B": "Attribute",
+                    "C": "Record",
+                    "D": "Domain"
+                },
+                "Correct Answer": "C"
+            },
+            {
+                "Question No": 12,
+                "Question": "A column in a table is called:",
+                "Options": {
+                    "A": "Record",
+                    "B": "Field",
+                    "C": "Tuple",
+                    "D": "File"
+                },
+                "Correct Answer": "B"
+            },
+            {
+                "Question No": 13,
+                "Question": "The realational Database model was proposed by:",
+                "Options": {
+                    "A": "Bill Gates",
+                    "B": "Charles Baggage",
+                    "C": "E. F. Codd",
+                    "D": "Dennis Ritchie"
+                },
+                "Correct Answer": "C"
+            },
+            {
+                "Question No": 14,
+                "Question": "A field that uniquely identifies a record is called:",
+                "Options": {
+                    "A": "Foreign Key",
+                    "B": "Candidate Key",
+                    "C": "Primary Key",
+                    "D": "Secondary Key"
+                },
+                "Correct Answer": "C"
+            },
+            {
+                "Question No": 15,
+                "Question": "A table in a relational database is also known as:",
+                "Options": {
+                    "A": "Relation",
+                    "B": "Record",
+                    "C": "Domain",
+                    "D": "Attribute"
+                },
+                "Correct Answer": "A"
+            },
+            {
+                "Question No": 16,
+                "Question": "Which of the following is not a database object in MS Access:",
+                "Options": {
+                    "A": "Table",
+                    "B": "Query",
+                    "C": "Report",
+                    "D": "Compiler"
+                },
+                "Correct Answer": "D"
+            },
+            {
+                "Question No": 17,
+                "Question": "The data type used to store long text in MS Access is:",
+                "Options": {
+                    "A": "Text",
+                    "B": "Memo",
+                    "C": "Number",
+                    "D": "Currency"
+                },
+                "Correct Answer": "B"
+            },
+            {
+                "Question No": 18,
+                "Question": "Which Database is used to retrieve specific record:",
+                "Options": {
+                    "A": "Form",
+                    "B": "Table",
+                    "C": "Query",
+                    "D": "Report"
+                },
+                "Correct Answer": "C"
+            },
+            {
+                "Question No": 19,
+                "Question": "The relationship between one student and one roll number is:",
+                "Options": {
+                    "A": "One-to-One",
+                    "B": "One-to-Many",
+                    "C": "Many-to-Many",
+                    "D": "Many-to-one"
+                },
+                "Correct Answer": "A"
+            },
+            {
+                "Question No": 20,
+                "Question": "The relationship between one teacher and many students is:",
+                "Options": {
+                    "A": "One-to-One",
+                    "B": "One-to-Many",
+                    "C": "Many-to-Many",
+                    "D": "Many-to-one"
+                },
+                "Correct Answer": "B"
+            },
+            {
+                "Question No": 21,
+                "Question": "A form in MS Access is mainly used for:",
+                "Options": {
+                    "A": "Data Entry",
+                    "B": "Data Storage",
+                    "C": "Data Deletion",
+                    "D": "Data Compression"
+                },
+                "Correct Answer": "A"
+            },
+            {
+                "Question No": 22,
+                "Question": "The smallest unit of data in a computer is:",
+                "Options": {
+                    "A": "Byte",
+                    "B": "Bit",
+                    "C": "Nibble",
+                    "D": "Word"
+                },
+                "Correct Answer": "B"
+            },
+            {
+                "Question No": 23,
+                "Question": "The decimal equivalent of binary number 101101",
+                "Options": {
+                    "A": "43",
+                    "B": "44",
+                    "C": "45",
+                    "D": "46"
+                },
+                "Correct Answer": "C"
+            },
+            {
+                "Question No": 24,
+                "Question": "Which number system uses digists 0 to 7?",
+                "Options": {
+                    "A": "Binary",
+                    "B": "Decimal",
+                    "C": "Octal",
+                    "D": "Hexadecimal"
+                },
+                "Correct Answer": "C"
+            },
+            {
+                "Question No": 25,
+                "Question": "The hexadecimal equivalent of decimal 15 is:",
+                "Options": {
+                    "A": "E",
+                    "B": "F",
+                    "C": "10",
+                    "D": "15"
+                },
+                "Correct Answer": "B"
+            },
+            {
+                "Question No": 26,
+                "Question": "Which gate gives output 1 only when all inputs are 1?",
+                "Options": {
+                    "A": "OR gate",
+                    "B": "NOT gate",
+                    "C": "AND gate",
+                    "D": "NOR gate"
+                },
+                "Correct Answer": "C"
+            },
+            {
+                "Question No": 27,
+                "Question": "The output of a NOT gate is:",
+                "Options": {
+                    "A": "same as input",
+                    "B": "Double the input",
+                    "C": "complement of input",
+                    "D": "Always 1"
+                },
+                "Correct Answer": "C"
+            },
+            {
+                "Question No": 28,
+                "Question": "Which gate is known as universal gate:",
+                "Options": {
+                    "A": "AND",
+                    "B": "OR",
+                    "C": "XOR",
+                    "D": "NAND"
+                },
+                "Correct Answer": "D"
+            },
+            {
+                "Question No": 29,
+                "Question": "According to Boolean Algebra, A + 0 =",
+                "Options": {
+                    "A": "0",
+                    "B": "1",
+                    "C": "A",
+                    "D": "A'"
+                },
+                "Correct Answer": "C"
+            },
+            {
+                "Question No": 30,
+                "Question": "An algorithm must be:",
+                "Options": {
+                    "A": "Finite",
+                    "B": "Infinite",
+                    "C": "Complex",
+                    "D": "Graphical"
+                },
+                "Correct Answer": "A"
+            }
+        ]
+    },
+    {
         "Section": "English",
         "Questions": [
             {
@@ -352,12 +1022,12 @@
                 "Question No": 2,
                 "Question": "Ali studied hard for the examination. As a result, he secured first position in his class. What was the result of Ali's hard work?",
                 "Options": {
-                    "A": "He failed the exams",
+                    "A": "He failed the exam",
                     "B": "He left the school",
                     "C": "He secured first position",
                     "D": "He changed his class"
                 },
-                "Correct Answer": "B"
+                "Correct Answer": "C"
             },
             {
                 "Question No": 3,
@@ -374,20 +1044,20 @@
                 "Question No": 4,
                 "Question": "The weather became very dark and strong winds started blowing. Soon heavy rain began to fall. What can be concluded from the passage?",
                 "Options": {
-                    "A": "a storm was approaching",
+                    "A": "A storm was approached",
                     "B": "It was a sunny day",
                     "C": "Winter had ended",
                     "D": "The weather was pleasant"
                 },
-                "Correct Answer": "B"
+                "Correct Answer": "A"
             },
             {
                 "Question No": 5,
                 "Question": "The teacher praised Ahmad because he completed his project before the deadline. Why was Ahmad praised?",
                 "Options": {
                     "A": "He was absent",
-                    "B": "he helped his friends",
-                    "C": "He completed his project on time",
+                    "B": "He helped his friends",
+                    "C": "He completed his projects on time",
                     "D": "He won a competition"
                 },
                 "Correct Answer": "C"
@@ -421,7 +1091,7 @@
                     "A": "The bus arrived early",
                     "B": "He woke up late",
                     "C": "The bus was cancelled",
-                    "D": "He forgot the route"
+                    "D": "He forget the route"
                 },
                 "Correct Answer": "B"
             },
@@ -429,715 +1099,1028 @@
                 "Question No": 9,
                 "Question": "The scientist conducted several experiments before reaching a conclusion. What does this suggest about the scientist?",
                 "Options": {
-                    "A": "He was careless",
+                    "A": "He was Careless",
                     "B": "He relied on guesses",
-                    "C": "He was thorough and careful",
-                    "D": "He avoided reasearch"
+                    "C": "He was thorough and carefull",
+                    "D": "He avoided research"
                 },
-                "Correct Answer": "B"
+                "Correct Answer": "c"
             },
             {
                 "Question No": 10,
-                "Question": "The scientist conducted several experiments before reaching a conclusion. What does this suggest about the scientist?",
-                "Options": {
-                    "A": "He was careless",
-                    "B": "He relied on guesses",
-                    "C": "He was thorough and careful",
-                    "D": "He avoided reasearch"
-                },
-                "Correct Answer": "C"
-            },
-            {
-                "Question No": 11,
                 "Question": "Nadia carried an umbrella with her although the sky was clear. Later in the day, it started raining. Why did Nadia carry the umbrella?",
                 "Options": {
-                    "A": "She expected rain",
-                    "B": "she wanted shade from the sun only",
-                    "C": "She forgot it at home",
-                    "D": "She borrowed it from a family"
+                    "A": "She expeected rain",
+                    "B": "She wanted shade from the sun only",
+                    "C": "She forget it at home",
+                    "D": "She borrowed it from a friend"
                 },
                 "Correct Answer": "A"
             }
         ]
     },
     {
-        "Section": "Physics",
+        "Section": "Biology",
         "Questions": [
             {
                 "Question No": 1,
-                "Question": "A projectile is fired with speed u at an angle \u03b8. Its maximum range occurs when \u03b8 is:",
+                "Question": "Which enzyme joins Okazaki fragments during DNA replication?",
                 "Options": {
-                    "A": "30\u00b0",
-                    "B": "45\u00b0",
-                    "C": "60\u00b0",
-                    "D": "90\u00b0"
+                    "A": "Helicase",
+                    "B": "Ligase",
+                    "C": "Primase",
+                    "D": "Topoisomerase"
                 },
                 "Correct Answer": "B"
             },
             {
                 "Question No": 2,
-                "Question": "The dimensional formula of Planck's constant is:",
+                "Question": "The first stable product of CO\u2082 fixation in C4 plants is:",
                 "Options": {
-                    "A": "[ML\u00b2T\u207b\u00b9]",
-                    "B": "[ML\u00b2T\u207b\u00b2]",
-                    "C": "[MLT\u207b\u00b9]",
-                    "D": "[ML\u00b2T\u207b\u00b3]"
-                },
-                "Correct Answer": "A"
-            },
-            {
-                "Question No": 3,
-                "Question": "For simple harmonic motion, acceleration is proportional to:",
-                "Options": {
-                    "A": "Velocity",
-                    "B": "Time",
-                    "C": "Displacement",
-                    "D": "Amplitude"
-                },
-                "Correct Answer": "C"
-            },
-            {
-                "Question No": 4,
-                "Question": "The escape velocity from Earth is approximately: ",
-                "Options": {
-                    "A": "7.0 km/s",
-                    "B": "9.8 km/s",
-                    "C": "11.2 km/s",
-                    "D": "15 km/s"
-                },
-                "Correct Answer": "C"
-            },
-            {
-                "Question No": 5,
-                "Question": "The moment of inertia of a solid sphere about its diameter is:",
-                "Options": {
-                    "A": "(2/5)MR\u00b2",
-                    "B": "(2/3)MR\u00b2",
-                    "C": "(1/2)MR\u00b2",
-                    "D": "(7/5)MR\u00b2"
-                },
-                "Correct Answer": "A"
-            },
-            {
-                "Question No": 6,
-                "Question": "The moment of inertia of a solid sphere about its diameter is:",
-                "Options": {
-                    "A": "(2/5)MR\u00b2",
-                    "B": "(2/3)MR\u00b2",
-                    "C": "(1/2)MR\u00b2",
-                    "D": "(7/5)MR\u00b2"
-                },
-                "Correct Answer": "A"
-            },
-            {
-                "Question No": 7,
-                "Question": "The SI unit of surface tension is:",
-                "Options": {
-                    "A": "N/m",
-                    "B": "Nm",
-                    "C": "Pa",
-                    "D": "J/m"
-                },
-                "Correct Answer": "A"
-            },
-            {
-                "Question No": 8,
-                "Question": "In Bernoulli's equation, the quantity P + \u00bd\u03c1v\u00b2 + \u03c1gh remains:",
-                "Options": {
-                    "A": "Variable",
-                    "B": "Infinite",
-                    "C": "Constant",
-                    "D": "Zero"
-                },
-                "Correct Answer": "C"
-            },
-            {
-                "Question No": 9,
-                "Question": "The efficiency of a Carnot engine operating between 600K and 300K is:",
-                "Options": {
-                    "A": "25%",
-                    "B": "50%",
-                    "C": "75%",
-                    "D": "100%"
-                },
-                "Correct Answer": "B"
-            },
-            {
-                "Question No": 10,
-                "Question": "The rms value of AC current is related to peak current by:",
-                "Options": {
-                    "A": "I\u2080/2",
-                    "B": "\u221a2 I\u2080",
-                    "C": "I\u2080/\u221a2",
-                    "D": "2I\u2080"
-                },
-                "Correct Answer": "C"
-            },
-            {
-                "Question No": 11,
-                "Question": "A body moving in a circle with constant speed has:",
-                "Options": {
-                    "A": "Zero acceleration",
-                    "B": "Tangential Acceleration only",
-                    "C": "Centripetal Acceleration ",
-                    "D": "No force acting"
-                },
-                "Correct Answer": "C"
-            },
-            {
-                "Question No": 12,
-                "Question": "The electric field inside a conductor in electrostatic equilibrium is:",
-                "Options": {
-                    "A": "Maximum",
-                    "B": "Minimum",
-                    "C": "Infinite",
-                    "D": "zero"
-                },
-                "Correct Answer": "D"
-            },
-            {
-                "Question No": 13,
-                "Question": "The capacitance of a parallel plate capacitor increases when:",
-                "Options": {
-                    "A": "Plate seperation increases",
-                    "B": "Plate area decreases",
-                    "C": "Plate area increases",
-                    "D": "Voltage increases"
-                },
-                "Correct Answer": "C"
-            },
-            {
-                "Question No": 14,
-                "Question": "The magnetic field at the center of a circular loop is proportional to:",
-                "Options": {
-                    "A": "R",
-                    "B": "1 / R",
-                    "C": "R\u00b2",
-                    "D": "1 / R\u00b2"
-                },
-                "Correct Answer": "B"
-            },
-            {
-                "Question No": 15,
-                "Question": "The SI unit of magnetic flux is:",
-                "Options": {
-                    "A": "Tesla",
-                    "B": "Henry",
-                    "C": "weber",
-                    "D": "Gauss"
-                },
-                "Correct Answer": "C"
-            },
-            {
-                "Question No": 16,
-                "Question": "Lenz's law is based on conservation of:",
-                "Options": {
-                    "A": "Charge",
-                    "B": "Mass",
-                    "C": "Momentum",
-                    "D": "Energy"
-                },
-                "Correct Answer": "D"
-            },
-            {
-                "Question No": 17,
-                "Question": "The resolving power of a microscope increases when wavelength:",
-                "Options": {
-                    "A": "Increases",
-                    "B": "Decreases",
-                    "C": "Remains constanr",
-                    "D": "Becomes Infinite"
-                },
-                "Correct Answer": "B"
-            },
-            {
-                "Question No": 18,
-                "Question": "The work function of a metal is 2eV. The threshold wavelength is closest to:",
-                "Options": {
-                    "A": "620 nm",
-                    "B": "310 nm",
-                    "C": "1240 nm",
-                    "D": "2480 nm"
-                },
-                "Correct Answer": "A"
-            },
-            {
-                "Question No": 19,
-                "Question": "The de Broglie wavelength is inversely proportional to:",
-                "Options": {
-                    "A": "Energy",
-                    "B": "Mass",
-                    "C": "momentum",
-                    "D": "Velocity"
-                },
-                "Correct Answer": "C"
-            },
-            {
-                "Question No": 20,
-                "Question": "In Bohr's model, angular momentum is quantized in multiples of:",
-                "Options": {
-                    "A": "h",
-                    "B": "h / 2\u03c0",
-                    "C": "2\u03c0h",
-                    "D": "h\u00b2"
-                },
-                "Correct Answer": "B"
-            },
-            {
-                "Question No": 21,
-                "Question": "The half-life of a radioactive substance is 10 days. After 30 days the remaining fraction is:",
-                "Options": {
-                    "A": "1 / 2",
-                    "B": "1 / 4",
-                    "C": "1 / 8",
-                    "D": "1 / 16"
-                },
-                "Correct Answer": "C"
-            },
-            {
-                "Question No": 22,
-                "Question": "The energy stored in an inductor is:",
-                "Options": {
-                    "A": "\u00bdLI\u00b2",
-                    "B": "LI\u00b2",
-                    "C": "\u00bdCV\u00b2",
-                    "D": "IV"
-                },
-                "Correct Answer": "A"
-            },
-            {
-                "Question No": 23,
-                "Question": "The quality factor of a resonant circuit is a measure of:",
-                "Options": {
-                    "A": "Power",
-                    "B": "Selectivity",
-                    "C": "Resistence",
-                    "D": "current"
-                },
-                "Correct Answer": "B"
-            },
-            {
-                "Question No": 24,
-                "Question": "The critical angle exists only when light travels from:",
-                "Options": {
-                    "A": "Rarer to denser medium",
-                    "B": "Denser to rarer medium",
-                    "C": "Vacuum to air",
-                    "D": "Air to vacuum"
-                },
-                "Correct Answer": "B"
-            },
-            {
-                "Question No": 25,
-                "Question": "The binding energy per nucleon is maximum for:",
-                "Options": {
-                    "A": "Hydrogen",
-                    "B": "Uranium",
-                    "C": "Iron",
-                    "D": "Helium"
-                },
-                "Correct Answer": "C"
-            },
-            {
-                "Question No": 26,
-                "Question": "The drift velocity of electrons in a conductor is typically:",
-                "Options": {
-                    "A": "Very Large",
-                    "B": "Close to speed of light",
-                    "C": "very small",
-                    "D": "Infinite"
-                },
-                "Correct Answer": "C"
-            },
-            {
-                "Question No": 27,
-                "Question": "The drift velocity of electrons in a conductor is typically:",
-                "Options": {
-                    "A": "Self Induction",
-                    "B": "Mutual Induction",
-                    "C": "Electrolysis",
-                    "D": "Photo Electric effect"
-                },
-                "Correct Answer": "B"
-            },
-            {
-                "Question No": 28,
-                "Question": "The phase difference between voltage and current in a pure capacitor is:",
-                "Options": {
-                    "A": "0\u00b0",
-                    "B": "45\u00b0",
-                    "C": "90\u00b0",
-                    "D": "180\u00b0"
-                },
-                "Correct Answer": "C"
-            },
-            {
-                "Question No": 29,
-                "Question": "The stopping potential in photoelectric effect depends upon:",
-                "Options": {
-                    "A": "Intensity coil",
-                    "B": "Frequency coil",
-                    "C": "Area of metal",
-                    "D": "Distance from source"
-                },
-                "Correct Answer": "B"
-            },
-            {
-                "Question No": 30,
-                "Question": "For an ideal gas undergoing an isothermal process:",
-                "Options": {
-                    "A": "PV\u00b2 = constant",
-                    "B": "P/T = constant",
-                    "C": "PV = constant",
-                    "D": "V/T = constant"
-                },
-                "Correct Answer": "B"
-            },
-            {
-                "Question No": 31,
-                "Question": "The impedance of a pure resistor is:",
-                "Options": {
-                    "A": "XL",
-                    "B": "XC",
-                    "C": "R",
-                    "D": "\u221a(R\u00b2+X\u00b2)"
-                },
-                "Correct Answer": "C"
-            }
-        ]
-    },
-    {
-        "Section": "Computer",
-        "Questions": [
-            {
-                "Question No": 1,
-                "Question": "Which operator is used to access the value stored at an address in C?",
-                "Options": {
-                    "A": "&",
-                    "B": "*",
-                    "C": "%",
-                    "D": "#"
-                },
-                "Correct Answer": "A"
-            },
-            {
-                "Question No": 2,
-                "Question": "Which loop is guaranteed to execute at least once?",
-                "Options": {
-                    "A": "for",
-                    "B": "while",
-                    "C": "do while",
-                    "D": "nested loop"
+                    "A": "PGA",
+                    "B": "RuBP",
+                    "C": "Oxaloacetic acid",
+                    "D": "PEP"
                 },
                 "Correct Answer": "C"
             },
             {
                 "Question No": 3,
-                "Question": "Which header file is required for printf() and scanf()?",
+                "Question": "Which blood vessel carries oxygenated blood from lungs to heart?",
                 "Options": {
-                    "A": "stdio.h",
-                    "B": "conio.h",
-                    "C": "isostream.h",
-                    "D": "math.h"
+                    "A": "Pulmonary artery",
+                    "B": "Aorta",
+                    "C": "Vena cava",
+                    "D": "Pulmonary vein"
                 },
-                "Correct Answer": "A"
+                "Correct Answer": "D"
             },
             {
                 "Question No": 4,
-                "Question": "What is the index of the first element of an array?",
+                "Question": "The Bohr effect is related to:",
                 "Options": {
-                    "A": "1",
-                    "B": "-1",
-                    "C": "0",
-                    "D": "Depends on compiler"
+                    "A": "Photosynthesis",
+                    "B": "Hemoglobin affinity for oxygen",
+                    "C": "DNA replication",
+                    "D": "Nerve impulse"
                 },
-                "Correct Answer": "C"
+                "Correct Answer": "B"
             },
             {
                 "Question No": 5,
-                "Question": "Which function is used to open a file in C?",
+                "Question": "The anticodon is present on:",
                 "Options": {
-                    "A": "open( )",
-                    "B": "fileopen( ) ",
-                    "C": "fopen( )",
-                    "D": "read( )"
+                    "A": "DNA",
+                    "B": "mRNA",
+                    "C": "tRNA",
+                    "D": "rRNA"
                 },
                 "Correct Answer": "C"
             },
             {
                 "Question No": 6,
-                "Question": "A pointer stores:",
+                "Question": "Which hormone increases blood glucose level?",
                 "Options": {
-                    "A": "A value",
-                    "B": "A character",
-                    "C": "An address",
-                    "D": "A file"
-                },
-                "Correct Answer": "C"
-            },
-            {
-                "Question No": 7,
-                "Question": "Which keyword is used to define a structure in C?",
-                "Options": {
-                    "A": "record",
-                    "B": "struct",
-                    "C": "class",
-                    "D": "union"
+                    "A": "Insulin",
+                    "B": "Glucagon",
+                    "C": "ADH",
+                    "D": "Oxytocin"
                 },
                 "Correct Answer": "B"
             },
             {
-                "Question No": 8,
-                "Question": "The first element of an array arr is accessed as:",
+                "Question No": 7,
+                "Question": "Crossing over occurs during:",
                 "Options": {
-                    "A": "arr [ 1 ]",
-                    "B": "arr [ 0 ]",
-                    "C": "arr [ -1 ]",
-                    "D": "arr ( first )"
+                    "A": "Leptotene",
+                    "B": "Zygotene",
+                    "C": "Pachytene",
+                    "D": "Diplotene"
+                },
+                "Correct Answer": "C"
+            },
+            {
+                "Question No": 8,
+                "Question": "The functional unit of kidney is:",
+                "Options": {
+                    "A": "Neuron",
+                    "B": "Nephron",
+                    "C": "Alveolus",
+                    "D": "GLomerulus"
                 },
                 "Correct Answer": "B"
             },
             {
                 "Question No": 9,
-                "Question": "A database is a: ",
+                "Question": "Which cells produce antibodies?",
                 "Options": {
-                    "A": "Collection of programs",
-                    "B": "Collection of related data",
-                    "C": "Collection of Hardware",
-                    "D": "Collection of networks"
+                    "A": "RCB's",
+                    "B": "Platelates",
+                    "C": "B - Lymphocytes",
+                    "D": "Neutrophils"
                 },
-                "Correct Answer": "B"
+                "Correct Answer": "C"
             },
             {
                 "Question No": 10,
-                "Question": "DBMS stands for: ",
+                "Question": "The universal recipient blood group is:",
                 "Options": {
-                    "A": "Database Management System",
-                    "B": "Data Backup Management System",
-                    "C": "Data Memory System",
-                    "D": "Data Base Machine Learning"
+                    "A": "A",
+                    "B": "B",
+                    "C": "O",
+                    "D": "AB"
                 },
-                "Correct Answer": "A"
+                "Correct Answer": "D"
             },
             {
                 "Question No": 11,
-                "Question": "A row in a database table is called:",
+                "Question": "8Photorespiration mainly occurs in:",
                 "Options": {
-                    "A": "Field",
-                    "B": "Attribute",
-                    "C": "Record",
-                    "D": "Domain"
+                    "A": "C4 Plants",
+                    "B": "CAM Plants",
+                    "C": "C3 Plants",
+                    "D": "Bryophytes"
                 },
                 "Correct Answer": "C"
             },
             {
                 "Question No": 12,
-                "Question": "A column in a table is called:",
+                "Question": "Which organelle contains hydrolytic enzymes?",
                 "Options": {
-                    "A": "Record",
-                    "B": "Field",
-                    "C": "Tuple",
-                    "D": "File"
+                    "A": "Golgi apparatus",
+                    "B": "Ribosome",
+                    "C": "Lysosome",
+                    "D": "Nucleus"
+                },
+                "Correct Answer": "C"
+            },
+            {
+                "Question No": 13,
+                "Question": "The nitrogenous base absent in RNA is:",
+                "Options": {
+                    "A": "Adenine",
+                    "B": "Thymine",
+                    "C": "Guanine",
+                    "D": "Cytosine"
                 },
                 "Correct Answer": "B"
             },
             {
-                "Question No": 13,
-                "Question": "The relational database model was proposed by:",
-                "Options": {
-                    "A": "Bill Gates",
-                    "B": "Charles Baggage",
-                    "C": "E. F. Codd",
-                    "D": "Dennis Ritchie"
-                },
-                "Correct Answer": "C"
-            },
-            {
                 "Question No": 14,
-                "Question": "A field that uniquely identifies a record is called:",
+                "Question": "The opening and closing of stomata is controlled by:",
                 "Options": {
-                    "A": "Foreign Key",
-                    "B": "Candidate Key",
-                    "C": "Primary Key",
-                    "D": "Secondary Key"
+                    "A": "Companion cells",
+                    "B": "Guard ccells",
+                    "C": "Mesophyll cells",
+                    "D": "Epidermal cells"
                 },
-                "Correct Answer": "C"
+                "Correct Answer": "B"
             },
             {
                 "Question No": 15,
-                "Question": "A table in a relational database is also known as:",
+                "Question": "Which vitamin is required for blood clotting?",
                 "Options": {
-                    "A": "Relation",
-                    "B": "Record",
-                    "C": "Domain",
-                    "D": "Attribute"
+                    "A": "Vitamin A",
+                    "B": "Vitamin C",
+                    "C": "Vitamin K",
+                    "D": "Vitamin D"
                 },
-                "Correct Answer": "A"
+                "Correct Answer": "C"
             },
             {
                 "Question No": 16,
-                "Question": "Which of the following is NOT a database object in MS Access?",
+                "Question": "The site of protein synthesis is:",
                 "Options": {
-                    "A": "Table",
-                    "B": "Query",
-                    "C": "Report",
-                    "D": "Compiler"
+                    "A": "Golgi bodies",
+                    "B": "Ribosomes",
+                    "C": "Mitochondria",
+                    "D": "Lysosomes"
                 },
-                "Correct Answer": "D"
+                "Correct Answer": "B"
             },
             {
                 "Question No": 17,
-                "Question": "The data type used to store long text in MS Access is:",
+                "Question": "The theory of natural selection was proposed by:",
                 "Options": {
-                    "A": "Text",
-                    "B": "Memo",
-                    "C": "Number",
-                    "D": "Currency"
+                    "A": "Lamarck",
+                    "B": "Darwin",
+                    "C": "de Vries",
+                    "D": "Mendel"
                 },
                 "Correct Answer": "B"
             },
             {
                 "Question No": 18,
-                "Question": "Which database object is used to retrieve specific records?",
+                "Question": "Which tissue transports food in plants?",
                 "Options": {
-                    "A": "Form",
-                    "B": "Query",
-                    "C": "Table",
-                    "D": "Report"
+                    "A": "Xylem",
+                    "B": "Cambium",
+                    "C": "Pheloem",
+                    "D": "Cortex"
+                },
+                "Correct Answer": "C"
+            },
+            {
+                "Question No": 19,
+                "Question": "AUG is the codon for:",
+                "Options": {
+                    "A": "Termination",
+                    "B": "Methionine",
+                    "C": "Valline",
+                    "D": "Glycine"
                 },
                 "Correct Answer": "B"
             },
             {
-                "Question No": 19,
-                "Question": "The relationship between one student and one roll number is:",
-                "Options": {
-                    "A": "One - to - one",
-                    "B": "One - to - Many",
-                    "C": "Many - to - Many",
-                    "D": "Many - to - One"
-                },
-                "Correct Answer": "A"
-            },
-            {
                 "Question No": 20,
-                "Question": "A form in MS Access is mainly used for:",
+                "Question": "The longest phase of cell cycle is:",
                 "Options": {
-                    "A": "Data Entry",
-                    "B": "Data Storage",
-                    "C": "Data Deletion",
-                    "D": "Data Compression"
+                    "A": "Prophase",
+                    "B": "Interphase",
+                    "C": "Metaphase",
+                    "D": "Anaphase"
                 },
-                "Correct Answer": "A"
+                "Correct Answer": "B"
             },
             {
                 "Question No": 21,
-                "Question": "Which object is used to print formatted information?",
+                "Question": "Which kingdom contains prokaryotes?",
                 "Options": {
-                    "A": "Table",
-                    "B": "Query",
-                    "C": "Report",
-                    "D": "Field"
+                    "A": "Protista",
+                    "B": "Fungi",
+                    "C": "Monera",
+                    "D": "Plantae"
                 },
                 "Correct Answer": "C"
             },
             {
                 "Question No": 22,
-                "Question": "Redundancy in a database means:",
+                "Question": "The oxygen carrying pigment in blood is:",
                 "Options": {
-                    "A": "Data Security",
-                    "B": "Duplicate Data",
-                    "C": "Data Sharing",
-                    "D": "Data Recovery"
+                    "A": "Melanin",
+                    "B": "Hemoglobin",
+                    "C": "Chlorophyll",
+                    "D": "Keratin"
                 },
                 "Correct Answer": "B"
             },
             {
                 "Question No": 23,
-                "Question": "MS Access is a:",
+                "Question": "Which hormone stimulates uterine contractions?",
                 "Options": {
-                    "A": "DBMS",
-                    "B": "Operating System",
-                    "C": "Compiler",
-                    "D": "Programming Language"
+                    "A": "ADH",
+                    "B": "Insulin",
+                    "C": "Oxytocin",
+                    "D": "Thyroxine"
+                },
+                "Correct Answer": "C"
+            },
+            {
+                "Question No": 24,
+                "Question": "The primary source of energy for living organisms is:",
+                "Options": {
+                    "A": "ATP",
+                    "B": "Protein",
+                    "C": "DNA",
+                    "D": "RNA"
                 },
                 "Correct Answer": "A"
             },
             {
-                "Question No": 24,
-                "Question": "The smallest unit of data in a computer is:",
-                "Options": {
-                    "A": "Byte",
-                    "B": "BIt",
-                    "C": "Nibble",
-                    "D": "Word"
-                },
-                "Correct Answer": "B"
-            },
-            {
                 "Question No": 25,
-                "Question": "One byte is equal to:",
+                "Question": "Which process produces genetically identical daughter cells?",
                 "Options": {
-                    "A": "4 bits",
-                    "B": "8 bits",
-                    "C": "16 bits",
-                    "D": "32 bits"
+                    "A": "Meiosis",
+                    "B": "Mitosis",
+                    "C": "Fertilization",
+                    "D": "Crossing over"
                 },
                 "Correct Answer": "B"
             },
             {
                 "Question No": 26,
-                "Question": "The decimal equivalent of binary number 101101 is:",
+                "Question": "The normal chromosome number in human somatic cells is:",
                 "Options": {
                     "A": "43",
                     "B": "44",
-                    "C": "45",
-                    "D": "46"
+                    "C": "46",
+                    "D": "48"
                 },
                 "Correct Answer": "C"
             },
             {
                 "Question No": 27,
-                "Question": "Which number system uses digits 0 to 7?",
+                "Question": "Which component of blood is responsible for clotting?",
                 "Options": {
-                    "A": "BInary",
-                    "B": "Decimal",
-                    "C": "Octal",
-                    "D": "hexadecimal"
+                    "A": "RBC's",
+                    "B": "Platelates",
+                    "C": "Plasma",
+                    "D": "WBC's"
                 },
-                "Correct Answer": "C"
+                "Correct Answer": "B"
             },
             {
                 "Question No": 28,
-                "Question": "Which gate gives output 1 only when all inputs are 1?",
+                "Question": "The fluid mosaic model was proposed by:",
                 "Options": {
-                    "A": "OR Gate",
-                    "B": "NOT Gate",
-                    "C": "AND Gate",
-                    "D": "NOR Gate"
+                    "A": "Watson and Crick",
+                    "B": "Singer and Nicolson",
+                    "C": "Mendel",
+                    "D": "Darwin"
                 },
-                "Correct Answer": "C"
+                "Correct Answer": "B"
             },
             {
                 "Question No": 29,
-                "Question": "The output of a NOT gate is:",
+                "Question": "Which structure increases the surface area of small intestine?",
                 "Options": {
-                    "A": "Same as input",
-                    "B": "Double the input",
-                    "C": "Complement of input",
-                    "D": "Always 1"
+                    "A": "Alveoli",
+                    "B": "Nephrons",
+                    "C": "Villi",
+                    "D": "Osteons"
                 },
                 "Correct Answer": "C"
             },
             {
                 "Question No": 30,
-                "Question": "According to Boolean Algebra, A + 0 =",
+                "Question": "Ecology is the study of:",
+                "Options": {
+                    "A": "Cells",
+                    "B": "Genes",
+                    "C": "Evolution",
+                    "D": "Organisms and their environment"
+                },
+                "Correct Answer": "D"
+            }
+        ]
+    },
+    {
+        "Section": "Chemistry",
+        "Questions": [
+            {
+                "Question No": 1,
+                "Question": "Which quantum number determines the shape of an orbital?",
+                "Options": {
+                    "A": "Principal quantum number",
+                    "B": "Azimuthal quantum number",
+                    "C": "Magnetic quantum number",
+                    "D": "Spin quantum number"
+                },
+                "Correct Answer": "B"
+            },
+            {
+                "Question No": 2,
+                "Question": "The maximum number of electrons in the p-subshell is:",
+                "Options": {
+                    "A": "2",
+                    "B": "6",
+                    "C": "10",
+                    "D": "14"
+                },
+                "Correct Answer": "B"
+            },
+            {
+                "Question No": 3,
+                "Question": "Which bond is formed by the complete transfer of electrons?",
+                "Options": {
+                    "A": "Covalent Bond",
+                    "B": "Coordinate Bond",
+                    "C": "Ionic Bond ",
+                    "D": "Hydrogen Bond"
+                },
+                "Correct Answer": "C"
+            },
+            {
+                "Question No": 4,
+                "Question": "The hybridization of carbon in methane is:",
+                "Options": {
+                    "A": "sp",
+                    "B": "sp2",
+                    "C": "sp3",
+                    "D": "dsp2"
+                },
+                "Correct Answer": "C"
+            },
+            {
+                "Question No": 5,
+                "Question": "One mole of any gas at STP occupies:",
+                "Options": {
+                    "A": "11.2 dm\u00b3",
+                    "B": "22.4 dm\u00b3",
+                    "C": "44.8 dm\u00b3",
+                    "D": "24.0 dm\u00b3"
+                },
+                "Correct Answer": "B"
+            },
+            {
+                "Question No": 6,
+                "Question": "The SI unit of enthalpy is:",
+                "Options": {
+                    "A": "J mol\u207b\u00b9",
+                    "B": "Pa",
+                    "C": "atm",
+                    "D": "mol dm\u207b\u00b3"
+                },
+                "Correct Answer": "A"
+            },
+            {
+                "Question No": 7,
+                "Question": "A catalyst increases the rate of reaction by:",
+                "Options": {
+                    "A": "Increasing activation energy",
+                    "B": "Lowering activation energy",
+                    "C": "Chaging equilibrium constant",
+                    "D": "Increasing enthalpy"
+                },
+                "Correct Answer": "B"
+            },
+            {
+                "Question No": 8,
+                "Question": "At equilibrium, the rate of forward reaction is:",
+                "Options": {
+                    "A": "Zero",
+                    "B": "Greater than reverse reaction",
+                    "C": "Less than reverse reaction",
+                    "D": "Equal to reverse reaction"
+                },
+                "Correct Answer": "D"
+            },
+            {
+                "Question No": 9,
+                "Question": "The pH of a neutral solution at 25\u00b0C is:",
+                "Options": {
+                    "A": "0",
+                    "B": "7",
+                    "C": "14",
+                    "D": "1"
+                },
+                "Correct Answer": "B"
+            },
+            {
+                "Question No": 10,
+                "Question": "The oxidation number of sulfur in H\u2082SO\u2084 is:",
+                "Options": {
+                    "A": "+4",
+                    "B": "+6",
+                    "C": "+2",
+                    "D": "-2"
+                },
+                "Correct Answer": "B"
+            },
+            {
+                "Question No": 11,
+                "Question": "The strongest intermolecular force is:",
+                "Options": {
+                    "A": "Dipole - dipole",
+                    "B": "London forces",
+                    "C": "Hydrogen bonding",
+                    "D": "Ion - induced dipole"
+                },
+                "Correct Answer": "C"
+            },
+            {
+                "Question No": 12,
+                "Question": "Which gas is produced at the cathode during electrolysis of water?",
+                "Options": {
+                    "A": "Oxygen",
+                    "B": "Hydrogen",
+                    "C": "Chlorine",
+                    "D": "Nitrogen"
+                },
+                "Correct Answer": "B"
+            },
+            {
+                "Question No": 13,
+                "Question": "Faraday constant is approximately:",
+                "Options": {
+                    "A": "96500 C mol\u207b\u00b9",
+                    "B": "8.314 J mol\u207b\u00b9 K\u207b\u00b9",
+                    "C": "6.02\u00d710\u00b2\u00b3",
+                    "D": "22.4 dm\u00b3"
+                },
+                "Correct Answer": "A"
+            },
+            {
+                "Question No": 14,
+                "Question": "The shape of BF\u2083 molecule is:",
+                "Options": {
+                    "A": "Tetrahedral",
+                    "B": "Trigonal Planar",
+                    "C": "Bent",
+                    "D": "Linear"
+                },
+                "Correct Answer": "B"
+            },
+            {
+                "Question No": 15,
+                "Question": "The molecular formula of benzene is:",
+                "Options": {
+                    "A": "C\u2086H\u2086",
+                    "B": "C\u2086H\u2081\u2082",
+                    "C": "C\u2085H\u2086",
+                    "D": "C\u2086H\u2088"
+                },
+                "Correct Answer": "A"
+            },
+            {
+                "Question No": 16,
+                "Question": "Which hydrocarbon undergoes addition reactions?",
+                "Options": {
+                    "A": "Alkanes",
+                    "B": "Alkenes",
+                    "C": "Cycloalkenes",
+                    "D": "Paraffins"
+                },
+                "Correct Answer": "B"
+            },
+            {
+                "Question No": 17,
+                "Question": "The functional group of alcohols is:",
+                "Options": {
+                    "A": "-CHO",
+                    "B": "-COOH",
+                    "C": "-OH",
+                    "D": "-NH\u2082"
+                },
+                "Correct Answer": "C"
+            },
+            {
+                "Question No": 18,
+                "Question": "The IUPAC name of CH\u2083COOH is:",
+                "Options": {
+                    "A": "Methanoic acid",
+                    "B": "Ethanoic acid",
+                    "C": "Propanoic acid",
+                    "D": "Butanoic acid "
+                },
+                "Correct Answer": "B"
+            },
+            {
+                "Question No": 19,
+                "Question": "Which compound shows hydrogen bonding?",
+                "Options": {
+                    "A": "CH\u2084",
+                    "B": "NH\u2083",
+                    "C": "CO\u2082",
+                    "D": "CCl\u2084"
+                },
+                "Correct Answer": "B"
+            },
+            {
+                "Question No": 20,
+                "Question": "The Haber process is used for the manufacture of:",
+                "Options": {
+                    "A": "HNO\u2083",
+                    "B": "H\u2082SO\u2084",
+                    "C": "NH\u2083",
+                    "D": "NaOH"
+                },
+                "Correct Answer": "C"
+            },
+            {
+                "Question No": 21,
+                "Question": "The catalyst used in the Haber process is:",
+                "Options": {
+                    "A": "Nickel",
+                    "B": "Iron",
+                    "C": "Platinum",
+                    "D": "Vanadium pentoxide"
+                },
+                "Correct Answer": "B"
+            },
+            {
+                "Question No": 22,
+                "Question": "The contact process is used for manufacturing:",
+                "Options": {
+                    "A": "Ammonia",
+                    "B": "Nitric acid",
+                    "C": "Sulfuric acid",
+                    "D": "Hydrocholoric acid"
+                },
+                "Correct Answer": "C"
+            },
+            {
+                "Question No": 23,
+                "Question": "The oxidation state of chromium in K\u2082Cr\u2082O\u2087 is:",
+                "Options": {
+                    "A": "+3",
+                    "B": "+4",
+                    "C": "+6",
+                    "D": "+7"
+                },
+                "Correct Answer": "C"
+            },
+            {
+                "Question No": 24,
+                "Question": "Which law states that volume is directly proportional to temperature at constant pressure?",
+                "Options": {
+                    "A": "Boyle's Law",
+                    "B": "Charles's Law",
+                    "C": "Avogadro's law",
+                    "D": "Dalton's Law"
+                },
+                "Correct Answer": "B"
+            },
+            {
+                "Question No": 25,
+                "Question": "The unit of rate constant for a first-order reaction is:",
+                "Options": {
+                    "A": "mol dm\u207b\u00b3 s\u207b\u00b9",
+                    "B": "s\u207b\u00b9",
+                    "C": "dm\u00b3 mol\u207b\u00b9 s\u207b\u00b9",
+                    "D": "mol\u00b2 dm\u207b\u2076 s\u207b\u00b9"
+                },
+                "Correct Answer": "B"
+            },
+            {
+                "Question No": 26,
+                "Question": "Which solution has the highest boiling point?",
+                "Options": {
+                    "A": "0.1 M glucose",
+                    "B": "0.1 M Nacl",
+                    "C": "Pure Water",
+                    "D": "0.1 M Urea"
+                },
+                "Correct Answer": "B"
+            },
+            {
+                "Question No": 27,
+                "Question": "The geometry of CO\u2082 molecule is:",
+                "Options": {
+                    "A": "Bent",
+                    "B": "Trigonal Planar",
+                    "C": "Linear",
+                    "D": "Tetrahedrol"
+                },
+                "Correct Answer": "C"
+            },
+            {
+                "Question No": 28,
+                "Question": "Which element has the highest electronegativity?",
+                "Options": {
+                    "A": "Oxygen",
+                    "B": "Nitrogen",
+                    "C": "Fluorine",
+                    "D": "Chlorine"
+                },
+                "Correct Answer": "C"
+            },
+            {
+                "Question No": 29,
+                "Question": "The number of sigma bonds in ethene (C\u2082H\u2084) is:",
+                "Options": {
+                    "A": "4",
+                    "B": "5",
+                    "C": "6",
+                    "D": "7"
+                },
+                "Correct Answer": "B"
+            },
+            {
+                "Question No": 30,
+                "Question": "The common ion effect decreases:",
+                "Options": {
+                    "A": "Solubility",
+                    "B": "Temperature",
+                    "C": "Pressure",
+                    "D": "Density"
+                },
+                "Correct Answer": "A"
+            }
+        ]
+    },
+    {
+        "Section": "Statistics",
+        "Questions": [
+            {
+                "Question No": 1,
+                "Question": "Statistics is the science of:",
+                "Options": {
+                    "A": "Numbers only",
+                    "B": "Collection, organization and interpretation of data",
+                    "C": "Drawing figures",
+                    "D": "Business management"
+                },
+                "Correct Answer": "B"
+            },
+            {
+                "Question No": 2,
+                "Question": "A complete collection of observations is called:",
+                "Options": {
+                    "A": "Sample",
+                    "B": "Population",
+                    "C": "Variable",
+                    "D": "Frequency"
+                },
+                "Correct Answer": "B"
+            },
+            {
+                "Question No": 3,
+                "Question": "A subset of population is called:",
+                "Options": {
+                    "A": "Sample",
+                    "B": "Parameter",
+                    "C": "Class",
+                    "D": "Range"
+                },
+                "Correct Answer": "A"
+            },
+            {
+                "Question No": 4,
+                "Question": "The arithmetic mean of 4, 6, 8, 10 is:",
+                "Options": {
+                    "A": "6",
+                    "B": "7",
+                    "C": "8",
+                    "D": "9"
+                },
+                "Correct Answer": "B"
+            },
+            {
+                "Question No": 5,
+                "Question": "The median of 3, 5, 7, 9, 11 is:",
+                "Options": {
+                    "A": "5",
+                    "B": "7",
+                    "C": "9",
+                    "D": "11"
+                },
+                "Correct Answer": "B"
+            },
+            {
+                "Question No": 6,
+                "Question": "The mode of 2, 4, 4, 5, 6 is:",
+                "Options": {
+                    "A": "2",
+                    "B": "4",
+                    "C": "5",
+                    "D": "6"
+                },
+                "Correct Answer": "B"
+            },
+            {
+                "Question No": 7,
+                "Question": "Range is equal to:",
+                "Options": {
+                    "A": "Largest value + Smallest valu",
+                    "B": "Largest value \u2212 Smallest value",
+                    "C": "Mean + Median",
+                    "D": "Mode \u2212 Mean"
+                },
+                "Correct Answer": "B"
+            },
+            {
+                "Question No": 8,
+                "Question": "The sum of probabilities of all possible outcomes is:",
                 "Options": {
                     "A": "0",
                     "B": "1",
-                    "C": "A",
-                    "D": "A'"
+                    "C": "10",
+                    "D": "100"
+                },
+                "Correct Answer": "B"
+            },
+            {
+                "Question No": 9,
+                "Question": "Probability of an impossible event is:",
+                "Options": {
+                    "A": "0",
+                    "B": "1",
+                    "C": "0.5",
+                    "D": "100"
+                },
+                "Correct Answer": "A"
+            },
+            {
+                "Question No": 10,
+                "Question": "Probability of a certain event is:",
+                "Options": {
+                    "A": "0",
+                    "B": "0.5",
+                    "C": "1",
+                    "D": "2"
                 },
                 "Correct Answer": "C"
+            },
+            {
+                "Question No": 11,
+                "Question": "The standard deviation is always:",
+                "Options": {
+                    "A": "Negative",
+                    "B": "Positive or zero",
+                    "C": "Less than zero",
+                    "D": "Undefined"
+                },
+                "Correct Answer": "B"
+            },
+            {
+                "Question No": 12,
+                "Question": "Variance is the square of:",
+                "Options": {
+                    "A": "Mean",
+                    "B": "Median",
+                    "C": "Standarddeviation",
+                    "D": "Range"
+                },
+                "Correct Answer": "C"
+            },
+            {
+                "Question No": 13,
+                "Question": "The graphical representation of frequency distribution using rectangles is:",
+                "Options": {
+                    "A": "Pie chart",
+                    "B": "Histogram",
+                    "C": "Ogive",
+                    "D": "Scatter diagram"
+                },
+                "Correct Answer": "B"
+            },
+            {
+                "Question No": 14,
+                "Question": "A cumulative frequency curve is called:",
+                "Options": {
+                    "A": "Histogram",
+                    "B": "Frequency polygon",
+                    "C": "Ogive",
+                    "D": "Bar chart"
+                },
+                "Correct Answer": "C"
+            },
+            {
+                "Question No": 15,
+                "Question": "The arithmetic mean is affected by:",
+                "Options": {
+                    "A": "Extreme values",
+                    "B": "Class intervals only",
+                    "C": "Frequencies inly",
+                    "D": "None"
+                },
+                "Correct Answer": "A"
+            },
+            {
+                "Question No": 16,
+                "Question": "If two events are mutually exclusive, then:",
+                "Options": {
+                    "A": "They occur together",
+                    "B": "they cannot accur together",
+                    "C": "They are independent",
+                    "D": "They are certain"
+                },
+                "Correct Answer": "B"
+            },
+            {
+                "Question No": 17,
+                "Question": "The coefficient of variation is used to compare:",
+                "Options": {
+                    "A": "Means",
+                    "B": "Variability",
+                    "C": "Modes",
+                    "D": "Frequencies"
+                },
+                "Correct Answer": "B"
+            },
+            {
+                "Question No": 18,
+                "Question": "The total area under a probability curve equals:",
+                "Options": {
+                    "A": "0",
+                    "B": "1",
+                    "C": "100",
+                    "D": "50"
+                },
+                "Correct Answer": "B"
+            },
+            {
+                "Question No": 19,
+                "Question": "The quartiles divide data into:",
+                "Options": {
+                    "A": "2 equal parts",
+                    "B": "3 equal parts",
+                    "C": "4 equal parts",
+                    "D": "5 equal parts"
+                },
+                "Correct Answer": "C"
+            },
+            {
+                "Question No": 20,
+                "Question": "The deciles divide data into:",
+                "Options": {
+                    "A": "5 equal parts",
+                    "B": "8 equal parts",
+                    "C": "10 equal parts",
+                    "D": "100 equal parts"
+                },
+                "Correct Answer": "C"
+            },
+            {
+                "Question No": 21,
+                "Question": "Percentiles divide data into:",
+                "Options": {
+                    "A": "10 equal parts",
+                    "B": "25 equal parts",
+                    "C": "50 equal parts",
+                    "D": "100 equal parts"
+                },
+                "Correct Answer": "D"
+            },
+            {
+                "Question No": 22,
+                "Question": "The correlation coefficient always lies between:",
+                "Options": {
+                    "A": "-1 and 1",
+                    "B": "0 and 10",
+                    "C": "-10 and 10",
+                    "D": "0 and 1"
+                },
+                "Correct Answer": "A"
+            },
+            {
+                "Question No": 23,
+                "Question": "Perfect positive correlation is represented by:",
+                "Options": {
+                    "A": "-1",
+                    "B": "0",
+                    "C": "1",
+                    "D": "10"
+                },
+                "Correct Answer": "C"
+            },
+            {
+                "Question No": 24,
+                "Question": "Perfect negative correlation is represented by:",
+                "Options": {
+                    "A": "-1",
+                    "B": "0",
+                    "C": "1",
+                    "D": "-10"
+                },
+                "Correct Answer": "A"
+            },
+            {
+                "Question No": 25,
+                "Question": "The regression line is used for:",
+                "Options": {
+                    "A": "Classification",
+                    "B": "Prediction",
+                    "C": "Sorting",
+                    "D": "Grouping"
+                },
+                "Correct Answer": "B"
+            },
+            {
+                "Question No": 26,
+                "Question": "A random variable that can take only finite values is:",
+                "Options": {
+                    "A": "Continuous",
+                    "B": "Discrete",
+                    "C": "Infinite",
+                    "D": "Grouped"
+                },
+                "Correct Answer": "B"
+            },
+            {
+                "Question No": 27,
+                "Question": "The expected value of a random variable is also called:",
+                "Options": {
+                    "A": "Mode",
+                    "B": "Median",
+                    "C": "Mean",
+                    "D": "Range"
+                },
+                "Correct Answer": "C"
+            },
+            {
+                "Question No": 28,
+                "Question": "The binomial distribution is used when trials are:",
+                "Options": {
+                    "A": "Dependent",
+                    "B": "Independent",
+                    "C": "Grouped",
+                    "D": "Continuous"
+                },
+                "Correct Answer": "B"
+            },
+            {
+                "Question No": 29,
+                "Question": "The normal distribution curve is:",
+                "Options": {
+                    "A": "Rectangular",
+                    "B": "Triangular",
+                    "C": "Bell - Shaped",
+                    "D": "Circular"
+                },
+                "Correct Answer": "C"
+            },
+            {
+                "Question No": 30,
+                "Question": "In a perfectly symmetrical distribution:",
+                "Options": {
+                    "A": "Mean = Median = Mode",
+                    "B": "Mean > Median",
+                    "C": "Mode > Mean",
+                    "D": "Median > Mode"
+                },
+                "Correct Answer": "A"
             }
         ]
     }
