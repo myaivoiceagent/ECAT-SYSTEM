@@ -417,7 +417,7 @@ elif st.session_state.page == "Live Examination":
         st.warning("No dynamic questions resolved.")
 
 # ------------------------------------------------------------------------
-# GRADE EVALUATION PROCESSING (FULL-PAGE PRODUCTION-GRADE REALISTIC SKY FIREWORKS)
+# GRADE EVALUATION PROCESSING (FIXED: FULL-SCREEN CANVAS FIREWORKS)
 # ------------------------------------------------------------------------
 elif st.session_state.page == "Grade Evaluation Processing":
     st.subheader("📊 Output Metric Breakdown")
@@ -460,7 +460,7 @@ elif st.session_state.page == "Grade Evaluation Processing":
             save_json("Result.json", results_db)
             st.session_state.result_saved = True
         
-        # 🎆 100% WORKING REALISTIC CANVAS FIREWORKS COVERING ENTIRE BACKGROUND
+        # 🎆 FIXED HTML LAYER (Height changed from 1 to 300 to activate the canvas engine)
         html_components.html("""
         <!DOCTYPE html>
         <html>
@@ -470,10 +470,15 @@ elif st.session_state.page == "Grade Evaluation Processing":
                 margin: 0; padding: 0; width: 100%; height: 100%;
                 overflow: hidden; background: transparent;
             }
+            /* Force the canvas to look behind Streamlit main container elements */
             canvas {
-                position: fixed; top: 0; left: 0;
-                width: 100vw; height: 100vh;
-                z-index: -1; pointer-events: none;
+                position: fixed; 
+                top: 0; 
+                left: 0;
+                width: 100vw; 
+                height: 100vh;
+                z-index: 99999; 
+                pointer-events: none;
             }
         </style>
         </head>
@@ -483,19 +488,21 @@ elif st.session_state.page == "Grade Evaluation Processing":
             const canvas = document.getElementById('canvas');
             const ctx = canvas.getContext('2d');
             
+            // Adjust canvas to match device inner frame perfectly
             function resize() {
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight;
+                canvas.width = window.parent.innerWidth || window.innerWidth;
+                canvas.height = window.parent.innerHeight || window.innerHeight;
             }
             window.addEventListener('resize', resize);
+            window.addEventListener('load', resize);
             resize();
 
             class Particle {
                 constructor(x, y, color, angle, speed) {
                     this.x = x; this.y = y; this.color = color;
                     this.angle = angle; this.speed = speed;
-                    this.friction = 0.95; this.gravity = 0.12;
-                    this.alpha = 1; this.decay = 0.015 + Math.random() * 0.015;
+                    this.friction = 0.95; this.gravity = 0.15;
+                    this.alpha = 1; this.decay = 0.012 + Math.random() * 0.015;
                 }
                 update() {
                     this.speed *= this.friction;
@@ -507,9 +514,9 @@ elif st.session_state.page == "Grade Evaluation Processing":
                     ctx.save();
                     ctx.globalAlpha = this.alpha;
                     ctx.beginPath();
-                    ctx.arc(this.x, this.y, 2, 0, Math.PI * 2);
+                    ctx.arc(this.x, this.y, 2.5, 0, Math.PI * 2);
                     ctx.fillStyle = this.color;
-                    ctx.shadowBlur = 10;
+                    ctx.shadowBlur = 12;
                     ctx.shadowColor = this.color;
                     ctx.fill();
                     ctx.restore();
@@ -520,9 +527,9 @@ elif st.session_state.page == "Grade Evaluation Processing":
                 constructor() {
                     this.x = Math.random() * canvas.width;
                     this.y = canvas.height;
-                    this.targetY = Math.random() * (canvas.height * 0.5);
-                    this.speed = 8 + Math.random() * 4;
-                    this.color = `hsl(${Math.random() * 360}, 100%, 60%)`;
+                    this.targetY = Math.random() * (canvas.height * 0.55);
+                    this.speed = 9 + Math.random() * 5;
+                    this.color = `hsl(${Math.random() * 360}, 100%, 65%)`;
                     this.particles = [];
                     this.exploded = false;
                 }
@@ -543,10 +550,10 @@ elif st.session_state.page == "Grade Evaluation Processing":
                     }
                 }
                 explode() {
-                    const count = 60 + Math.floor(Math.random() * 40);
+                    const count = 70 + Math.floor(Math.random() * 40);
                     for (let i = 0; i < count; i++) {
                         const angle = Math.random() * Math.PI * 2;
-                        const speed = Math.random() * 6 + 2;
+                        const speed = Math.random() * 7 + 2;
                         this.particles.push(new Particle(this.x, this.y, this.color, angle, speed));
                     }
                 }
@@ -564,10 +571,10 @@ elif st.session_state.page == "Grade Evaluation Processing":
 
             const fireworks = [];
             function loop() {
-                ctx.fillStyle = 'rgba(14, 17, 23, 0.2)';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                // Clear frame transparently to avoid breaking background themes
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
                 
-                if (Math.random() < 0.05 && fireworks.length < 5) {
+                if (Math.random() < 0.04 && fireworks.length < 6) {
                     fireworks.push(new Firework());
                 }
                 
@@ -584,7 +591,7 @@ elif st.session_state.page == "Grade Evaluation Processing":
         </script>
         </body>
         </html>
-        """, height=1)
+        """, height=200)
 
         # Content Box Design
         st.markdown("""
