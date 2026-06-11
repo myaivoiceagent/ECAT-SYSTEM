@@ -190,14 +190,48 @@ elif st.session_state.page == "Admin Dashboard":
                     st.rerun()
 
     with t4:
-        users = load_json("Login.json")
-        for u in users:
-            st.write(f"👤 **{u['User Name']}** ({u['Email']})")
+        st.subheader("👥 Registered Users Details")
+        users = load_json("Login.json")  # Aapka original file name
+        if users:
+            import pandas as pd
+            # Dataframe bana kar har user ki full detail show hogi
+            df_users = pd.DataFrame(users)
+            st.dataframe(df_users, use_container_width=True, hide_index=True)
+        else:
+            st.info("No registered users found.")
 
     with t5:
+        st.subheader("📊 Candidate Performance Results")
         results = load_json("Result.json")
-        for r in results:
-            st.write(f"🔹 **{r['User Name']}** - Marks: {r['User Result'][0]['Obtained Marks']}")
+        if results:
+            flattened_results = []
+            for r in results:
+                res_list = r.get("User Result", [{}])
+                res = res_list[0] if isinstance(res_list, list) and len(res_list) > 0 else {}
+                
+                # Full details aur results ko map kar diya taake table kharab na ho
+                flattened_results.append({
+                    "User ID": r.get("USER ID", "N/A"),
+                    "Student Name": r.get("User Name", "N/A"),
+                    "Email Address": r.get("User Email", "N/A"),
+                    "Total Qs": res.get("Total Questions", 0),
+                    "Max Marks": res.get("Total Marks", 0),
+                    "Score Obtained": res.get("Obtained Marks", 0),
+                    "Correct ✔️": res.get("Correct Answers", 0),
+                    "Wrong ❌": res.get("Wrong Answers", 0)
+                })
+                
+            import pandas as pd
+            df_results = pd.DataFrame(flattened_results)
+            st.dataframe(df_results, use_container_width=True, hide_index=True)
+            
+            st.write("")
+            if st.button("Clear Submission Logs Databases", type="secondary"):
+                save_json("Result.json", [])
+                st.success("Ledger database cleared successfully!")
+                st.rerun()
+        else:
+            st.info("No candidates have evaluated or logged exams yet.")
 
 # STUDENT AUTHENTICATION
 elif st.session_state.page == "Student Auth Menu":
