@@ -30,6 +30,8 @@ if "quiz_submitted" not in st.session_state:
     st.session_state.quiz_submitted = False
 if "result_saved" not in st.session_state:
     st.session_state.result_saved = False
+if "selected_tracks" not in st.session_state:
+    st.session_state.selected_tracks = []
 
 def init_json_file(filename):
     if not os.path.exists(filename) or os.stat(filename).st_size == 0:
@@ -214,7 +216,6 @@ elif st.session_state.page == "Admin Dashboard":
         import json
         import os
         
-        # Safe reading inside admin panel
         def admin_load_json(filename):
             if os.path.exists(filename):
                 with open(filename, "r") as f:
@@ -229,7 +230,6 @@ elif st.session_state.page == "Admin Dashboard":
         users = admin_load_json("Login.json")
         
         if users:
-            # 📊 Header Row for the Custom Table
             h_id, h_name, h_email, h_pass, h_time, h_act = st.columns([1.2, 2, 2.5, 1.8, 2.2, 1.3])
             with h_id: st.markdown("**ID**")
             with h_name: st.markdown("**Name**")
@@ -239,43 +239,33 @@ elif st.session_state.page == "Admin Dashboard":
             with h_act: st.markdown("**Action**")
             st.markdown("<hr style='margin:2px 0px 8px 0px;'>", unsafe_allow_html=True)
 
-            # 🛠️ Loop chala kar saari details ek line mein set kar di hain
             for idx, u in enumerate(users):
                 col1, col2, col3, col4, col5, col6 = st.columns([1.2, 2, 2.5, 1.8, 2.2, 1.3])
                 
-                # Handle UUID placeholder fix if needed
                 u_id = u.get("User ID", "N/A")
                 if "function uuid4" in str(u_id):
                     u_id = f"USR-{idx+1:03d}"
 
-                with col1:
-                    st.text(u_id)
-                with col2:
-                    st.text(u.get("User Name", "N/A"))
-                with col3:
-                    st.text(u.get("Email", "N/A"))
-                with col4:
-                    st.text(u.get("Password", "N/A"))
-                with col5:
-                    st.text(u.get("Last Login", "Not Logged In"))
+                with col1: st.text(u_id)
+                with col2: st.text(u.get("User Name", "N/A"))
+                with col3: st.text(u.get("Email", "N/A"))
+                with col4: st.text(u.get("Password", "N/A"))
+                with col5: st.text(u.get("Last Login", "Not Logged In"))
                 with col6:
-                    # 🗑️ REMOVE BUTTON
                     if st.button("❌ Remove", key=f"del_usr_final_{idx}", use_container_width=True):
                         target_email = u.get("Email")
                         target_name = u.get("User Name")
                         
-                        # 1. Login.json se remove kiya
                         new_users_list = [usr for usr in users if usr.get("Email") != target_email]
                         admin_save_json("Login.json", new_users_list)
                         
-                        # 2. Result.json se bhi cleanly wipe kiya
                         results = admin_load_json("Result.json")
                         new_results_list = [r for r in results if r.get("User Email") != target_email]
                         admin_save_json("Result.json", new_results_list)
                         
                         st.success(f"🎉 {target_name} ka account aur saara data delete ho gaya!")
                         st.rerun()
-                st.write("") # Choti si spacing rows ke beech mein
+                st.write("") 
         else:
             st.info("No registered users found.")
 
@@ -288,21 +278,8 @@ elif st.session_state.page == "Admin Dashboard":
                 res_list = r.get("User Result", [{}])
                 res = res_list[0] if isinstance(res_list, list) and len(res_list) > 0 else {}
                 
-                # 1. Pehle file se subject uthane ki koshish karein
                 subj = r.get("Selected Subject", r.get("Subject", "Not Selected"))
                 
-                # 2. 🛠️ FOOLPROOF FIX: Agar subject save nahi hua tha, toh record se auto-detect karein
-                if subj == "Not Selected" or not subj:
-                    # Agar user result list mein koi structural detail ho, ya user profile check karni ho
-                    if "active_quiz" in st.session_state and st.session_state.active_quiz:
-                        # Pehle question se subject nikalne ki koshish
-                        first_q = st.session_state.active_quiz[0]
-                        subj = first_q.get("Subject", first_q.get("Section", "General Test"))
-                    else:
-                        # Aik automatic backup subject rakh dete hain jo aapki website par defaults hain
-                        subj = "ECAT Main Stream"
-                
-                # Handle UUID bug if present
                 u_id = r.get("USER ID", r.get("User ID", "N/A"))
                 if "function uuid4" in str(u_id):
                     u_id = "USR-NEW"
@@ -311,7 +288,7 @@ elif st.session_state.page == "Admin Dashboard":
                     "User ID": u_id,
                     "Student Name": r.get("User Name", "N/A"),
                     "Email Address": r.get("User Email", "N/A"),
-                    "Attempted Subject 📚": subj,  # 💡 Ab yeh khali "Not Selected" nahi dikhayega
+                    "Attempted Subject 📚": subj,  
                     "Login/Test Time 🕒": r.get("Login Time", "N/A"),
                     "Total Qs": res.get("Total Questions", 100),
                     "Max Marks": res.get("Total Marks", 400),
@@ -325,7 +302,7 @@ elif st.session_state.page == "Admin Dashboard":
             st.write("")
             if st.button("Clear Submission Logs Databases", type="secondary", key="admin_clear_all_res"):
                 save_json("Result.json", [])
-                st.success("Database cleared! Now test with new fresh user login.")
+                st.success("Database cleared!")
                 st.rerun()
         else:
             st.info("No candidates have evaluated or logged exams yet.")
@@ -334,20 +311,16 @@ elif st.session_state.page == "Admin Dashboard":
 elif st.session_state.page == "Student Auth Menu":
     st.subheader("🔑 Student Registration & Login")
     
-    # 🕒 PAKISTAN TIME ZONE FUNCTION (Isay sab se upar rakhna hai)
     def get_pakistan_time():
         from datetime import datetime, timedelta
-        # Server UTC time mein exactly 5 ghante plus kiye taake local computer time banay
         pkt_time = datetime.utcnow() + timedelta(hours=5)
         return pkt_time.strftime("%I:%M %p (%d-%b)")
 
     mode = st.radio("Action:", ["User Login", "Create Account", "Forget Password"])
     
-    # Python ka apna json library import kiya backup ke liye
     import json
     import os
 
-    # 🛠️ SAFE FILE LOADER (Direct Python Implementation)
     def force_load_login():
         if not os.path.exists("Login.json"):
             return []
@@ -358,46 +331,43 @@ elif st.session_state.page == "Student Auth Menu":
         except Exception:
             return []
 
-    # 🛠️ SAFE FILE SAVER (Direct Python Implementation)
     def force_save_login(data):
         with open("Login.json", "w") as f:
             json.dump(data, f, indent=4)
 
     # ------------------------------------------------------------------------
-    # 🔓 USER LOGIN LOGIC
+    # 🔓 USER LOGIN LOGIC (UPDATED WITH FOOLPROOF MATCH)
     # ------------------------------------------------------------------------
     if mode == "User Login":
-        login_email = st.text_input("Email:").strip()
-        login_user = st.text_input("Username:").strip()
+        login_input = st.text_input("Email ya Username Enter Karein:").strip().lower()
         login_pass = st.text_input("Password:", type="password").strip()
         
         if st.button("Log In"):
-            users = force_load_login()  # Direct load kiya
-            found = False
+            users = force_load_login()  
+            found_user = None
+            
             for u in users:
                 db_email = str(u.get("Email", "")).strip().lower()
                 db_user = str(u.get("User Name", "")).strip().lower()
                 db_pass = str(u.get("Password", "")).strip()
                 
-                if db_email == login_email.lower() and db_user == login_user.lower() and db_pass == login_pass:
-                    found = True
+                # Username ya email dono mein se koi aik b match ho jaye to chal jaye
+                if (login_input == db_email or login_input == db_user) and login_pass == db_pass:
+                    found_user = u
+                    break
                     
-                    # 🕒 Purani line hata kar yeh lagayin
-                    current_time = get_pakistan_time()
-                    st.session_state["login_time"] = current_time
-                    
-                    u["Last Login"] = current_time  
-                    force_save_login(users)
-                    
-                    u["Last Login"] = current_time  
-                    force_save_login(users) # Force save updated list
-                    
-                    st.session_state.logged_in_user = u  
-                    st.session_state.page = "Main Menu"
-                    st.success("Login Successful! 🎉")
-                    st.rerun()
-            if not found:
-                st.error("❌ Invalid Credentials. Email, Username ya Password ghalt hai!")
+            if found_user:
+                current_time = get_pakistan_time()
+                st.session_state["login_time"] = current_time
+                found_user["Last Login"] = current_time  
+                force_save_login(users)
+                
+                st.session_state.logged_in_user = found_user  
+                st.session_state.page = "Main Menu"
+                st.success("Login Successful! 🎉")
+                st.rerun()
+            else:
+                st.error("❌ Invalid Credentials. Email/Username ya Password ghalt hai!")
 
     # ------------------------------------------------------------------------
     # 📝 CREATE ACCOUNT LOGIC
@@ -417,7 +387,6 @@ elif st.session_state.page == "Student Auth Menu":
             elif any(str(u.get("Email", "")).lower() == reg_email.lower() for u in users):
                 st.error("❌ Yeh Email pehle se registered hai!")
             else:
-                import uuid
                 new_user = {
                     "User ID": str(uuid.uuid4())[:8],
                     "User Name": reg_name,
@@ -425,19 +394,13 @@ elif st.session_state.page == "Student Auth Menu":
                     "Password": reg_pass,
                     "Last Login": "Not Logged In Yet"
                 }
-                
                 users.append(new_user)
-                force_save_login(users) # Direct file ke andar write ho gaya
-                
-                st.success("🎉 Account Created Successfully! Ab 'User Login' tab par ja kar login karein.")
+                force_save_login(users) 
+                st.success("🎉 Account Created! Tab pe login karein.")
                 st.rerun()
 
-    # ------------------------------------------------------------------------
-    # 🔄 FORGET PASSWORD LOGIC
-    # ------------------------------------------------------------------------
     elif mode == "Forget Password":
         st.write("---")
-        st.markdown("#### 🔄 Recover Your Password")
         forget_email = st.text_input("Enter Registered Email Address:")
         forget_name = st.text_input("Enter Your Registered Username:")
         
@@ -445,36 +408,36 @@ elif st.session_state.page == "Student Auth Menu":
             if forget_email and forget_name:
                 users_list = force_load_login()
                 found_user = None
-                
                 for u in users_list:
                     if str(u.get("Email")).lower() == forget_email.strip().lower() and str(u.get("User Name")).lower() == forget_name.strip().lower():
                         found_user = u
                         break
-                        
                 if found_user:
                     st.success("🔑 Account Verified Successfully!")
-                    st.info(f"Your Registered Password is: **{found_user.get('Password')}**")
+                    st.info(f"Your Password is: **{found_user.get('Password')}**")
                 else:
-                    st.error("❌ No matching profile found with these details.")
+                    st.error("❌ Profile nahi mili.")
             else:
-                st.warning("⚠️ Please fill out both fields.")
+                st.warning("⚠️ Dono fields fill karein.")
 
     st.write("---")
     if st.button("Back"):
         st.session_state.page = "Main Menu"
         st.rerun()
 
-# ECAT TEST LOGIN
+# ECAT TEST LOGIN (UPDATED TO ALLOW SINGLE MATCH INTERFACE AS WELL)
 elif st.session_state.page == "ECAT Test Login":
     st.subheader("✍️ Verification Prior to ECAT")
-    test_email = st.text_input("Student Email:")
-    test_user = st.text_input("Username:")
-    test_pass = st.text_input("Password:", type="password")
+    test_input = st.text_input("Email ya Username Enter Karein:").strip().lower()
+    test_pass = st.text_input("Password:", type="password").strip()
+    
     if st.button("Verify Identity"):
         users = load_json("Login.json")
         matched = None
         for u in users:
-            if u["Email"].lower() == test_email.lower() and u["User Name"].lower() == test_user.lower() and u["Password"] == test_pass:
+            db_email = str(u.get("Email", "")).strip().lower()
+            db_user = str(u.get("User Name", "")).strip().lower()
+            if (test_input == db_email or test_input == db_user) and u["Password"] == test_pass:
                 matched = u
                 break
         if matched:
@@ -487,7 +450,7 @@ elif st.session_state.page == "ECAT Test Login":
         st.session_state.page = "Main Menu"
         st.rerun()
 
-# # ECAT SUBJECT SELECTION
+# ECAT SUBJECT SELECTION
 elif st.session_state.page == "ECAT Subject Selection":
     st.subheader("📝 Subject Selection Criteria")
     quizz_data = load_json("Quizz.json")
@@ -498,17 +461,11 @@ elif st.session_state.page == "ECAT Subject Selection":
     else:
         chosen_tracks = st.multiselect("Pick exactly 3 branches:", available_subjects)
         
-        # ------------------------------------------------------------------------
-        # 📚 💡 STEP 2: DYNAMIC COMBINATION STREAM BANNER HERE
-        # ------------------------------------------------------------------------
         if chosen_tracks:
-            # English ko manually add kiya kyunki mapping criteria mein English shaamil hai
             full_user_selection = chosen_tracks + ["English"]
+            st.session_state.selected_tracks = full_user_selection # Save securely to session state
             user_stream = get_stream_name(full_user_selection)
-            
-            # Student ko website par live banner dikhega
             st.info(f"📚 **Your Stream Group:** {user_stream}")
-        # ------------------------------------------------------------------------
 
         if st.button("Assemble Test Matrix"):
             if len(chosen_tracks) != 3:
@@ -537,9 +494,7 @@ elif st.session_state.page == "ECAT Subject Selection":
                     st.session_state.page = "Live Examination"
                     st.rerun()
 
-# ------------------------------------------------------------------------
-# LIVE EXAMINATION (UPDATED: WITH REAL-TIME QUESTION COUNTERS)
-# ------------------------------------------------------------------------
+# LIVE EXAMINATION
 elif st.session_state.page == "Live Examination":
     student = st.session_state.logged_in_user
     questions = st.session_state.active_quiz
@@ -565,13 +520,11 @@ elif st.session_state.page == "Live Examination":
     st.write("---")
 
     if questions:
-        # 📊 REAL-TIME QUESTION TRACKING COUNTERS
         total_questions_count = len(questions)
         solved_count = len(st.session_state.saved_questions)
         skipped_count = len(st.session_state.skipped_questions)
         remaining_count = total_questions_count - (solved_count + skipped_count)
 
-        # Counter Banner Visual Layout
         c1, c2, c3, c4 = st.columns(4)
         c1.metric("Total Items 📋", total_questions_count)
         c2.metric("Saved/Locked ✅", solved_count)
@@ -583,17 +536,16 @@ elif st.session_state.page == "Live Examination":
         q = questions[current_idx]
         display_no = current_idx + 1
 
-        # 1️⃣ QUESTIONS AND OPTIONS (ON TOP)
         st.markdown(f"#### **Question {display_no} of {total_questions_count}**")
         
         if current_idx in st.session_state.saved_questions:
-            st.warning("🔒 This question has been locked and saved. You cannot modify it.")
+            st.warning("🔒 This question has been locked.")
             st.write(f"**{q['Question']}**")
             saved_ans = st.session_state.quiz_answers.get(display_no, "A")
             st.info(f"Your Locked Response: Option {saved_ans}. {q['Options'][saved_ans]}")
         else:
             if current_idx in st.session_state.skipped_questions:
-                st.warning("⚠️ You skipped this question earlier. You can solve it now!")
+                st.warning("⚠️ You skipped this question earlier.")
 
             st.write(f"**{q['Question']}**")
             current_ans = st.session_state.quiz_answers.get(display_no, None)
@@ -616,17 +568,15 @@ elif st.session_state.page == "Live Examination":
                         st.session_state.quiz_answers[display_no] = answer
                         st.session_state.saved_questions.add(current_idx)
                         st.session_state.skipped_questions.discard(current_idx)
-                        
                         if current_idx < len(questions) - 1:
                             st.session_state.current_q_index += 1
                         st.rerun()
                     else:
-                        st.error("Please choose an answer before locking or choose Skip.")
+                        st.error("Please choose an answer.")
             
             with col_actions[1]:
                 if st.button("🟡 Skip Question", use_container_width=True):
                     st.session_state.skipped_questions.add(current_idx)
-                    # Remove from saved just in case they re-skipped
                     st.session_state.saved_questions.discard(current_idx)
                     if current_idx < len(questions) - 1:
                         st.session_state.current_q_index += 1
@@ -647,16 +597,11 @@ elif st.session_state.page == "Live Examination":
                 st.session_state.page = "Grade Evaluation Processing"
                 st.rerun()
 
-        # 2️⃣ NAVIGATION MATRIX BOX (AT THE BOTTOM)
-        st.write("")
         st.write("---")
-        st.write("**📋 Exam Question Navigator Matrix:**")
-        
         grid_cols = st.columns(10)
         for i in range(len(questions)):
             col_pos = i % 10
             btn_no = i + 1
-            
             if i in st.session_state.saved_questions:
                 btn_label = f"🔒{btn_no}"  
                 disabled_state = True
@@ -671,12 +616,9 @@ elif st.session_state.page == "Live Examination":
                 if st.button(btn_label, key=f"nav_btn_{i}", disabled=disabled_state, use_container_width=True):
                     st.session_state.current_q_index = i
                     st.rerun()
-    else:
-        st.warning("No dynamic questions resolved.")
-
 
 # ------------------------------------------------------------------------
-# GRADE EVALUATION PROCESSING (FINAL CLEAN FIX: NO CODE BLOCKING)
+# GRADE EVALUATION PROCESSING (COMPLETED WITH STATE PERSISTENCE)
 # ------------------------------------------------------------------------
 elif st.session_state.page == "Grade Evaluation Processing":
     st.subheader("📊 Output Metric Breakdown")
@@ -691,7 +633,6 @@ elif st.session_state.page == "Grade Evaluation Processing":
     if questions:
         for idx, q in enumerate(questions, start=1):
             user_choice = answers.get(idx, None)
-            
             if user_choice is None:
                 unanswered_count += 1  
             elif user_choice == q["Correct Answer"]:
@@ -707,26 +648,22 @@ elif st.session_state.page == "Grade Evaluation Processing":
         if not st.session_state.result_saved:
             results_db = load_json("Result.json")
             
-            # 🕒 Pakistan Computer Time
             from datetime import datetime, timedelta
             pkt_now = datetime.utcnow() + timedelta(hours=5)
             current_login = pkt_now.strftime("%I:%M %p (%d-%b)")
             
-            # 📚 Stream Mapping Logic
-            detected_stream = "General Test"
-            
-            # local context variables se checks lagaye
-            if 'chosen_tracks' in locals() and chosen_tracks:
-                detected_stream = get_stream_name(chosen_tracks + ["English"])
-            elif "selected_subjects" in st.session_state and st.session_state.selected_subjects:
-                detected_stream = get_stream_name(st.session_state.selected_subjects)
+            # Fetch safely from session state
+            if "selected_tracks" in st.session_state and st.session_state.selected_tracks:
+                detected_stream = get_stream_name(st.session_state.selected_tracks)
+            else:
+                detected_stream = "General Test"
                 
             results_db.append({
                 "USER ID": student.get("User ID", "N/A"),
                 "User Name": student.get("User Name", "N/A"),
                 "User Email": student.get("Email", "N/A"),
                 "Login Time": current_login,
-                "Selected Subject": detected_stream,  # Yahan auto mapping group save hoga (e.g., ICS - Physics)
+                "Selected Subject": detected_stream,  
                 "User Result": [{
                     "Total Questions": total_q,
                     "Total Marks": total_marks,
@@ -736,194 +673,17 @@ elif st.session_state.page == "Grade Evaluation Processing":
             save_json("Result.json", results_db)
             st.session_state.result_saved = True
 
-        # 👤 1️⃣ CANDIDATE PROFILE DETAILS CARD (ALWAYS ON TOP)
-        st.markdown(f"""
-        <div style="background-color: #1e293b; border-left: 5px solid #3b82f6; border-radius: 8px; padding: 15px; margin-bottom: 20px;">
-            <h4 style="margin: 0; color: #3b82f6;">👤 Candidate Profile & Session Info</h4>
-            <p style="margin: 5px 0 0 0; color: #cbd5e1; font-size: 14px;">
-                <strong>Name:</strong> {student['User Name']} | 
-                <strong>ID:</strong> {student['User ID']} | 
-                <strong>Email:</strong> {student['Email']}
-            </p>
-        </div>
-        """, unsafe_allow_html=True)
-
-        # 🏆 2️⃣ EXAM PERFORMANCE SUMMARY METRICS
-        st.success("Test Logged Safely in Central Registry Ledger Databases.")
-        st.write("---")
+        # Show final report card to user
+        st.success("Test Submitted Successfully! 🎉")
+        st.write(f"📝 **Total Questions:** {total_q}")
+        st.write(f"✅ **Correct Answers:** {correct_count}")
+        st.write(f"❌ **Wrong Answers:** {wrong_count}")
+        st.write(f"🟡 **Unanswered:** {unanswered_count}")
+        st.info(f"🏆 **Your Score:** {final_score} / {total_marks}")
         
-        st.markdown("### 🏆 Exam Metric Performance Summary")
-        st.metric(label="Calculated Scale Output Grade", value=f"{final_score} / {total_marks}")
-        
-        col1, col2, col3, col4 = st.columns(4)
-        col1.metric("Total Items", total_q)
-        col2.metric("Correct ✔️", correct_count)
-        col3.metric("Wrong ❌", wrong_count)
-        col4.metric("Unanswered ⚪", unanswered_count)  
-        
-        st.write("---")
-
-        # 🎬 3️⃣ CONDITION PACKS: DOWNSIDE EFFECTS WITH SEGREGATED IFRAME LAYER
-        if final_score >= 100:
-            # Clean Congratulations Card
-            st.markdown("""
-            <div style="background-color: #0e1117; border: 2px solid #2e7d32; border-radius: 12px; padding: 25px; text-align: center; margin-top: 15px; margin-bottom: 15px;">
-                <h1 style="color: #4caf50 !important; font-family: sans-serif; font-weight: bold; margin:0;">🎆 CONGRATULATIONS 🎆</h1>
-                <p style="color: white !important; margin: 5px 0 0 0;">Excellent work! You have successfully passed the threshold.</p>
-            </div>
-            """, unsafe_allow_html=True)
-            
-            # True Full-Screen Safe Canvas Fireworks Iframe Component
-            html_components.html("""
-            <!DOCTYPE html>
-            <html>
-            <head>
-            <style>
-                html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: transparent; }
-                canvas {
-                    position: fixed; top: 0; left: 0;
-                    width: 100vw; height: 100vh;
-                    z-index: -1; pointer-events: none;
-                }
-            </style>
-            </head>
-            <body>
-            <canvas id="canvasSky"></canvas>
-            <script>
-                const canvas = document.getElementById('canvasSky');
-                const ctx = canvas.getContext('2d');
-                function resize() {
-                    canvas.width = window.parent.innerWidth || window.innerWidth;
-                    canvas.height = window.parent.innerHeight || window.innerHeight;
-                }
-                window.addEventListener('resize', resize); window.addEventListener('load', resize); resize();
-
-                class Spark {
-                    constructor(x, y, color) {
-                        this.x = x; this.y = y; this.color = color;
-                        const angle = Math.random() * Math.PI * 2;
-                        const speed = Math.random() * 6 + 2;
-                        this.vx = Math.cos(angle) * speed;
-                        this.vy = Math.sin(angle) * speed;
-                        this.friction = 0.95; this.gravity = 0.15;
-                        this.alpha = 1; this.decay = 0.012 + Math.random() * 0.015;
-                    }
-                    update() {
-                        this.vx *= this.friction; this.vy *= this.friction; this.vy += this.gravity;
-                        this.x += this.vx; this.y += this.vy; this.alpha -= this.decay;
-                    }
-                    draw() {
-                        ctx.save(); ctx.globalAlpha = this.alpha; ctx.beginPath();
-                        ctx.arc(this.x, this.y, 2.5, 0, Math.PI * 2);
-                        ctx.fillStyle = this.color; ctx.shadowBlur = 10; ctx.shadowColor = this.color;
-                        ctx.fill(); ctx.restore();
-                    }
-                }
-
-                class Rocket {
-                    constructor() {
-                        this.x = Math.random() * canvas.width; this.y = canvas.height;
-                        this.targetY = Math.random() * (canvas.height * 0.5) + 50;
-                        this.speed = 11 + Math.random() * 4;
-                        this.color = `hsl(${Math.random() * 360}, 100%, 60%)`;
-                        this.sparks = []; this.exploded = false;
-                    }
-                    update() {
-                        if (!this.exploded) {
-                            this.y -= this.speed;
-                            if (this.y <= this.targetY) { this.exploded = true; this.explode(); }
-                        } else {
-                            for (let i = this.sparks.length - 1; i >= 0; i--) {
-                                this.sparks[i].update();
-                                if (this.sparks[i].alpha <= 0) this.sparks.splice(i, 1);
-                            }
-                        }
-                    }
-                    explode() {
-                        const count = 80 + Math.floor(Math.random() * 30);
-                        for (let i = 0; i < count; i++) this.sparks.push(new Spark(this.x, this.y, this.color));
-                    }
-                    draw() {
-                        if (!this.exploded) {
-                            ctx.beginPath(); ctx.arc(this.x, this.y, 3, 0, Math.PI * 2);
-                            ctx.fillStyle = '#ffffff'; ctx.fill();
-                        } else { this.sparks.forEach(s => s.draw()); }
-                    }
-                }
-
-                const rockets = [];
-                function loop() {
-                    ctx.clearRect(0, 0, canvas.width, canvas.height);
-                    if (Math.random() < 0.04 && rockets.length < 6) rockets.push(new Rocket());
-                    for (let i = rockets.length - 1; i >= 0; i--) {
-                        rockets[i].update(); rockets[i].draw();
-                        if (rockets[i].exploded && rockets[i].sparks.length === 0) rockets.splice(i, 1);
-                    }
-                    requestAnimationFrame(loop);
-                }
-                loop();
-            </script>
-            </body>
-            </html>
-            """, height=250)
-            
-        else:
-            # Crying Face Banner placed down below the metrics cleanly via CSS animation
-            st.markdown("""
-            <style>
-                @keyframes tear-drop {
-                    0% { transform: translateY(0) scale(1); opacity: 1; }
-                    80% { opacity: 1; }
-                    100% { transform: translateY(40px) scale(0.5); opacity: 0; }
-                }
-                .crying-container {
-                    background-color: #0e1117; 
-                    border: 2px solid #d32f2f; 
-                    border-radius: 12px; 
-                    padding: 25px; 
-                    text-align: center; 
-                    margin-top: 15px;
-                }
-                .sad-emoji-wrapper {
-                    font-size: 70px;
-                    position: relative;
-                    display: inline-block;
-                    line-height: 1;
-                }
-                .tear {
-                    position: absolute;
-                    font-size: 24px;
-                    animation: tear-drop 1.5s infinite linear;
-                }
-                .tear-left { left: 10px; top: 45px; animation-delay: 0s; }
-                .tear-right { right: 10px; top: 45px; animation-delay: 0.7s; }
-            </style>
-            
-            <div class="crying-container">
-                <div class="sad-emoji-wrapper">
-                    😢
-                    <span class="tear tear-left">💧</span>
-                    <span class="tear tear-right">💧</span>
-                </div>
-                <h1 style="color: #d32f2f !important; font-family: sans-serif; font-weight: bold; margin: 10px 0 0 0;">BETTER LUCK NEXT TIME!</h1>
-                <p style="color: white !important; margin: 5px 0 0 0;">Score is below 100. Hard work pays off, keep practicing!</p>
-            </div>
-            """, unsafe_allow_html=True)
-
-    else:
-        st.error("Error generating score logs.")
-
-    # 4️⃣ BUTTON IS TOTALLY OUTSIDE LAYOUT (ALWAYS WORKS)
-    st.write("")
-    if st.button("Return Main Portal Home", type="secondary", use_container_width=True):
-        st.session_state.page = "Main Menu"
-        st.session_state.active_quiz = None
-        st.session_state.quiz_answers = {}
-        st.session_state.saved_questions = set()
-        st.session_state.skipped_questions = set()
-        st.session_state.current_q_index = 0
-        st.session_state.logged_in_user = None
-        st.session_state.result_saved = False
-        if "start_time" in st.session_state:
-            del st.session_state.start_time
-        st.rerun()
+        if st.button("Return to Main Menu", type="primary"):
+            st.session_state.page = "Main Menu"
+            st.session_state.active_quiz = None
+            st.session_state.quiz_answers = {}
+            st.session_state.result_saved = False
+            st.rerun()
