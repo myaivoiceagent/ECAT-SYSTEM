@@ -72,7 +72,7 @@ def play_fireworks():
     </script>
     """
     components.html(fireworks_js, height=0, width=0)
-    
+
 # --------------------------------------------------
 # CONFIGURATION & STATE INITIALIZATION
 # --------------------------------------------------
