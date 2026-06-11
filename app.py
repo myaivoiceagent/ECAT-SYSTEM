@@ -295,6 +295,13 @@ elif st.session_state.page == "Admin Dashboard":
 elif st.session_state.page == "Student Auth Menu":
     st.subheader("🔑 Student Registration & Login")
     
+    # 🕒 PAKISTAN TIME ZONE FUNCTION (Isay sab se upar rakhna hai)
+    def get_pakistan_time():
+        from datetime import datetime, timedelta
+        # Server UTC time mein exactly 5 ghante plus kiye taake local computer time banay
+        pkt_time = datetime.utcnow() + timedelta(hours=5)
+        return pkt_time.strftime("%I:%M %p (%d-%b)")
+
     mode = st.radio("Action:", ["User Login", "Create Account", "Forget Password"])
     
     # Python ka apna json library import kiya backup ke liye
@@ -336,9 +343,12 @@ elif st.session_state.page == "Student Auth Menu":
                 if db_email == login_email.lower() and db_user == login_user.lower() and db_pass == login_pass:
                     found = True
                     
-                    from datetime import datetime
-                    current_time = datetime.now().strftime("%I:%M %p (%d-%b)")
+                    # 🕒 Purani line hata kar yeh lagayin
+                    current_time = get_pakistan_time()
                     st.session_state["login_time"] = current_time
+                    
+                    u["Last Login"] = current_time  
+                    force_save_login(users)
                     
                     u["Last Login"] = current_time  
                     force_save_login(users) # Force save updated list
@@ -645,15 +655,14 @@ elif st.session_state.page == "Grade Evaluation Processing":
         if not st.session_state.result_saved:
             results_db = load_json("Result.json")
             
-            # 🕒 Current Login Time Catch kiya
-            current_login = st.session_state.get("login_time", "N/A")
+            # 🕒 Pakistan ka current time catch karne ke liye function lagaya
+            from datetime import datetime, timedelta
+            pkt_now = datetime.utcnow() + timedelta(hours=5)
+            current_login = pkt_now.strftime("%I:%M %p (%d-%b)")
             
-            # 📚 AUTOMATIC SUBJECT SCANNER:
-            # Yeh check karega ke aapne poore script mein subject ka kya naam rakha hai
+            # Subject detector lagaya
             user_selected_subject = "Not Selected"
-            
-            # Aapke pooray app mein jo bhi variable active hoga, yeh usay auto-detect kar lega
-            possible_keys = ["selected_subject", "subject", "chosen_subject", "active_subject", "sel_subject"]
+            possible_keys = ["selected_subject", "subject", "chosen_subject", "active_subject"]
             for key in possible_keys:
                 if key in st.session_state and st.session_state[key]:
                     user_selected_subject = st.session_state[key]
@@ -663,8 +672,8 @@ elif st.session_state.page == "Grade Evaluation Processing":
                 "USER ID": student.get("User ID", "N/A"),
                 "User Name": student.get("User Name", "N/A"),
                 "User Email": student.get("Email", "N/A"),
-                "Login Time": current_login,
-                "Selected Subject": user_selected_subject,  # 💡 Exact select kiya hua subject save hoga
+                "Login Time": current_login,  # 🕒 Yeh exact computer wala sahi time save karega
+                "Selected Subject": user_selected_subject,
                 "User Result": [{
                     "Total Questions": total_q,
                     "Total Marks": total_marks,
