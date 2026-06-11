@@ -624,7 +624,7 @@ elif st.session_state.page == "Grade Evaluation Processing":
         # 🎯 PERFORMANCE ASSESSMENT STATUS (DOWNSIDE AREA)
         st.markdown("### ✨ Performance Assessment Status")
         
-        if final_score >= 0:
+        if final_score >= 100:
             st.success(f"💥 EXCELLENT METRIC PROFILE! You achieved {final_score} points!")
             
             # 👇 Triggering the fixed cross-origin sandbox firework function layout directly here
