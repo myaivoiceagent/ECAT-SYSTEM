@@ -8,105 +8,106 @@ import streamlit.components.v1 as components
 
 # --- INTERACTIVE FIREWORKS HTML/JS MATRIX GENERATOR ---
 def play_fireworks():
-    fireworks_html = """
-    <div style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 999999; margin: 0; padding: 0;">
-        <canvas id="fireworksCanvas" style="width: 100%; height: 100%; display: block;"></canvas>
-    </div>
+    # Direct DOM injection to completely bypass Streamlit iframe restrictions
+    fireworks_js = """
     <script>
-    const canvas = document.getElementById('fireworksCanvas');
-    const ctx = canvas.getContext('2d');
-    
-    // Dynamic screen sizing
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    
-    let particles = [];
-    
-    class Particle {
-        constructor(x, y, color) {
-            this.x = x;
-            this.y = y;
-            this.color = color;
-            this.radius = Math.random() * 3 + 1;
-            this.velocity = {
-                x: (Math.random() - 0.5) * 12,
-                y: (Math.random() - 0.5) * 12
-            };
-            this.alpha = 1;
-        }
-        draw() {
-            ctx.save();
-            ctx.globalAlpha = this.alpha;
-            ctx.beginPath();
-            ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
-            ctx.fillStyle = this.color;
-            ctx.fill();
-            ctx.restore();
-        }
-        update() {
-            this.velocity.y += 0.05;
-            this.x += this.velocity.x;
-            this.y += this.velocity.y;
-            this.alpha -= 0.015;
-        }
-    }
-    
-    function createFirework() {
-        const x = Math.random() * canvas.width;
-        const y = Math.random() * (canvas.height * 0.5);
-        const colors = ['#FF1493', '#00FFFF', '#FFD700', '#FF4500', '#7FFF00', '#9400D3'];
-        const color = colors[Math.floor(Math.random() * colors.length)];
-        for (let i = 0; i < 50; i++) {
-            particles.push(new Particle(x, y, color));
-        }
-    }
-    
-    // Instant initial bursts on loading
-    createFirework();
-    createFirework();
-    
-    let timer = setInterval(createFirework, 350);
-    setTimeout(() => { clearInterval(timer); }, 5000);
-    
-    function runLoop() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        particles.forEach((p, index) => {
-            if (p.alpha <= 0) {
-                particles.splice(index, 1);
-            } else {
-                p.update();
-                p.draw();
+    (function() {
+        // Target the main parent document window directly
+        const targetDoc = window.parent.document;
+        
+        // Check if canvas already exists to avoid duplicate loops
+        if (targetDoc.getElementById('globalFireworksCanvas')) return;
+
+        // Create canvas element on the absolute top body layer
+        const canvas = targetDoc.createElement('canvas');
+        canvas.id = 'globalFireworksCanvas';
+        canvas.style.position = 'fixed';
+        canvas.style.top = '0';
+        canvas.style.left = '0';
+        canvas.style.width = '100vw';
+        canvas.style.height = '100vh';
+        canvas.style.pointerEvents = 'none';
+        canvas.style.zIndex = '999999';
+        targetDoc.body.appendChild(canvas);
+
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.parent.innerWidth;
+        canvas.height = window.parent.innerHeight;
+
+        let particles = [];
+
+        class Particle {
+            constructor(x, y, color) {
+                this.x = x;
+                this.y = y;
+                this.color = color;
+                this.radius = Math.random() * 3 + 1;
+                this.velocity = {
+                    x: (Math.random() - 0.5) * 12,
+                    y: (Math.random() - 0.5) * 12
+                };
+                this.alpha = 1;
             }
-        });
-        requestAnimationFrame(runLoop);
-    }
-    runLoop();
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.alpha;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+                ctx.restore();
+            }
+            update() {
+                this.velocity.y += 0.05;
+                this.x += this.velocity.x;
+                this.y += this.velocity.y;
+                this.alpha -= 0.015;
+            }
+        }
+
+        function createFirework() {
+            const x = Math.random() * canvas.width;
+            const y = Math.random() * (canvas.height * 0.5);
+            const colors = ['#FF1493', '#00FFFF', '#FFD700', '#FF4500', '#7FFF00', '#9400D3'];
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            for (let i = 0; i < 50; i++) {
+                particles.push(new Particle(x, y, color));
+            }
+        }
+
+        // Trigger immediate blast profile
+        createFirework();
+        createFirework();
+
+        let timer = setInterval(createFirework, 350);
+        
+        // Clean up and remove the canvas from parent document after 6 seconds
+        setTimeout(() => { 
+            clearInterval(timer); 
+            setTimeout(() => {
+                canvas.remove();
+            }, 2000);
+        }, 4000);
+
+        function runLoop() {
+            if (!targetDoc.getElementById('globalFireworksCanvas')) return;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach((p, index) => {
+                if (p.alpha <= 0) {
+                    particles.splice(index, 1);
+                } else {
+                    p.update();
+                    p.draw();
+                }
+            });
+            requestAnimationFrame(runLoop);
+        }
+        runLoop();
+    })();
     </script>
-    <style>
-        body, html { margin: 0; padding: 0; background: transparent; overflow: hidden; }
-    </style>
     """
-    # Force loading framework inside cloud environment
-    st.components.v1.html(fireworks_html, height=1, width=1)
-    
-    # Global override injector to project iframe overlay across viewport boundaries
-    st.markdown(
-        """
-        <style>
-            iframe[title="streamlit_components.v1.html"] {
-                position: fixed !important;
-                top: 0 !important;
-                left: 0 !important;
-                width: 100vw !important;
-                height: 100vh !important;
-                pointer-events: none !important;
-                z-index: 999999 !important;
-                border: none !important;
-            }
-        </style>
-        """,
-        unsafe_allow_html=True
-    )
+    # Simply rendering the injector script block safely without layout dimensions constraints
+    components.html(fireworks_js, height=0, width=0)
 
 # --------------------------------------------------
 # CONFIGURATION & STATE INITIALIZATION
