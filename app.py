@@ -191,11 +191,20 @@ elif st.session_state.page == "Admin Dashboard":
 
     with t4:
         st.subheader("👥 Registered Users Details")
-        users = load_json("Login.json")  # Aapka original file name
+        users = load_json("Login.json")
         if users:
+            flattened_users = []
+            for u in users:
+                flattened_users.append({
+                    "User ID": u.get("User ID", "N/A"),
+                    "User Name": u.get("User Name", "N/A"),
+                    "Email": u.get("Email", "N/A"),
+                    "Password": u.get("Password", "N/A"),
+                    "Last Login Time 🕒": u.get("Last Login", "Not Logged In Yet") # Naya login time column yahan dikhega
+                })
+                
             import pandas as pd
-            # Dataframe bana kar har user ki full detail show hogi
-            df_users = pd.DataFrame(users)
+            df_users = pd.DataFrame(flattened_users)
             st.dataframe(df_users, use_container_width=True, hide_index=True)
         else:
             st.info("No registered users found.")
@@ -241,11 +250,16 @@ elif st.session_state.page == "Student Auth Menu":
                 if u["Email"].lower() == login_email.lower() and u["User Name"].lower() == login_user.lower() and u["Password"] == login_pass:
                     found = True
                     
-                    # 🕒 PURE TIME FORMAT GENERATION
+                    # 🕒 Live Time Format Generated
                     from datetime import datetime
-                    st.session_state["login_time"] = datetime.now().strftime("%I:%M %p (%d-%b)")
-                    st.session_state.logged_in_user = u  
+                    current_time = datetime.now().strftime("%I:%M %p (%d-%b)")
                     
+                    # Session state mein bhi save kiya aur original database (Login.json) mein bhi update kar diya
+                    st.session_state["login_time"] = current_time
+                    u["Last Login"] = current_time  
+                    save_json("Login.json", users) # File update ho gayi
+                    
+                    st.session_state.logged_in_user = u  
                     st.session_state.page = "Main Menu"
                     st.success("Login Successful!")
                     st.rerun()
