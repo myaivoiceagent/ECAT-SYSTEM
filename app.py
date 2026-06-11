@@ -4,7 +4,7 @@ import datetime
 import random
 import uuid
 import streamlit as st
-import streamlit.components.v1 as html_components
+import streamlit.components.v1 as components
 
 # --------------------------------------------------
 # CONFIGURATION & STATE INITIALIZATION
@@ -80,6 +80,51 @@ def get_stream_name(selected_subjects_list):
         return "General Science"
         
     return "Custom Stream"
+
+# --- INTERACTIVE FIREWORKS HTML/JS MATRIX GENERATOR ---
+def play_fireworks():
+    fireworks_js = """
+    <canvas id="canvas" style="position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:99999;pointer-events:none;"></canvas>
+    <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    let particles = [];
+    class Particle {
+        constructor(x, y, color) {
+            this.x = x; this.y = y; this.color = color;
+            this.radius = Math.random() * 3 + 1;
+            this.velocity = { x: (Math.random() - 0.5) * 8, y: (Math.random() - 0.5) * 8 };
+            this.alpha = 1;
+        }
+        draw() {
+            ctx.save(); ctx.globalAlpha = this.alpha; ctx.beginPath();
+            ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+            ctx.fillStyle = this.color; ctx.fill(); ctx.restore();
+        }
+        update() {
+            this.velocity.y += 0.05; this.x += this.velocity.x; this.y += this.velocity.y;
+            this.alpha -= 0.012;
+        }
+    }
+    function spawnFirework() {
+        const x = Math.random() * canvas.width; const y = Math.random() * (canvas.height * 0.6);
+        const colors = ['#FF1493', '#00FFFF', '#FFD700', '#FF4500', '#7FFF00', '#9400D3'];
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        for (let i = 0; i < 40; i++) { particles.push(new Particle(x, y, color)); }
+    }
+    let interval = setInterval(spawnFirework, 400);
+    setTimeout(() => { clearInterval(interval); }, 6000);
+    function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach((p, i) => { if (p.alpha <= 0) { particles.splice(i, 1); } else { p.update(); p.draw(); } });
+        requestAnimationFrame(animate);
+    }
+    animate();
+    </script>
+    """
+    components.html(fireworks_js, height=0, width=0)
 
 # --------------------------------------------------
 # WEB VIEWS & UI ROUTER
@@ -212,20 +257,7 @@ elif st.session_state.page == "Admin Dashboard":
 
     with t4:
         st.subheader("👥 Registered Users Details")
-        
-        def admin_load_json(filename):
-            if os.path.exists(filename):
-                with open(filename, "r") as f:
-                    content = f.read().strip()
-                    return json.loads(content) if content else []
-            return []
-
-        def admin_save_json(filename, data):
-            with open(filename, "w") as f:
-                json.dump(data, f, indent=4)
-
-        users = admin_load_json("Login.json")
-        
+        users = load_json("Login.json")
         if users:
             h_id, h_name, h_email, h_pass, h_time, h_act = st.columns([1.2, 2, 2.5, 1.8, 2.2, 1.3])
             with h_id: st.markdown("**ID**")
@@ -238,34 +270,24 @@ elif st.session_state.page == "Admin Dashboard":
 
             for idx, u in enumerate(users):
                 col1, col2, col3, col4, col5, col6 = st.columns([1.2, 2, 2.5, 1.8, 2.2, 1.3])
-                
-                u_id = u.get("User ID", "N/A")
-                if "function uuid4" in str(u_id):
-                    u_id = f"USR-{idx+1:03d}"
-
+                u_id = u.get("User ID", f"USR-{idx+1:03d}")
                 with col1: st.text(u_id)
                 with col2: st.text(u.get("User Name", "N/A"))
                 with col3: st.text(u.get("Email", "N/A"))
                 with col4: st.text(u.get("Password", "N/A"))
                 with col5: st.text(u.get("Last Login", "Not Logged In"))
                 with col6:
-                    # REMOVE USER AND CLEAN DATABASE LOGS
-                    if st.button("❌ Remove", key=f"del_usr_final_{idx}", use_container_width=True):
+                    if st.button("❌ Remove", key=f"del_usr_{idx}", use_container_width=True):
                         target_email = u.get("Email")
-                        target_name = u.get("User Name")
+                        new_users = [usr for usr in users if usr.get("Email") != target_email]
+                        save_json("Login.json", new_users)
                         
-                        # 1. Wipe cleanly from Login records so they can register again
-                        new_users_list = [usr for usr in users if usr.get("Email") != target_email]
-                        admin_save_json("Login.json", new_users_list)
+                        results = load_json("Result.json")
+                        new_results = [r for r in results if r.get("User Email") != target_email]
+                        save_json("Result.json", new_results)
                         
-                        # 2. Clear out performance evaluation logs
-                        results = admin_load_json("Result.json")
-                        new_results_list = [r for r in results if r.get("User Email") != target_email]
-                        admin_save_json("Result.json", new_results_list)
-                        
-                        st.success(f"🎉 Account and logs for {target_name} deleted! Student can re-register now.")
+                        st.success("Account dropped! Clean system reset complete.")
                         st.rerun()
-                st.write("") 
         else:
             st.info("No registered users found.")
 
@@ -275,238 +297,143 @@ elif st.session_state.page == "Admin Dashboard":
         if results:
             flattened_results = []
             for r in results:
-                res_list = r.get("User Result", [{}])
-                res = res_list[0] if isinstance(res_list, list) and len(res_list) > 0 else {}
-                
-                subj = r.get("Selected Subject", r.get("Subject", "Not Selected"))
-                
-                u_id = r.get("USER ID", r.get("User ID", "N/A"))
-                if "function uuid4" in str(u_id):
-                    u_id = "USR-NEW"
-                
+                res = r.get("User Result", [{}])[0]
                 flattened_results.append({
-                    "User ID": u_id,
+                    "User ID": r.get("USER ID", "N/A"),
                     "Student Name": r.get("User Name", "N/A"),
                     "Email Address": r.get("User Email", "N/A"),
-                    "Attempted Subject 📚": subj,  
+                    "Attempted Subject 📚": r.get("Selected Subject", "General Test"),
                     "Login/Test Time 🕒": r.get("Login Time", "N/A"),
                     "Total Qs": res.get("Total Questions", 100),
                     "Max Marks": res.get("Total Marks", 400),
                     "Score Obtained": res.get("Obtained Marks", 0)
                 })
-                
             import pandas as pd
-            df_results = pd.DataFrame(flattened_results)
-            st.dataframe(df_results, use_container_width=True, hide_index=True)
-            
-            st.write("")
-            if st.button("Clear Submission Logs Databases", type="secondary", key="admin_clear_all_res"):
-                save_json("Result.json", [])
-                st.success("Database cleared!")
-                st.rerun()
-        else:
-            st.info("No candidates have evaluated or logged exams yet.")
+            st.dataframe(pd.DataFrame(flattened_results), use_container_width=True, hide_index=True)
 
 # STUDENT AUTHENTICATION
 elif st.session_state.page == "Student Auth Menu":
     st.subheader("🔑 Student Registration & Login")
+    mode = st.radio("Action:", ["User Login", "Create Account", "Forget Password"])
     
     def get_pakistan_time():
         from datetime import datetime, timedelta
-        pkt_time = datetime.utcnow() + timedelta(hours=5)
-        return pkt_time.strftime("%I:%M %p (%d-%b)")
+        return (datetime.utcnow() + timedelta(hours=5)).strftime("%I:%M %p (%d-%b)")
 
-    mode = st.radio("Action:", ["User Login", "Create Account", "Forget Password"])
-    
-    import json
-    import os
-
-    def force_load_login():
-        if not os.path.exists("Login.json"):
-            return []
-        try:
-            with open("Login.json", "r") as f:
-                content = f.read().strip()
-                return json.loads(content) if content else []
-        except Exception:
-            return []
-
-    def force_save_login(data):
-        with open("Login.json", "w") as f:
-            json.dump(data, f, indent=4)
-
-    # USER LOGIN LOGIC
     if mode == "User Login":
         login_input = st.text_input("Enter Email or Username:").strip().lower()
         login_pass = st.text_input("Password:", type="password").strip()
-        
         if st.button("Log In"):
-            users = force_load_login()  
-            found_user = None
-            
+            users = load_json("Login.json")
+            found = None
             for u in users:
-                db_email = str(u.get("Email", "")).strip().lower()
-                db_user = str(u.get("User Name", "")).strip().lower()
-                db_pass = str(u.get("Password", "")).strip()
-                
-                if (login_input == db_email or login_input == db_user) and login_pass == db_pass:
-                    found_user = u
+                if (login_input == u.get("Email","").lower() or login_input == u.get("User Name","").lower()) and login_pass == u.get("Password",""):
+                    found = u
                     break
-                    
-            if found_user:
-                current_time = get_pakistan_time()
-                st.session_state["login_time"] = current_time
-                found_user["Last Login"] = current_time  
-                force_save_login(users)
-                
-                st.session_state.logged_in_user = found_user  
+            if found:
+                found["Last Login"] = get_pakistan_time()
+                save_json("Login.json", users)
+                st.session_state.logged_in_user = found
                 st.session_state.page = "Main Menu"
-                st.success("Login Successful! 🎉")
                 st.rerun()
             else:
-                st.error("❌ Invalid Credentials. Incorrect Email/Username or Password!")
+                st.error("❌ Invalid Credentials!")
 
-    # CREATE ACCOUNT LOGIC
     elif mode == "Create Account":
         reg_email = st.text_input("Email:").strip()
         reg_name = st.text_input("Full Name (Username):").strip()
         reg_pass = st.text_input("Password:", type="password").strip()
-        
         if st.button("Register"):
-            users = force_load_login()
-            
+            users = load_json("Login.json")
             if not reg_email or not reg_name or not reg_pass:
                 st.error("❌ All fields are required!")
-            elif len(reg_pass) < 6:
-                st.error("❌ Password must be at least 6 characters long.")
-            elif any(str(u.get("Email", "")).lower() == reg_email.lower() for u in users):
+            elif any(u.get("Email","").lower() == reg_email.lower() for u in users):
                 st.error("❌ This Email is already registered!")
             else:
-                new_user = {
-                    "User ID": str(uuid.uuid4())[:8],
-                    "User Name": reg_name,
-                    "Email": reg_email,
-                    "Password": reg_pass,
-                    "Last Login": "Not Logged In Yet"
-                }
-                users.append(new_user)
-                force_save_login(users) 
-                st.success("🎉 Account Created Successfully! Go to 'User Login' to sign in.")
-                st.rerun()
+                users.append({"User ID": str(uuid.uuid4())[:8], "User Name": reg_name, "Email": reg_email, "Password": reg_pass, "Last Login": "Not Logged In"})
+                save_json("Login.json", users)
+                st.success("🎉 Registered! Proceed to Login.")
 
-    # FORGET PASSWORD LOGIC
     elif mode == "Forget Password":
-        st.write("---")
-        forget_email = st.text_input("Enter Registered Email Address:")
-        forget_name = st.text_input("Enter Your Registered Username:")
-        
-        if st.button("Retrieve Password 🔍", type="primary", use_container_width=True):
-            if forget_email and forget_name:
-                users_list = force_load_login()
-                found_user = None
-                for u in users_list:
-                    if str(u.get("Email")).lower() == forget_email.strip().lower() and str(u.get("User Name")).lower() == forget_name.strip().lower():
-                        found_user = u
-                        break
-                if found_user:
-                    st.success("🔑 Account Verified Successfully!")
-                    st.info(f"Your Registered Password is: **{found_user.get('Password')}**")
-                else:
-                    st.error("❌ No matching profile found with these details.")
+        f_email = st.text_input("Enter Registered Email:")
+        f_name = st.text_input("Enter Registered Username:")
+        if st.button("Retrieve Password 🔍"):
+            users = load_json("Login.json")
+            match = next((u for u in users if u.get("Email","").lower() == f_email.lower() and u.get("User Name","").lower() == f_name.lower()), None)
+            if match:
+                st.info(f"Your Password is: **{match.get('Password')}**")
             else:
-                st.warning("⚠️ Please fill out both fields.")
+                st.error("Profile matching criteria not found.")
 
-    st.write("---")
     if st.button("Back"):
         st.session_state.page = "Main Menu"
         st.rerun()
 
-# ECAT TEST LOGIN
 elif st.session_state.page == "ECAT Test Login":
     st.subheader("✍️ Identity Verification Prior to ECAT")
-    test_input = st.text_input("Enter Registered Email or Username:").strip().lower()
-    test_pass = st.text_input("Password:", type="password").strip()
-    
+    t_input = st.text_input("Enter Registered Email or Username:").strip().lower()
+    t_pass = st.text_input("Password:", type="password").strip()
     if st.button("Verify Identity"):
         users = load_json("Login.json")
-        matched = None
-        for u in users:
-            db_email = str(u.get("Email", "")).strip().lower()
-            db_user = str(u.get("User Name", "")).strip().lower()
-            if (test_input == db_email or test_input == db_user) and u["Password"] == test_pass:
-                matched = u
-                break
-        if matched:
-            st.session_state.logged_in_user = matched
+        match = next((u for u in users if (t_input == u.get("Email","").lower() or t_input == u.get("User Name","").lower()) and u["Password"] == t_pass), None)
+        if match:
+            st.session_state.logged_in_user = match
             st.session_state.page = "ECAT Subject Selection"
             st.rerun()
         else:
-            st.error("Identity Verification Failed: Record not found.")
+            st.error("Verification failed.")
     if st.button("Back"):
         st.session_state.page = "Main Menu"
         st.rerun()
 
-# ECAT SUBJECT SELECTION
 elif st.session_state.page == "ECAT Subject Selection":
     st.subheader("📝 Subject Selection Criteria")
     quizz_data = load_json("Quizz.json")
     available_subjects = [s["Section"] for s in quizz_data if s["Section"].lower() != "english"]
     
     if len(available_subjects) < 3:
-        st.error("Database initialization error: Needs at least 3 alternative subjects to English.")
+        st.error("Database error: Needs at least 3 alternative branches plus English.")
     else:
         chosen_tracks = st.multiselect("Pick exactly 3 subject branches:", available_subjects)
-        
         if chosen_tracks:
-            full_user_selection = chosen_tracks + ["English"]
-            st.session_state.selected_tracks = full_user_selection
-            user_stream = get_stream_name(full_user_selection)
-            st.info(f"📚 **Your Stream Group Designation:** {user_stream}")
+            st.session_state.selected_tracks = chosen_tracks + ["English"]
+            st.info(f"📚 Stream Assignment: {get_stream_name(st.session_state.selected_tracks)}")
 
         if st.button("Assemble Test Matrix"):
             if len(chosen_tracks) != 3:
-                st.error("Please pick exactly 3 items.")
+                st.error("Please select exactly 3 branches.")
             else:
-                all_questions = []
-                eng_sec = next((s for s in quizz_data if s["Section"].lower() == "english"), None)
-                if eng_sec and eng_sec["Questions"]:
-                    all_questions.extend(random.sample(eng_sec["Questions"], min(10, len(eng_sec["Questions"]))))
+                all_qs = []
+                eng = next((s for s in quizz_data if s["Section"].lower() == "english"), None)
+                if eng and eng["Questions"]:
+                    all_qs.extend(random.sample(eng["Questions"], min(10, len(eng["Questions"]))))
                 for track in chosen_tracks:
-                    t_sec = next(s for s in quizz_data if s["Section"] == track)
-                    if t_sec["Questions"]:
-                        all_questions.extend(random.sample(t_sec["Questions"], min(30, len(t_sec["Questions"]))))
+                    sec = next(s for s in quizz_data if s["Section"] == track)
+                    if sec["Questions"]:
+                        all_qs.extend(random.sample(sec["Questions"], min(30, len(sec["Questions"]))))
                 
-                if not all_questions:
-                    st.error("No questions compiled.")
+                if not all_qs:
+                    st.error("Compilation matrix returned empty.")
                 else:
-                    random.shuffle(all_questions)
-                    st.session_state.active_quiz = all_questions
+                    random.shuffle(all_qs)
+                    st.session_state.active_quiz = all_qs
                     st.session_state.quiz_answers = {}
                     st.session_state.saved_questions = set()
                     st.session_state.skipped_questions = set()
                     st.session_state.current_q_index = 0
-                    st.session_state.quiz_submitted = False
                     st.session_state.start_time = datetime.datetime.now().timestamp()
                     st.session_state.page = "Live Examination"
                     st.rerun()
 
-# LIVE EXAMINATION
 elif st.session_state.page == "Live Examination":
     student = st.session_state.logged_in_user
     questions = st.session_state.active_quiz
     
-    if "start_time" not in st.session_state:
-        st.session_state.start_time = datetime.datetime.now().timestamp()
-        
-    total_allowed_seconds = 100 * 60  
-    current_time_stamp = datetime.datetime.now().timestamp()
-    elapsed = int(current_time_stamp - st.session_state.start_time)
-    remaining = max(0, total_allowed_seconds - elapsed)
+    elapsed = int(datetime.datetime.now().timestamp() - st.session_state.get("start_time", datetime.datetime.now().timestamp()))
+    remaining = max(0, (100 * 60) - elapsed)
     
-    st.markdown(f"### 📝 Live Exam Environment (Candidate: **{student['User Name']}**)")
-    
+    st.markdown(f"### 📝 Live Exam (Candidate: **{student['User Name']}**)")
     if remaining <= 0:
-        st.error("⏰ Time Limit Reached! Auto-evaluating responses...")
         st.session_state.page = "Grade Evaluation Processing"
         st.rerun()
     else:
@@ -514,107 +441,73 @@ elif st.session_state.page == "Live Examination":
         st.error(f"⏱️ **Time Remaining: {int(mins):02d}:{int(secs):02d}**")
         
     st.write("---")
-
     if questions:
-        total_questions_count = len(questions)
-        solved_count = len(st.session_state.saved_questions)
-        skipped_count = len(st.session_state.skipped_questions)
-        remaining_count = total_questions_count - (solved_count + skipped_count)
-
         c1, c2, c3, c4 = st.columns(4)
-        c1.metric("Total Items 📋", total_questions_count)
-        c2.metric("Saved/Locked ✅", solved_count)
-        c3.metric("Skipped Items 🟡", skipped_count)
-        c4.metric("Remaining ⏳", remaining_count)
-        st.write("---")
-
-        current_idx = st.session_state.current_q_index
-        q = questions[current_idx]
-        display_no = current_idx + 1
-
-        st.markdown(f"#### **Question {display_no} of {total_questions_count}**")
+        c1.metric("Total Items", len(questions))
+        c2.metric("Saved/Locked", len(st.session_state.saved_questions))
+        c3.metric("Skipped", len(st.session_state.skipped_questions))
+        c4.metric("Remaining", len(questions) - (len(st.session_state.saved_questions) + len(st.session_state.skipped_questions)))
         
-        if current_idx in st.session_state.saved_questions:
-            st.warning("🔒 This question has been locked.")
+        st.write("---")
+        idx = st.session_state.current_q_index
+        q = questions[idx]
+        display_no = idx + 1
+        
+        st.markdown(f"#### **Question {display_no} of {len(questions)}**")
+        if idx in st.session_state.saved_questions:
+            st.warning("🔒 Question Locked.")
             st.write(f"**{q['Question']}**")
-            saved_ans = st.session_state.quiz_answers.get(display_no, "A")
-            st.info(f"Your Locked Response: Option {saved_ans}. {q['Options'][saved_ans]}")
+            ans = st.session_state.quiz_answers.get(display_no, "A")
+            st.info(f"Your Choice: {ans}. {q['Options'][ans]}")
         else:
-            if current_idx in st.session_state.skipped_questions:
-                st.warning("⚠️ You skipped this question earlier.")
-
             st.write(f"**{q['Question']}**")
-            current_ans = st.session_state.quiz_answers.get(display_no, None)
-            default_idx = ["A", "B", "C", "D"].index(current_ans) if current_ans in ["A", "B", "C", "D"] else None
-
-            answer = st.radio(
-                f"Select option for question {display_no}:", 
-                ["A", "B", "C", "D"], 
-                index=default_idx,
-                format_func=lambda x: f"{x}. {q['Options'][x]}",
-                key=f"live_q_{display_no}"
-            )
+            cur_ans = st.session_state.quiz_answers.get(display_no, None)
+            def_idx = ["A", "B", "C", "D"].index(cur_ans) if cur_ans in ["A", "B", "C", "D"] else None
             
-            st.write("")
-            col_actions = st.columns([2, 2, 2])
+            answer = st.radio("Options:", ["A", "B", "C", "D"], index=def_idx, format_func=lambda x: f"{x}. {q['Options'][x]}", key=f"q_{display_no}")
             
-            with col_actions[0]:
+            act = st.columns(3)
+            with act[0]:
                 if st.button("💾 Save & Next", type="primary", use_container_width=True):
-                    if answer is not None:
-                        st.session_state.quiz_answers[display_no] = answer
-                        st.session_state.saved_questions.add(current_idx)
-                        st.session_state.skipped_questions.discard(current_idx)
-                        if current_idx < len(questions) - 1:
-                            st.session_state.current_q_index += 1
-                        st.rerun()
-                    else:
-                        st.error("Please choose an answer.")
-            
-            with col_actions[1]:
-                if st.button("🟡 Skip Question", use_container_width=True):
-                    st.session_state.skipped_questions.add(current_idx)
-                    st.session_state.saved_questions.discard(current_idx)
-                    if current_idx < len(questions) - 1:
-                        st.session_state.current_q_index += 1
+                    st.session_state.quiz_answers[display_no] = answer
+                    st.session_state.saved_questions.add(idx)
+                    st.session_state.skipped_questions.discard(idx)
+                    if idx < len(questions) - 1: st.session_state.current_q_index += 1
+                    st.rerun()
+            with act[1]:
+                if st.button("🟡 Skip Item", use_container_width=True):
+                    st.session_state.skipped_questions.add(idx)
+                    st.session_state.saved_questions.discard(idx)
+                    if idx < len(questions) - 1: st.session_state.current_q_index += 1
                     st.rerun()
 
         st.write("---")
-        col_foot = st.columns([2, 2, 2])
-        with col_foot[0]:
-            if st.button("⬅️ Previous Question", disabled=(current_idx == 0), use_container_width=True):
+        foot = st.columns(3)
+        with foot[0]:
+            if st.button("⬅️ Previous", disabled=(idx == 0), use_container_width=True):
                 st.session_state.current_q_index -= 1
                 st.rerun()
-        with col_foot[1]:
-            if st.button("Next Question ➡️", disabled=(current_idx == len(questions) - 1), use_container_width=True):
+        with foot[1]:
+            if st.button("Next ➡️", disabled=(idx == len(questions) - 1), use_container_width=True):
                 st.session_state.current_q_index += 1
                 st.rerun()
-        with col_foot[2]:
-            if st.button("🛑 Submit Entire Test", type="primary", use_container_width=True):
+        with foot[2]:
+            if st.button("🛑 Submit Test", type="primary", use_container_width=True):
                 st.session_state.page = "Grade Evaluation Processing"
                 st.rerun()
 
         st.write("---")
-        grid_cols = st.columns(10)
+        g_cols = st.columns(10)
         for i in range(len(questions)):
-            col_pos = i % 10
-            btn_no = i + 1
-            if i in st.session_state.saved_questions:
-                btn_label = f"🔒{btn_no}"  
-                disabled_state = True
-            elif i in st.session_state.skipped_questions:
-                btn_label = f"🟡{btn_no}"  
-                disabled_state = False
-            else:
-                btn_label = f"📄{btn_no}"  
-                disabled_state = False
-                
-            with grid_cols[col_pos]:
-                if st.button(btn_label, key=f"nav_btn_{i}", disabled=disabled_state, use_container_width=True):
+            pos = i % 10
+            lbl = f"🔒{i+1}" if i in st.session_state.saved_questions else (f"🟡{i+1}" if i in st.session_state.skipped_questions else f"📄{i+1}")
+            with g_cols[pos]:
+                if st.button(lbl, key=f"nav_{i}", disabled=(i in st.session_state.saved_questions), use_container_width=True):
                     st.session_state.current_q_index = i
                     st.rerun()
 
 # ------------------------------------------------------------------------
-# GRADE EVALUATION PROCESSING (WITH FIREWORKS & EMOJIS)
+# GRADE EVALUATION PROCESSING (WITH DOWNSIDE FIREWORKS / CRYING ENGINE)
 # ------------------------------------------------------------------------
 elif st.session_state.page == "Grade Evaluation Processing":
     st.subheader("📊 Performance Metric Breakdown")
@@ -622,19 +515,14 @@ elif st.session_state.page == "Grade Evaluation Processing":
     answers = st.session_state.quiz_answers
     student = st.session_state.logged_in_user
     
-    correct_count = 0
-    wrong_count = 0
-    unanswered_count = 0  
+    correct_count, wrong_count, unanswered_count = 0, 0, 0
     
     if questions:
         for idx, q in enumerate(questions, start=1):
             user_choice = answers.get(idx, None)
-            if user_choice is None:
-                unanswered_count += 1  
-            elif user_choice == q["Correct Answer"]:
-                correct_count += 1
-            else:
-                wrong_count += 1
+            if user_choice is None: unanswered_count += 1
+            elif user_choice == q["Correct Answer"]: correct_count += 1
+            else: wrong_count += 1
                 
         total_q = len(questions)
         total_marks = total_q * 4
@@ -643,46 +531,24 @@ elif st.session_state.page == "Grade Evaluation Processing":
         
         if not st.session_state.result_saved:
             results_db = load_json("Result.json")
-            
             from datetime import datetime, timedelta
-            pkt_now = datetime.utcnow() + timedelta(hours=5)
-            current_login = pkt_now.strftime("%I:%M %p (%d-%b)")
+            current_login = (datetime.utcnow() + timedelta(hours=5)).strftime("%I:%M %p (%d-%b)")
+            stream = get_stream_name(st.session_state.get("selected_tracks", []))
             
-            if "selected_tracks" in st.session_state and st.session_state.selected_tracks:
-                detected_stream = get_stream_name(st.session_state.selected_tracks)
-            else:
-                detected_stream = "General Test"
-                
             results_db.append({
                 "USER ID": student.get("User ID", "N/A"),
                 "User Name": student.get("User Name", "N/A"),
                 "User Email": student.get("Email", "N/A"),
                 "Login Time": current_login,
-                "Selected Subject": detected_stream,  
-                "User Result": [{
-                    "Total Questions": total_q,
-                    "Total Marks": total_marks,
-                    "Obtained Marks": final_score
-                }]
+                "Selected Subject": stream,  
+                "User Result": [{"Total Questions": total_q, "Total Marks": total_marks, "Obtained Marks": final_score}]
             })
             save_json("Result.json", results_db)
             st.session_state.result_saved = True
 
-            # 🎆 CELEBRATORY BALLOONS (FIREWORKS INTERFACE)
-            st.balloons()
-
         percentage = (final_score / total_marks) * 100 if total_marks > 0 else 0
-        
-        if percentage >= 70:
-            status_text = "💥 EXCELLENT PERFORMANCE! You absolutely smashed the ECAT metric! 🏆✨"
-            st.success(status_text)
-        elif percentage >= 50:
-            status_text = "🎉 GOOD JOB! Outstanding score, keep polishing your concepts! 💪"
-            st.info(status_text)
-        else:
-            status_text = "🫡 KEEP IT UP! An excellent try, revision will lead you to victory! 🔥🚀"
-            st.warning(status_text)
 
+        # REPORT CARD VISUALIZATION
         st.markdown(f"### 📋 **Official Report Card: {student['User Name']}**")
         st.write("---")
         
@@ -695,7 +561,28 @@ elif st.session_state.page == "Grade Evaluation Processing":
         st.write("---")
         st.subheader(f"🏆 Final Score Obtained: {final_score} / {total_marks}")
         st.progress(int(percentage))
+        st.write("---")
+
+        # 👇 DOWNSIDE DYNAMIC INTERFACE RULES AREA 👇
+        st.markdown("### ✨ Performance Assessment Status")
         
+        if final_score >= 100:
+            st.success(f"💥 EXCELLENT METRIC PROFILE! You achieved {final_score} points! Visual Fireworks Triggered! 🎆🏆✨")
+            play_fireworks()
+        else:
+            st.error(f"😭 UNACCEPTABLE BENCHMARK PROFILE... Score is {final_score} (Requires minimum 100).")
+            st.markdown(
+                """
+                <div style="text-align: center; padding: 25px; border-radius: 10px; background-color: rgba(255, 75, 75, 0.1); border: 1px solid #ff4b4b;">
+                    <h1 style="font-size: 75px; margin: 0;">😭 😭 😭</h1>
+                    <h2 style="color: #ff4b4b; margin-top: 10px;">Exam Metric Criteria Failure</h2>
+                    <p style="font-size: 18px;">Please review your core concepts and try again. Practice makes perfect.</p>
+                    <span style="font-size: 40px;">💔 🛌 📉 🚮</span>
+                </div>
+                """, 
+                unsafe_allow_html=True
+            )
+
         st.write("")
         if st.button("🚪 Return to Main Menu", type="primary", use_container_width=True):
             st.session_state.page = "Main Menu"
