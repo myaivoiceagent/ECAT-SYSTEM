@@ -47,7 +47,7 @@ if not any(a.get("Admin Name") == "Zargham - Ullah" for a in admins):
     admins.append({
         "Admin Id": str(uuid.uuid4()),
         "Admin Name": "Zargham - Ullah",
-        "Password": "1234_qwe@"
+        "Password": "UET - CYBER - SECURITY - SPECIALIST - 2026 - 2030 - @#$%"
     })
     with open("Admin.json", "w") as f:
         json.dump(admins, f, indent=4)
@@ -89,8 +89,8 @@ elif st.session_state.page == "Admin Key Verification":
     secret_key = st.text_input("Enter Admin Secret Key:", type="password")
     col1, col2 = st.columns(2)
     with col1:
-        if st.button("Verify Key"):
-            if secret_key == "UET-ECAT-ADMIN":
+        if st.button("Veri]fy Key"):
+            if secret_key == "UET - ECAT - ADMIN - PORTAL - ACCESS":
                 st.session_state.page = "Admin Login"
                 st.rerun()
             else:
@@ -123,81 +123,55 @@ elif st.session_state.page == "Admin Login":
             st.session_state.page = "Main Menu"
             st.rerun()
 
-# ADMIN DASHBOARD
+# ------------------------------------------------------------------------
+# ADMIN DASHBOARD PORTAL (SHOW USER DETAILS TO ADMIN ONLY)
+# ------------------------------------------------------------------------
 elif st.session_state.page == "Admin Dashboard":
-    st.subheader("🎛️ Admin Control Dashboard")
-    st.write("Logged in as: **Zargham - Ullah**")
+    st.title("🛡️ Central Administration Registry Portal")
+    st.write("Review all evaluated native candidate records below.")
+    st.write("---")
     
-    if st.button("🚪 Logout Admin", type="primary"):
-        st.session_state.logged_in_user = None
+    # Load candidate details safely
+    import pandas as pd
+    results_data = load_json("Result.json")
+    
+    if results_data:
+        # Convert JSON structure to an elegant dataframe
+        df = pd.DataFrame(results_data)
+        
+        # Display total candidate count metrics
+        st.metric("Total Checked Submissions", len(df))
+        
+        # Format columns cleanly for Admin View
+        st.markdown("### 📋 Student Performance Master Ledger")
+        st.dataframe(
+            df, 
+            column_config={
+                "USER ID": "User ID",
+                "User Name": "Student Name",
+                "User Email": "Email Address",
+                "Total Questions": "Total Qs",
+                "Total Marks": "Max Marks",
+                "Obtained Marks": "Score Obtained",
+                "Correct Answers": "Correct ✔️",
+                "Wrong Answers": "Wrong ❌"
+            },
+            use_container_width=True,
+            hide_index=True
+        )
+        
+        # Option to clear or reset logs if needed
+        if st.button("🧹 Clear Submission Logs", type="secondary"):
+            save_json("Result.json", [])
+            st.success("Ledger database cleared successfully!")
+            st.rerun()
+            
+    else:
+        st.info("No candidates have evaluated or logged exams yet.")
+        
+    if st.button("Back to Main Portal Menu", use_container_width=True):
         st.session_state.page = "Main Menu"
         st.rerun()
-        
-    st.write("---")
-    t1, t2, t3, t4, t5 = st.tabs(["➕ Add Sections", "📝 Add Questions", "❌ Remove Questions", "👥 Users", "📊 Results"])
-    
-    with t1:
-        new_sec = st.text_input("Section Name:")
-        if st.button("Add Section"):
-            if new_sec:
-                quizz_data = load_json("Quizz.json")
-                if any(s["Section"].lower() == new_sec.lower() for s in quizz_data):
-                    st.warning("Section exists!")
-                else:
-                    quizz_data.append({"Section": new_sec, "Questions": []})
-                    save_json("Quizz.json", quizz_data)
-                    st.success("Section Added!")
-                    
-    with t2:
-        quizz_data = load_json("Quizz.json")
-        sections = [s["Section"] for s in quizz_data]
-        if sections:
-            sel_sec = st.selectbox("Select Target Section:", sections)
-            q_text = st.text_area("Question Content:")
-            op_a = st.text_input("Option A:")
-            op_b = st.text_input("Option B:")
-            op_c = st.text_input("Option C:")
-            op_d = st.text_input("Option D:")
-            cor_ans = st.selectbox("Correct Option:", ["A", "B", "C", "D"])
-            if st.button("Save Question"):
-                for s in quizz_data:
-                    if s["Section"] == sel_sec:
-                        s["Questions"].append({
-                            "Question No": len(s["Questions"]) + 1,
-                            "Question": q_text,
-                            "Options": {"A": op_a, "B": op_b, "C": op_c, "D": op_d},
-                            "Correct Answer": cor_ans
-                        })
-                        break
-                save_json("Quizz.json", quizz_data)
-                st.success("Question Saved!")
-
-    with t3:
-        quizz_data = load_json("Quizz.json")
-        sections = [s["Section"] for s in quizz_data]
-        if sections:
-            sel_sec_rem = st.selectbox("Select Section:", sections, key="rem_sec")
-            target_sec = next(s for s in quizz_data if s["Section"] == sel_sec_rem)
-            if target_sec["Questions"]:
-                q_list = [f"{q['Question No']}: {q['Question'][:30]}..." for q in target_sec["Questions"]]
-                selected_q_str = st.selectbox("Choose Question:", q_list)
-                q_no = int(selected_q_str.split(":")[0])
-                if st.button("Delete Question"):
-                    target_sec["Questions"] = [q for q in target_sec["Questions"] if q["Question No"] != q_no]
-                    for idx, q in enumerate(target_sec["Questions"], start=1):
-                        q["Question No"] = idx
-                    save_json("Quizz.json", quizz_data)
-                    st.rerun()
-
-    with t4:
-        users = load_json("Login.json")
-        for u in users:
-            st.write(f"👤 **{u['User Name']}** ({u['Email']})")
-
-    with t5:
-        results = load_json("Result.json")
-        for r in results:
-            st.write(f"🔹 **{r['User Name']}** - Marks: {r['User Result'][0]['Obtained Marks']}")
 
 # STUDENT AUTHENTICATION
 elif st.session_state.page == "Student Auth Menu":
