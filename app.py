@@ -297,7 +297,9 @@ elif st.session_state.page == "ECAT Subject Selection":
                     st.session_state.page = "Live Examination"
                     st.rerun()
 
-# LIVE EXAMINATION (FIXED QUESTIONS ON TOP, TIMER & MATRIX STABLE)
+# ------------------------------------------------------------------------
+# LIVE EXAMINATION (UPDATED: WITH REAL-TIME QUESTION COUNTERS)
+# ------------------------------------------------------------------------
 elif st.session_state.page == "Live Examination":
     student = st.session_state.logged_in_user
     questions = st.session_state.active_quiz
@@ -323,12 +325,26 @@ elif st.session_state.page == "Live Examination":
     st.write("---")
 
     if questions:
+        # 📊 REAL-TIME QUESTION TRACKING COUNTERS
+        total_questions_count = len(questions)
+        solved_count = len(st.session_state.saved_questions)
+        skipped_count = len(st.session_state.skipped_questions)
+        remaining_count = total_questions_count - (solved_count + skipped_count)
+
+        # Counter Banner Visual Layout
+        c1, c2, c3, c4 = st.columns(4)
+        c1.metric("Total Items 📋", total_questions_count)
+        c2.metric("Saved/Locked ✅", solved_count)
+        c3.metric("Skipped Items 🟡", skipped_count)
+        c4.metric("Remaining ⏳", remaining_count)
+        st.write("---")
+
         current_idx = st.session_state.current_q_index
         q = questions[current_idx]
         display_no = current_idx + 1
 
-        # 1️⃣ QUESTIONS AND OPTIONS (STAYS ON TOP)
-        st.markdown(f"#### **Question {display_no} of {len(questions)}**")
+        # 1️⃣ QUESTIONS AND OPTIONS (ON TOP)
+        st.markdown(f"#### **Question {display_no} of {total_questions_count}**")
         
         if current_idx in st.session_state.saved_questions:
             st.warning("🔒 This question has been locked and saved. You cannot modify it.")
@@ -370,6 +386,8 @@ elif st.session_state.page == "Live Examination":
             with col_actions[1]:
                 if st.button("🟡 Skip Question", use_container_width=True):
                     st.session_state.skipped_questions.add(current_idx)
+                    # Remove from saved just in case they re-skipped
+                    st.session_state.saved_questions.discard(current_idx)
                     if current_idx < len(questions) - 1:
                         st.session_state.current_q_index += 1
                     st.rerun()
@@ -389,7 +407,7 @@ elif st.session_state.page == "Live Examination":
                 st.session_state.page = "Grade Evaluation Processing"
                 st.rerun()
 
-        # 2️⃣ NAVIGATION MATRIX BOX (STAYS AT THE BOTTOM)
+        # 2️⃣ NAVIGATION MATRIX BOX (AT THE BOTTOM)
         st.write("")
         st.write("---")
         st.write("**📋 Exam Question Navigator Matrix:**")
@@ -416,8 +434,9 @@ elif st.session_state.page == "Live Examination":
     else:
         st.warning("No dynamic questions resolved.")
 
+
 # ------------------------------------------------------------------------
-# GRADE EVALUATION PROCESSING (UPDATED: EFFECTS ON DOWNSIDE & FULL SCREEN)
+# GRADE EVALUATION PROCESSING (REALISTIC DOWNSIDE INTERACTIVE FIREWORKS)
 # ------------------------------------------------------------------------
 elif st.session_state.page == "Grade Evaluation Processing":
     st.subheader("📊 Output Metric Breakdown")
@@ -460,7 +479,7 @@ elif st.session_state.page == "Grade Evaluation Processing":
             save_json("Result.json", results_db)
             st.session_state.result_saved = True
 
-        # 1️⃣ FIRST: SHOW METRICS & SUMMARY (ALWAYS ON TOP)
+        # 1️⃣ FIRST: SCORE METRICS PERFORMANCE SHOW (ALWAYS ON TOP)
         st.success("Test Logged Safely in Central Registry Ledger Databases.")
         st.write("---")
         
@@ -475,70 +494,144 @@ elif st.session_state.page == "Grade Evaluation Processing":
         
         st.write("---")
 
-        # 2️⃣ SECOND: EFFECTS DELIVERED ON THE DOWNSIDE
+        # 2️⃣ SECOND: RE-ENFORCED DOWNSIDE LOGIC PACKS
         if final_score >= 100:
-            # Full-screen Dynamic Fireworks injected at the bottom layer
-            st.markdown("""
+            # 🎆 HIGH-GRADE PRODUCTION ENGINE WITH GRAVITY EXPLOSIONS (TRUE FULL-SCREEN BACKGROUND)
+            html_components.html("""
+            <!DOCTYPE html>
+            <html>
+            <head>
             <style>
-                .real-sky-wrapper {
-                    position: fixed;
+                html, body {
+                    margin: 0; padding: 0; width: 100%; height: 100%;
+                    overflow: hidden; background: transparent;
+                }
+                canvas {
+                    position: fixed; 
                     top: 0; left: 0;
                     width: 100vw; height: 100vh;
+                    z-index: -1; 
                     pointer-events: none;
-                    z-index: 99999;
-                    overflow: hidden;
                 }
-                @keyframes rocket-launch {
-                    0% { transform: translateY(100vh); opacity: 1; }
-                    50% { opacity: 1; }
-                    55% { transform: translateY(var(--burst-y)); opacity: 0; }
-                    100% { transform: translateY(var(--burst-y)); opacity: 0; }
-                }
-                @keyframes burst-particles {
-                    0%, 53% { transform: scale(0); opacity: 0; }
-                    55% { transform: scale(0.2); opacity: 1; }
-                    100% { transform: scale(2.5); opacity: 0; }
-                }
-                .rocket-trail {
-                    position: absolute;
-                    width: 4px; height: 40px;
-                    background: linear-gradient(to top, transparent, #ffffff);
-                    border-radius: 50%;
-                    animation: rocket-launch 4s infinite cubic-bezier(0.25, 1, 0.5, 1);
-                    animation-delay: var(--delay);
-                }
-                .burst-matrix {
-                    position: absolute;
-                    top: var(--burst-y);
-                    left: calc(var(--launch-x) - 50px);
-                    width: 120px; height: 120px;
-                    border-radius: 50%;
-                    background: radial-gradient(circle, var(--c1) 0%, var(--c2) 30%, transparent 70%);
-                    box-shadow: 
-                        0 0 40px var(--c1),
-                        -60px -60px 0 var(--c2), 60px -60px 0 var(--c1),
-                        -60px 60px 0 var(--c1), 60px 60px 0 var(--c2),
-                        0px -80px 0 var(--c2), 0px 80px 0 var(--c1),
-                        -80px 0px 0 var(--c1), 80px 0px 0 var(--c2);
-                    animation: burst-particles 4s infinite ease-out;
-                    animation-delay: var(--delay);
-                    transform-origin: center center;
-                }
-                .fw-left   { --launch-x: 20%; --burst-y: 25vh; --delay: 0s;   --c1: #ff3366; --c2: #ffea00; }
-                .fw-center { --launch-x: 50%; --burst-y: 15vh; --delay: 1.2s; --c1: #00e5ff; --c2: #d500f9; }
-                .fw-right  { --launch-x: 80%; --burst-y: 30vh; --delay: 0.6s; --c1: #00e676; --c2: #ffff00; }
-                .fw-mid-l  { --launch-x: 35%; --burst-y: 40vh; --delay: 2.0s; --c1: #ff9100; --c2: #ff1744; }
-                .fw-mid-r  { --launch-x: 68%; --burst-y: 35vh; --delay: 2.6s; --c1: #2979ff; --c2: #00e5ff; }
             </style>
-            
-            <div class="real-sky-wrapper">
-                <div class="rocket-trail fw-left"></div><div class="burst-matrix fw-left"></div>
-                <div class="rocket-trail fw-right"></div><div class="burst-matrix fw-right"></div>
-                <div class="rocket-trail fw-center"></div><div class="burst-matrix fw-center"></div>
-                <div class="rocket-trail fw-mid-l"></div><div class="burst-matrix fw-mid-l"></div>
-                <div class="rocket-trail fw-mid-r"></div><div class="burst-matrix fw-mid-r"></div>
-            </div>
-            
+            </head>
+            <body>
+            <canvas id="skyCanvas"></canvas>
+            <script>
+                const canvas = document.getElementById('skyCanvas');
+                const ctx = canvas.getContext('2d');
+                
+                function resize() {
+                    canvas.width = window.parent.innerWidth || window.innerWidth;
+                    canvas.height = window.parent.innerHeight || window.innerHeight;
+                }
+                window.addEventListener('resize', resize);
+                window.addEventListener('load', resize);
+                resize();
+
+                class Spark {
+                    constructor(x, y, color) {
+                        this.x = x; this.y = y; this.color = color;
+                        // Random circular vectors
+                        const angle = Math.random() * Math.PI * 2;
+                        const speed = Math.random() * 5 + 1.5;
+                        this.vx = Math.cos(angle) * speed;
+                        this.vy = Math.sin(angle) * speed;
+                        
+                        this.friction = 0.95; 
+                        this.gravity = 0.12; 
+                        this.alpha = 1; 
+                        this.decay = 0.01 + Math.random() * 0.015;
+                    }
+                    update() {
+                        this.vx *= this.friction;
+                        this.vy *= this.friction;
+                        this.vy += this.gravity;
+                        this.x += this.vx;
+                        this.y += this.vy;
+                        this.alpha -= this.decay;
+                    }
+                    draw() {
+                        ctx.save();
+                        ctx.globalAlpha = this.alpha;
+                        ctx.beginPath();
+                        ctx.arc(this.x, this.y, 2.2, 0, Math.PI * 2);
+                        ctx.fillStyle = this.color;
+                        // High glow physics factor
+                        ctx.shadowBlur = 8;
+                        ctx.shadowColor = this.color;
+                        ctx.fill();
+                        ctx.restore();
+                    }
+                }
+
+                class Rocket {
+                    constructor() {
+                        this.x = Math.random() * canvas.width;
+                        this.y = canvas.height;
+                        this.targetY = Math.random() * (canvas.height * 0.45) + 50;
+                        this.speed = 11 + Math.random() * 4;
+                        this.color = `hsl(${Math.random() * 360}, 100%, 60%)`;
+                        this.sparks = [];
+                        this.exploded = false;
+                    }
+                    update() {
+                        if (!this.exploded) {
+                            this.y -= this.speed;
+                            if (this.y <= this.targetY) {
+                                this.exploded = true;
+                                this.createExplosion();
+                            }
+                        } else {
+                            for (let i = this.sparks.length - 1; i >= 0; i--) {
+                                this.sparks[i].update();
+                                if (this.sparks[i].alpha <= 0) this.sparks.splice(i, 1);
+                            }
+                        }
+                    }
+                    createExplosion() {
+                        const count = 80 + Math.floor(Math.random() * 40);
+                        for (let i = 0; i < count; i++) {
+                            this.sparks.push(new Spark(this.x, this.y, this.color));
+                        }
+                    }
+                    draw() {
+                        if (!this.exploded) {
+                            ctx.beginPath();
+                            ctx.arc(this.x, this.y, 3, 0, Math.PI * 2);
+                            ctx.fillStyle = '#ffffff';
+                            ctx.fill();
+                        } else {
+                            this.sparks.forEach(s => s.draw());
+                        }
+                    }
+                }
+
+                const launcherArray = [];
+                function runLoop() {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    
+                    if (Math.random() < 0.05 && launcherArray.length < 7) {
+                        launcherArray.push(new Rocket());
+                    }
+                    
+                    for (let i = launcherArray.length - 1; i >= 0; i--) {
+                        launcherArray[i].update();
+                        launcherArray[i].draw();
+                        if (launcherArray[i].exploded && launcherArray[i].sparks.length === 0) {
+                            launcherArray.splice(i, 1);
+                        }
+                    }
+                    requestAnimationFrame(runLoop);
+                }
+                runLoop();
+            </script>
+            </body>
+            </html>
+            """, height=220)
+
+            # Congratulations Card
+            st.markdown("""
             <div style="background-color: #0e1117; border: 2px solid #2e7d32; border-radius: 12px; padding: 25px; text-align: center; margin-top: 20px;">
                 <h1 style="color: #4caf50 !important; font-family: sans-serif; font-weight: bold; margin:0;">🎆 CONGRATULATIONS 🎆</h1>
                 <p style="color: white !important; margin: 5px 0 0 0;">Excellent work! You have successfully passed the threshold.</p>
@@ -546,7 +639,7 @@ elif st.session_state.page == "Grade Evaluation Processing":
             """, unsafe_allow_html=True)
             
         else:
-            # Crying Face Banner placed down below the metrics
+            # 😭 Crying Face Card downside
             st.markdown("""
             <style>
                 @keyframes tear-drop {
