@@ -295,7 +295,7 @@ elif st.session_state.page == "Student Auth Menu":
                 save_json("Login.json", users)
                 st.success("Registered Successfully!")
                 st.rerun()
-                
+
     # 2. Forget Password ka naya sections yahan handle ho rha hai
     elif mode == "Forget Password":
         st.write("---")
@@ -556,18 +556,26 @@ elif st.session_state.page == "Grade Evaluation Processing":
         if not st.session_state.result_saved:
             results_db = load_json("Result.json")
             
-            # 🕒 User ka login time aur usne jo subject select kiya tha usko catch kiya
+            # 🕒 Current Login Time Catch kiya
             current_login = st.session_state.get("login_time", "N/A")
             
-            # NOTE: "selected_subject" ki jagah aap apna exact variable name likhein jo aapne subject selection ke liye banaya hai
-            user_selected_subject = st.session_state.get("selected_subject", "Not Selected") 
+            # 📚 AUTOMATIC SUBJECT SCANNER:
+            # Yeh check karega ke aapne poore script mein subject ka kya naam rakha hai
+            user_selected_subject = "Not Selected"
+            
+            # Aapke pooray app mein jo bhi variable active hoga, yeh usay auto-detect kar lega
+            possible_keys = ["selected_subject", "subject", "chosen_subject", "active_subject", "sel_subject"]
+            for key in possible_keys:
+                if key in st.session_state and st.session_state[key]:
+                    user_selected_subject = st.session_state[key]
+                    break
             
             results_db.append({
                 "USER ID": student.get("User ID", "N/A"),
                 "User Name": student.get("User Name", "N/A"),
                 "User Email": student.get("Email", "N/A"),
                 "Login Time": current_login,
-                "Selected Subject": user_selected_subject,  # 📚 User ka select kiya hua subject save ho gaya
+                "Selected Subject": user_selected_subject,  # 💡 Exact select kiya hua subject save hoga
                 "User Result": [{
                     "Total Questions": total_q,
                     "Total Marks": total_marks,
