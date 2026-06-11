@@ -191,21 +191,52 @@ elif st.session_state.page == "Admin Dashboard":
 
     with t4:
         st.subheader("👥 Registered Users Details")
-        users = load_json("Login.json")
+        import json
+        import os
+        
+        # Safe reading inside admin panel
+        def admin_load_json(filename):
+            if os.path.exists(filename):
+                with open(filename, "r") as f:
+                    content = f.read().strip()
+                    return json.loads(content) if content else []
+            return []
+
+        def admin_save_json(filename, data):
+            with open(filename, "w") as f:
+                json.dump(data, f, indent=4)
+
+        users = admin_load_json("Login.json")
+        
         if users:
-            flattened_users = []
-            for u in users:
-                flattened_users.append({
-                    "User ID": u.get("User ID", "N/A"),
-                    "User Name": u.get("User Name", "N/A"),
-                    "Email": u.get("Email", "N/A"),
-                    "Password": u.get("Password", "N/A"),
-                    "Last Login Time 🕒": u.get("Last Login", "Not Logged In Yet") # Naya login time column yahan dikhega
-                })
+            # 🛠️ Loop chala kar har user ki details aur delete button render karenge
+            for idx, u in enumerate(users):
+                col1, col2, col3, col4 = st.columns([2, 3, 3, 1.5])
                 
-            import pandas as pd
-            df_users = pd.DataFrame(flattened_users)
-            st.dataframe(df_users, use_container_width=True, hide_index=True)
+                with col1:
+                    st.write(f"**{u.get('User Name', 'N/A')}**")
+                with col2:
+                    st.write(f"📧 {u.get('Email', 'N/A')}")
+                with col3:
+                    st.write(f"🕒 {u.get('Last Login', 'Not Logged In Yet')}")
+                with col4:
+                    # 🗑️ REMOVE BUTTON
+                    if st.button("❌ Remove", key=f"del_usr_{idx}"):
+                        target_email = u.get("Email")
+                        target_name = u.get("User Name")
+                        
+                        # 1. Login.json se nikalo
+                        new_users_list = [usr for usr in users if usr.get("Email") != target_email]
+                        admin_save_json("Login.json", new_users_list)
+                        
+                        # 2. Result.json se bhi sara data delete karo taake clean wipe ho
+                        results = admin_load_json("Result.json")
+                        new_results_list = [r for r in results if r.get("User Email") != target_email]
+                        admin_save_json("Result.json", new_results_list)
+                        
+                        st.success(f"{target_name} ka data mukammal delete ho gaya!")
+                        st.rerun()
+                st.write("---")
         else:
             st.info("No registered users found.")
 
