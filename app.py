@@ -124,60 +124,51 @@ elif st.session_state.page == "Admin Login":
             st.rerun()
 
 # ------------------------------------------------------------------------
-# ADMIN DASHBOARD PORTAL (PARSES NESTED LOGS SECURELY FOR ADMIN VIEW ONLY)
+# ONLY REPLACE THE USER RESULT / DETAILS SECTION INSIDE ADMIN DASHBOARD
 # ------------------------------------------------------------------------
-elif st.session_state.page == "Admin Dashboard":
-    st.title("🛡️ Central Administration Registry Portal")
-    st.write("Review all evaluated native candidate records below.")
-    st.write("---")
+st.subheader("📊 Candidate Performance Master Ledger")
+
+results_data = load_json("Result.json")
+
+if results_data:
+    flattened_list = []
     
-    results_data = load_json("Result.json")
+    # Safe breakdown of JSON records to prevent raw HTML/text printing on screen
+    for row in results_data:
+        res_list = row.get("User Result", [{}])
+        res = res_list[0] if isinstance(res_list, list) and len(res_list) > 0 else {}
+        
+        flattened_list.append({
+            "User ID": row.get("USER ID", "N/A"),
+            "Student Name": row.get("User Name", "N/A"),
+            "Email Address": row.get("User Email", "N/A"),
+            "Total Qs": res.get("Total Questions", 0),
+            "Max Marks": res.get("Total Marks", 0),
+            "Score Obtained": res.get("Obtained Marks", 0),
+            "Correct ✔️": res.get("Correct Answers", 0),
+            "Wrong ❌": res.get("Wrong Answers", 0)
+        })
+        
+    import pandas as pd
+    df = pd.DataFrame(flattened_list)
     
-    if results_data:
-        flattened_list = []
+    st.metric("Total Checked Submissions", len(df))
+    
+    # Displays clean dataframe grid so no raw HTML string leaks onto the screen
+    st.dataframe(
+        df, 
+        use_container_width=True,
+        hide_index=True
+    )
+    
+    st.write("")
+    if st.button("Clear Submission Logs Databases", type="secondary"):
+        save_json("Result.json", [])
+        st.success("Ledger database cleared successfully!")
+        st.rerun()
         
-        # Safe breakdown of JSON records
-        for row in results_data:
-            # Handle nested list structure smoothly
-            res_list = row.get("User Result", [{}])
-            res = res_list[0] if isinstance(res_list, list) and len(res_list) > 0 else {}
-            
-            flattened_list.append({
-                "User ID": row.get("USER ID", "N/A"),
-                "Student Name": row.get("User Name", "N/A"),
-                "Email Address": row.get("User Email", "N/A"),
-                "Total Qs": res.get("Total Questions", 0),
-                "Max Marks": res.get("Total Marks", 0),
-                "Score Obtained": res.get("Obtained Marks", 0),
-                "Correct ✔️": res.get("Correct Answers", 0),
-                "Wrong ❌": res.get("Wrong Answers", 0)
-            })
-            
-        import pandas as pd
-        df = pd.DataFrame(flattened_list)
-        
-        st.metric("Total Checked Submissions", len(df))
-        st.markdown("### 📋 Student Performance Master Ledger")
-        
-        st.dataframe(
-            df, 
-            use_container_width=True,
-            hide_index=True
-        )
-        
-        st.write("")
-        if st.button("实时 Data Clean Registry Logs (Reset Database)", type="secondary"):
-            save_json("Result.json", [])
-            st.success("Ledger database cleared successfully!")
-            st.rerun()
-            
     else:
         st.info("No candidates have evaluated or logged exams yet.")
-        
-    st.write("")
-    if st.button("Back to Main Portal Menu", use_container_width=True):
-        st.session_state.page = "Main Menu"
-        st.rerun()
 
 # ECAT TEST LOGIN
 elif st.session_state.page == "ECAT Test Login":
