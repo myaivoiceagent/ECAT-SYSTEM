@@ -268,6 +268,7 @@ elif st.session_state.page == "Student Auth Menu":
     mode = st.radio("Action:", ["User Login", "Create Account", "Forget Password"])
     
     if mode == "User Login":
+        # .strip() lagaya taake agar copy-paste mein koi extra space aa jaye toh auto-delete ho jaye
         login_email = st.text_input("Email:").strip()
         login_user = st.text_input("Username:").strip()
         login_pass = st.text_input("Password:", type="password").strip()
@@ -276,49 +277,66 @@ elif st.session_state.page == "Student Auth Menu":
             users = load_json("Login.json")
             found = False
             for u in users:
-                # 💡 .strip() aur .lower() dono side par laga kar space aur letters ka rola khatam
-                db_email = str(u.get("Email", "")).strip().lower()
-                db_user = str(u.get("User Name", "")).strip().lower()
-                db_pass = str(u.get("Password", "")).strip()
+                # 💡 SAFE KEYS SCANNER: Dono space aur bina space wali keys check karega taake fail na ho
+                db_email = str(u.get("Email", u.get("email", ""))).strip().lower()
+                db_user = str(u.get("User Name", u.get("Username", u.get("User Name", "")))).strip().lower()
+                db_pass = str(u.get("Password", u.get("password", ""))).strip()
                 
+                # Sab ko lowercase (choti abc) mein match kiya taake capital letters ka rola khatam ho
                 if db_email == login_email.lower() and db_user == login_user.lower() and db_pass == login_pass:
                     found = True
                     
-                    # 🕒 Timestamp save kiya login ka
+                    # 🕒 Timestamp generated safely
                     from datetime import datetime
                     current_time = datetime.now().strftime("%I:%M %p (%d-%b)")
                     st.session_state["login_time"] = current_time
+                    
+                    # File update configuration
                     u["Last Login"] = current_time  
                     save_json("Login.json", users)
                     
                     st.session_state.logged_in_user = u  
                     st.session_state.page = "Main Menu"
-                    st.success("Login Successful!")
+                    st.success("Login Successful! 🎉")
                     st.rerun()
             if not found:
-                st.error("❌ No Record Found or Credentials ghalt hain. Dobara check karein!")
+                st.error("❌ Invalid Credentials. Email, Username ya Password ghalt hai!")
 
     elif mode == "Create Account":
-        reg_email = st.text_input("Email:")
-        reg_name = st.text_input("Full Name:")
-        reg_pass = st.text_input("Password:", type="password")
+        reg_email = st.text_input("Email:").strip()
+        reg_name = st.text_input("Full Name:").strip()
+        reg_pass = st.text_input("Password:", type="password").strip()
+        
         if st.button("Register"):
+            # File load ki
             users = load_json("Login.json")
-            if len(reg_pass) < 6:
-                st.error("Min 6 chars required.")
-            elif any(u["Email"].lower() == reg_email.lower() for u in users):
-                st.error("Email taken.")
+            
+            # Agar file bilkul khali ya corrupt hai, toh usay khali list [] bana do
+            if not isinstance(users, list):
+                users = []
+                
+            if not reg_email or not reg_name or not reg_pass:
+                st.error("❌ Saari fields ko bharna zaroori hai!")
+            elif len(reg_pass) < 6:
+                st.error("❌ Password kam az kam 6 characters ka hona chahiye.")
+            elif any(str(u.get("Email", "")).lower() == reg_email.lower() for u in users):
+                st.error("❌ Yeh Email pehle se registered hai!")
             else:
                 import uuid
-                users.append({
-                    "User ID": str(uuid.uuid4())[:8],  # 💡 Brackets () add kar diye taake unique ID string banay, function object nahi
+                # Naya user data structure jo login code ke sath 100% match karta hai
+                new_user = {
+                    "User ID": str(uuid.uuid4())[:8],
                     "User Name": reg_name,
                     "Email": reg_email,
-                    "Password": reg_pass
-                })
-                save_json("Login.json", users)
-                st.success("Registered Successfully!")
-                st.rerun()
+                    "Password": reg_pass,
+                    "Last Login": "Not Logged In Yet"
+                }
+                
+                users.append(new_user)
+                save_json("Login.json", users) # File mein write kiya
+                
+                st.success("🎉 Account Created Successfully! Ab 'User Login' par ja kar login karein.")
+                st.rerun()()
 
     # 2. Forget Password ka naya sections yahan handle ho rha hai
     elif mode == "Forget Password":
