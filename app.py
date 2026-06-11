@@ -268,31 +268,35 @@ elif st.session_state.page == "Student Auth Menu":
     mode = st.radio("Action:", ["User Login", "Create Account", "Forget Password"])
     
     if mode == "User Login":
-        login_email = st.text_input("Email:")
-        login_user = st.text_input("Username:")
-        login_pass = st.text_input("Password:", type="password")
+        login_email = st.text_input("Email:").strip()
+        login_user = st.text_input("Username:").strip()
+        login_pass = st.text_input("Password:", type="password").strip()
+        
         if st.button("Log In"):
             users = load_json("Login.json")
             found = False
             for u in users:
-                if u["Email"].lower() == login_email.lower() and u["User Name"].lower() == login_user.lower() and u["Password"] == login_pass:
+                # 💡 .strip() aur .lower() dono side par laga kar space aur letters ka rola khatam
+                db_email = str(u.get("Email", "")).strip().lower()
+                db_user = str(u.get("User Name", "")).strip().lower()
+                db_pass = str(u.get("Password", "")).strip()
+                
+                if db_email == login_email.lower() and db_user == login_user.lower() and db_pass == login_pass:
                     found = True
                     
-                    # 🕒 Live Time Format Generated
+                    # 🕒 Timestamp save kiya login ka
                     from datetime import datetime
                     current_time = datetime.now().strftime("%I:%M %p (%d-%b)")
-                    
-                    # Session state mein bhi save kiya aur original database (Login.json) mein bhi update kar diya
                     st.session_state["login_time"] = current_time
                     u["Last Login"] = current_time  
-                    save_json("Login.json", users) # File update ho gayi
+                    save_json("Login.json", users)
                     
                     st.session_state.logged_in_user = u  
                     st.session_state.page = "Main Menu"
                     st.success("Login Successful!")
                     st.rerun()
             if not found:
-                st.error("Invalid Credentials.")
+                st.error("❌ No Record Found or Credentials ghalt hain. Dobara check karein!")
 
     elif mode == "Create Account":
         reg_email = st.text_input("Email:")
