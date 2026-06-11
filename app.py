@@ -417,7 +417,7 @@ elif st.session_state.page == "Live Examination":
         st.warning("No dynamic questions resolved.")
 
 # ------------------------------------------------------------------------
-# GRADE EVALUATION PROCESSING (FIREWORKS IN BACKGROUND / DOWN SIDE FLOW)
+# GRADE EVALUATION PROCESSING (DYNAMIC: FIREWORKS VS CRYING FACE)
 # ------------------------------------------------------------------------
 elif st.session_state.page == "Grade Evaluation Processing":
     st.subheader("📊 Output Metric Breakdown")
@@ -442,7 +442,7 @@ elif st.session_state.page == "Grade Evaluation Processing":
                 
         total_q = len(questions)
         total_marks = total_q * 4
-        calculated_marks = (correct_count * 4) - (wrong_count * 1) 
+        calculated_marks = (correct_count * 4) - (wrong_count * 4) 
         final_score = max(0, calculated_marks)
         
         if not st.session_state.result_saved:
@@ -460,14 +460,122 @@ elif st.session_state.page == "Grade Evaluation Processing":
             save_json("Result.json", results_db)
             st.session_state.result_saved = True
 
-        # 1️⃣ Content Box Design (Stays cleanly on top)
-        st.markdown("""
-        <div style="background-color: #0e1117; border: 2px solid #2e7d32; border-radius: 12px; padding: 25px; text-align: center; margin-bottom: 25px; position: relative; z-index: 10;">
-            <h1 style="color: #4caf50 !important; font-family: sans-serif; font-weight: bold; margin:0;">🎆 CONGRATULATIONS 🎆</h1>
-            <p style="color: white !important; margin: 5px 0 0 0;">Your ECAT exam has been evaluated natively.</p>
-        </div>
-        """, unsafe_allow_html=True)
-        
+        # 🎯 CONDITION CHECK: Marks 100 ya 100 se zyada hain toh Fireworks chalengi
+        if final_score >= 100:
+            # Full-screen Dynamic Fireworks
+            st.markdown("""
+            <style>
+                .real-sky-wrapper {
+                    position: fixed;
+                    top: 0; left: 0;
+                    width: 100vw; height: 100vh;
+                    pointer-events: none;
+                    z-index: 99999;
+                    overflow: hidden;
+                }
+                @keyframes rocket-launch {
+                    0% { transform: translateY(100vh); opacity: 1; }
+                    50% { opacity: 1; }
+                    55% { transform: translateY(var(--burst-y)); opacity: 0; }
+                    100% { transform: translateY(var(--burst-y)); opacity: 0; }
+                }
+                @keyframes burst-particles {
+                    0%, 53% { transform: scale(0); opacity: 0; }
+                    55% { transform: scale(0.2); opacity: 1; }
+                    100% { transform: scale(2.5); opacity: 0; }
+                }
+                .rocket-trail {
+                    position: absolute;
+                    width: 4px; height: 40px;
+                    background: linear-gradient(to top, transparent, #ffffff);
+                    border-radius: 50%;
+                    animation: rocket-launch 4s infinite cubic-bezier(0.25, 1, 0.5, 1);
+                    animation-delay: var(--delay);
+                }
+                .burst-matrix {
+                    position: absolute;
+                    top: var(--burst-y);
+                    left: calc(var(--launch-x) - 50px);
+                    width: 120px; height: 120px;
+                    border-radius: 50%;
+                    background: radial-gradient(circle, var(--c1) 0%, var(--c2) 30%, transparent 70%);
+                    box-shadow: 
+                        0 0 40px var(--c1),
+                        -60px -60px 0 var(--c2), 60px -60px 0 var(--c1),
+                        -60px 60px 0 var(--c1), 60px 60px 0 var(--c2),
+                        0px -80px 0 var(--c2), 0px 80px 0 var(--c1),
+                        -80px 0px 0 var(--c1), 80px 0px 0 var(--c2);
+                    animation: burst-particles 4s infinite ease-out;
+                    animation-delay: var(--delay);
+                    transform-origin: center center;
+                }
+                .fw-left   { --launch-x: 20%; --burst-y: 25vh; --delay: 0s;   --c1: #ff3366; --c2: #ffea00; }
+                .fw-center { --launch-x: 50%; --burst-y: 15vh; --delay: 1.2s; --c1: #00e5ff; --c2: #d500f9; }
+                .fw-right  { --launch-x: 80%; --burst-y: 30vh; --delay: 0.6s; --c1: #00e676; --c2: #ffff00; }
+                .fw-mid-l  { --launch-x: 35%; --burst-y: 40vh; --delay: 2.0s; --c1: #ff9100; --c2: #ff1744; }
+                .fw-mid-r  { --launch-x: 68%; --burst-y: 35vh; --delay: 2.6s; --c1: #2979ff; --c2: #00e5ff; }
+            </style>
+            
+            <div class="real-sky-wrapper">
+                <div class="rocket-trail fw-left"></div><div class="burst-matrix fw-left"></div>
+                <div class="rocket-trail fw-right"></div><div class="burst-matrix fw-right"></div>
+                <div class="rocket-trail fw-center"></div><div class="burst-matrix fw-center"></div>
+                <div class="rocket-trail fw-mid-l"></div><div class="burst-matrix fw-mid-l"></div>
+                <div class="rocket-trail fw-mid-r"></div><div class="burst-matrix fw-mid-r"></div>
+            </div>
+            """, unsafe_allow_html=True)
+
+            # Congratulations Banner
+            st.markdown("""
+            <div style="background-color: #0e1117; border: 2px solid #2e7d32; border-radius: 12px; padding: 25px; text-align: center; margin-bottom: 25px;">
+                <h1 style="color: #4caf50 !important; font-family: sans-serif; font-weight: bold; margin:0;">🎆 CONGRATULATIONS 🎆</h1>
+                <p style="color: white !important; margin: 5px 0 0 0;">Excellent work! You have successfully passed the threshold.</p>
+            </div>
+            """, unsafe_allow_html=True)
+            
+        else:
+            # 😭 ELSE: Marks 100 se kam hain toh Crying Face animation dikhegi
+            st.markdown("""
+            <style>
+                @keyframes tear-drop {
+                    0% { transform: translateY(0) scale(1); opacity: 1; }
+                    80% { opacity: 1; }
+                    100% { transform: translateY(40px) scale(0.5); opacity: 0; }
+                }
+                .crying-container {
+                    background-color: #0e1117; 
+                    border: 2px solid #d32f2f; 
+                    border-radius: 12px; 
+                    padding: 25px; 
+                    text-align: center; 
+                    margin-bottom: 25px;
+                }
+                .sad-emoji-wrapper {
+                    font-size: 70px;
+                    position: relative;
+                    display: inline-block;
+                    line-height: 1;
+                }
+                .tear {
+                    position: absolute;
+                    font-size: 24px;
+                    animation: tear-drop 1.5s infinite linear;
+                }
+                .tear-left { left: 10px; top: 45px; animation-delay: 0s; }
+                .tear-right { right: 10px; top: 45px; animation-delay: 0.7s; }
+            </style>
+            
+            <div class="crying-container">
+                <div class="sad-emoji-wrapper">
+                    😢
+                    <span class="tear tear-left">💧</span>
+                    <span class="tear tear-right">💧</span>
+                </div>
+                <h1 style="color: #d32f2f !important; font-family: sans-serif; font-weight: bold; margin: 10px 0 0 0;">BETTER LUCK NEXT TIME!</h1>
+                <p style="color: white !important; margin: 5px 0 0 0;">Score is below 100. Hard work pays off, keep practicing!</p>
+            </div>
+            """, unsafe_allow_html=True)
+
         st.success("Test Logged Safely in Central Registry Ledger Databases.")
         st.write("---")
         
@@ -478,144 +586,10 @@ elif st.session_state.page == "Grade Evaluation Processing":
         col1.metric("Total Items", total_q)
         col2.metric("Correct ✔️", correct_count)
         col3.metric("Wrong ❌", wrong_count)
-        col4.metric("Unanswered ⚪", unanswered_count)
-
-        # 2️⃣ FIREWORKS ENGINE (Placed at the bottom of data, rendering as fixed back-layer)
-        html_components.html("""
-        <!DOCTYPE html>
-        <html>
-        <head>
-        <style>
-            html, body {
-                margin: 0; padding: 0; width: 100%; height: 100%;
-                overflow: hidden; background: transparent;
-            }
-            /* Fixed at the bottom layer, won't cover or block text clicks */
-            canvas {
-                position: fixed; 
-                top: 0; 
-                left: 0;
-                width: 100vw; 
-                height: 100vh;
-                z-index: -1; 
-                pointer-events: none;
-            }
-        </style>
-        </head>
-        <body>
-        <canvas id="canvas"></canvas>
-        <script>
-            const canvas = document.getElementById('canvas');
-            const ctx = canvas.getContext('2d');
-            
-            function resize() {
-                canvas.width = window.parent.innerWidth || window.innerWidth;
-                canvas.height = window.parent.innerHeight || window.innerHeight;
-            }
-            window.addEventListener('resize', resize);
-            window.addEventListener('load', resize);
-            resize();
-
-            class Particle {
-                constructor(x, y, color, angle, speed) {
-                    this.x = x; this.y = y; this.color = color;
-                    this.angle = angle; this.speed = speed;
-                    this.friction = 0.96; this.gravity = 0.15;
-                    this.alpha = 1; this.decay = 0.012 + Math.random() * 0.015;
-                }
-                update() {
-                    this.speed *= this.friction;
-                    this.x += Math.cos(this.angle) * this.speed;
-                    this.y += Math.sin(this.angle) * this.speed + this.gravity;
-                    this.alpha -= this.decay;
-                }
-                draw() {
-                    ctx.save();
-                    ctx.globalAlpha = this.alpha;
-                    ctx.beginPath();
-                    ctx.arc(this.x, this.y, 2.5, 0, Math.PI * 2);
-                    ctx.fillStyle = this.color;
-                    ctx.shadowBlur = 10;
-                    ctx.shadowColor = this.color;
-                    ctx.fill();
-                    ctx.restore();
-                }
-            }
-
-            class Firework {
-                constructor() {
-                    // Always shoots from the lower bottom portion of the window
-                    this.x = Math.random() * canvas.width;
-                    this.y = canvas.height; 
-                    this.targetY = Math.random() * (canvas.height * 0.5);
-                    this.speed = 10 + Math.random() * 5;
-                    this.color = `hsl(${Math.random() * 360}, 100%, 65%)`;
-                    this.particles = [];
-                    this.exploded = false;
-                }
-                update() {
-                    if (!this.exploded) {
-                        this.y -= this.speed;
-                        if (this.y <= this.targetY) {
-                            this.exploded = true;
-                            this.explode();
-                        }
-                    } else {
-                        for (let i = this.particles.length - 1; i >= 0; i--) {
-                            this.particles[i].update();
-                            if (this.particles[i].alpha <= 0) {
-                                this.particles.splice(i, 1);
-                            }
-                        }
-                    }
-                }
-                explode() {
-                    const count = 75 + Math.floor(Math.random() * 35);
-                    for (let i = 0; i < count; i++) {
-                        const angle = Math.random() * Math.PI * 2;
-                        const speed = Math.random() * 6 + 2;
-                        this.particles.push(new Particle(this.x, this.y, this.color, angle, speed));
-                    }
-                }
-                draw() {
-                    if (!this.exploded) {
-                        ctx.beginPath();
-                        ctx.arc(this.x, this.y, 3, 0, Math.PI * 2);
-                        ctx.fillStyle = '#ffffff';
-                        ctx.fill();
-                    } else {
-                        this.particles.forEach(p => p.draw());
-                    }
-                }
-            }
-
-            const fireworks = [];
-            function loop() {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                
-                if (Math.random() < 0.04 && fireworks.length < 6) {
-                    fireworks.push(new Firework());
-                }
-                
-                for (let i = fireworks.length - 1; i >= 0; i--) {
-                    fireworks[i].update();
-                    fireworks[i].draw();
-                    if (fireworks[i].exploded && fireworks[i].particles.length === 0) {
-                        fireworks.splice(i, 1);
-                    }
-                }
-                requestAnimationFrame(loop);
-            }
-            loop();
-        </script>
-        </body>
-        </html>
-        """, height=150)
-
+        col4.metric("Unanswered ⚪", unanswered_count)  
     else:
         st.error("Error generating score logs.")
 
-    st.write("")
     if st.button("Return Main Portal Home", type="secondary", use_container_width=True):
         st.session_state.page = "Main Menu"
         st.session_state.active_quiz = None
