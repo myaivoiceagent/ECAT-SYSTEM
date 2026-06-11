@@ -210,28 +210,18 @@ elif st.session_state.page == "Admin Dashboard":
                 res = res_list[0] if isinstance(res_list, list) and len(res_list) > 0 else {}
                 
                 flattened_results.append({
-                    "User ID": r.get("USER ID", "N/A"),
+                    "User ID": r.get("USER ID", r.get("User ID", "N/A")),
                     "Student Name": r.get("User Name", "N/A"),
                     "Email Address": r.get("User Email", "N/A"),
-                    "Login/Test Time 🕒": r.get("Login Time", "N/A"),  # 🕒 Column added for admin
-                    "Total Qs": res.get("Total Questions", 0),
-                    "Max Marks": res.get("Total Marks", 0),
-                    "Score Obtained": res.get("Obtained Marks", 0),
-                    "Correct ✔️": res.get("Correct Answers", 0),
-                    "Wrong ❌": res.get("Wrong Answers", 0)
+                    "Login/Test Time 🕒": r.get("Login Time", "N/A"),  # Read key matching precisely
+                    "Total Qs": res.get("Total Questions", 100),
+                    "Max Marks": res.get("Total Marks", 400),
+                    "Score Obtained": res.get("Obtained Marks", 0)
                 })
                 
             import pandas as pd
             df_results = pd.DataFrame(flattened_results)
             st.dataframe(df_results, use_container_width=True, hide_index=True)
-            
-            st.write("")
-            if st.button("Clear Submission Logs Databases", type="secondary"):
-                save_json("Result.json", [])
-                st.success("Ledger database cleared successfully!")
-                st.rerun()
-        else:
-            st.info("No candidates have evaluated or logged exams yet.")
 
 # # STUDENT AUTHENTICATION
 elif st.session_state.page == "Student Auth Menu":
@@ -251,12 +241,12 @@ elif st.session_state.page == "Student Auth Menu":
                 if u["Email"].lower() == login_email.lower() and u["User Name"].lower() == login_user.lower() and u["Password"] == login_pass:
                     found = True
                     
-                    # 🕒 LOGIN TIME RECORD KARNE KE LIYE LIVE TIMESTAMP
+                    # 🕒 PURE TIME FORMAT GENERATION
                     from datetime import datetime
-                    st.session_state.login_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                    st.session_state["login_time"] = datetime.now().strftime("%I:%M %p (%d-%b)")
+                    st.session_state.logged_in_user = u  
                     
                     st.session_state.page = "Main Menu"
-                    st.session_state.logged_in_user = u  
                     st.success("Login Successful!")
                     st.rerun()
             if not found:
@@ -544,14 +534,15 @@ elif st.session_state.page == "Grade Evaluation Processing":
         if not st.session_state.result_saved:
             results_db = load_json("Result.json")
             
-            # Login time check karne ke liye variable
-            current_login = st.session_state.get("login_time", "N/A")
+            # 🕒 AGAR LOGIN TIME SESSION STATE MEIN NA HO TO CURRENT TIME UTHA LE
+            from datetime import datetime
+            current_login = st.session_state.get("login_time", datetime.now().strftime("%I:%M %p (%d-%b)"))
             
             results_db.append({
-                "USER ID": student["User ID"],
-                "User Name": student["User Name"],
-                "User Email": student["Email"],
-                "Login Time": current_login,  # 🕒 Yeh nayi line add ho gayi hai
+                "USER ID": student.get("User ID", "N/A"),
+                "User Name": student.get("User Name", "N/A"),
+                "User Email": student.get("Email", "N/A"),
+                "Login Time": current_login,  # Saved securely here
                 "User Result": [{
                     "Total Questions": total_q,
                     "Total Marks": total_marks,
