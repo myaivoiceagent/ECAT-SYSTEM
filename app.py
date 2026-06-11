@@ -210,7 +210,6 @@ elif st.session_state.page == "Admin Dashboard":
             st.info("No registered users found.")
 
     with t5:
-    with t5:
         st.subheader("📊 Candidate Performance Results")
         results = load_json("Result.json")
         if results:
@@ -219,11 +218,16 @@ elif st.session_state.page == "Admin Dashboard":
                 res_list = r.get("User Result", [{}])
                 res = res_list[0] if isinstance(res_list, list) and len(res_list) > 0 else {}
                 
+                # Dynamic mapping with correct string check
+                u_id = r.get("USER ID", r.get("User ID", "N/A"))
+                if "function uuid4" in str(u_id):
+                    u_id = "USR-NEW"
+                
                 flattened_results.append({
-                    "User ID": r.get("USER ID", r.get("User ID", "N/A")),
+                    "User ID": u_id,
                     "Student Name": r.get("User Name", "N/A"),
                     "Email Address": r.get("User Email", "N/A"),
-                    "Attempted Subject 📚": r.get("Selected Subject", "N/A"), # 📚 Student ka selected subject column
+                    "Attempted Subject 📚": r.get("Selected Subject", "N/A"),
                     "Login/Test Time 🕒": r.get("Login Time", "N/A"),
                     "Total Qs": res.get("Total Questions", 100),
                     "Max Marks": res.get("Total Marks", 400),
@@ -233,12 +237,6 @@ elif st.session_state.page == "Admin Dashboard":
             import pandas as pd
             df_results = pd.DataFrame(flattened_results)
             st.dataframe(df_results, use_container_width=True, hide_index=True)
-            
-            st.write("")
-            if st.button("Clear Submission Logs Databases", type="secondary", key="clear_res_admin_final"):
-                save_json("Result.json", [])
-                st.success("Ledger database cleared successfully!")
-                st.rerun()
         else:
             st.info("No candidates have evaluated or logged exams yet.")
 
@@ -289,7 +287,7 @@ elif st.session_state.page == "Student Auth Menu":
             else:
                 import uuid
                 users.append({
-                    "User ID": str(uuid.uuid4())[:8],  # Clean short ID mapping
+                    "User ID": str(uuid.uuid4())[:8],  # 💡 Brackets () add kar diye taake unique ID string banay, function object nahi
                     "User Name": reg_name,
                     "Email": reg_email,
                     "Password": reg_pass
@@ -297,7 +295,7 @@ elif st.session_state.page == "Student Auth Menu":
                 save_json("Login.json", users)
                 st.success("Registered Successfully!")
                 st.rerun()
-
+                
     # 2. Forget Password ka naya sections yahan handle ho rha hai
     elif mode == "Forget Password":
         st.write("---")
