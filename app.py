@@ -81,13 +81,13 @@ def play_fireworks():
 
         let timer = setInterval(createFirework, 350);
         
-        // Clean up and remove the canvas from parent document after 6 seconds
+        // ⏳ CLEAN UP AND TIMING ENGINE CONTROLS
         setTimeout(() => { 
-            clearInterval(timer); 
+            clearInterval(timer); // Naye patakhe shoot hona band ho jayenge
             setTimeout(() => {
-                canvas.remove();
-            }, 2000);
-        }, 4000);
+                canvas.remove();  // Canvas screen se bilkul delete ho jayega
+            }, 3000);             // 3000ms (3 seconds) mazeed lagenge aakhri particles ko fade out hone mein
+        }, 12000);                // 12000ms (12 seconds) tak naye fireworks shoot hote rahenge!
 
         function runLoop() {
             if (!targetDoc.getElementById('globalFireworksCanvas')) return;
