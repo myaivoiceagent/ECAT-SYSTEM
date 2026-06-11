@@ -9,12 +9,18 @@ import streamlit.components.v1 as components
 
 def play_fireworks():
     fireworks_js = """
-    <canvas id="canvas" style="position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:99999;pointer-events:none;"></canvas>
+    <div style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 999999;">
+        <canvas id="canvas" style="width: 100%; height: 100%; display: block;"></canvas>
+    </div>
     <script>
+    // Ensure we are referencing the top-most window context if inside a Streamlit iframe
+    const targetWindow = window.top || window;
     const canvas = document.getElementById('canvas');
     const ctx = canvas.getContext('2d');
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    
+    canvas.width = targetWindow.innerWidth;
+    canvas.height = targetWindow.innerHeight;
+    
     let particles = [];
 
     class Particle {
@@ -22,8 +28,11 @@ def play_fireworks():
             this.x = x; 
             this.y = y; 
             this.color = color;
-            this.radius = Math.random() * 3 + 1;
-            this.velocity = { x: (Math.random() - 0.5) * 8, y: (Math.random() - 0.5) * 8 };
+            this.radius = Math.random() * 4 + 1;
+            this.velocity = { 
+                x: (Math.random() - 0.5) * 10, 
+                y: (Math.random() - 0.5) * 10 
+            };
             this.alpha = 1;
         }
         draw() {
@@ -36,25 +45,29 @@ def play_fireworks():
             ctx.restore();
         }
         update() {
-            this.velocity.y += 0.05; 
+            this.velocity.y += 0.06; 
             this.x += this.velocity.x; 
             this.y += this.velocity.y;
-            this.alpha -= 0.012;
+            this.alpha -= 0.015;
         }
     }
 
     function spawnFirework() {
         const x = Math.random() * canvas.width; 
-        const y = Math.random() * (canvas.height * 0.6);
-        const colors = ['#FF1493', '#00FFFF', '#FFD700', '#FF4500', '#7FFF00', '#9400D3'];
+        const y = Math.random() * (canvas.height * 0.5);
+        const colors = ['#FF1493', '#00FFFF', '#FFD700', '#FF4500', '#7FFF00', '#9400D3', '#00FF00'];
         const color = colors[Math.floor(Math.random() * colors.length)];
-        for (let i = 0; i < 40; i++) { 
+        for (let i = 0; i < 50; i++) { 
             particles.push(new Particle(x, y, color)); 
         }
     }
 
-    let interval = setInterval(spawnFirework, 400);
-    setTimeout(() => { clearInterval(interval); }, 6000);
+    // Instantly burst fireworks
+    spawnFirework();
+    spawnFirework();
+    
+    let interval = setInterval(spawnFirework, 350);
+    setTimeout(() => { clearInterval(interval); }, 5000);
 
     function animate() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -71,7 +84,8 @@ def play_fireworks():
     animate();
     </script>
     """
-    components.html(fireworks_js, height=0, width=0)
+    # Changed height from 0 to 1 so Streamlit forces the browser to render and run the script engine!
+    components.html(fireworks_js, height=1, width=1)
 
 # --------------------------------------------------
 # CONFIGURATION & STATE INITIALIZATION
@@ -630,12 +644,15 @@ elif st.session_state.page == "Grade Evaluation Processing":
         st.progress(int(percentage))
         st.write("---")
 
-        # 👇 DOWNSIDE DYNAMIC INTERFACE RULES AREA 👇
+        # 🎯 PERFORMANCE ASSESSMENT STATUS (DOWNSIDE AREA)
         st.markdown("### ✨ Performance Assessment Status")
         
         if final_score >= 100:
             st.success(f"💥 EXCELLENT METRIC PROFILE! You achieved {final_score} points!")
-            play_fireworks()  # <--- Yeh line fireworks chalaye gi
+            
+            # 👇 Placed here at the very bottom so fireworks trigger below the score summary components
+            play_fireworks()  
+            
         else:
             st.error(f"😭 UNACCEPTABLE BENCHMARK PROFILE... Score is {final_score} (Requires minimum 100).")
             st.markdown(
