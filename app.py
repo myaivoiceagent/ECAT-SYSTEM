@@ -210,6 +210,7 @@ elif st.session_state.page == "Admin Dashboard":
             st.info("No registered users found.")
 
     with t5:
+    with t5:
         st.subheader("📊 Candidate Performance Results")
         results = load_json("Result.json")
         if results:
@@ -222,7 +223,8 @@ elif st.session_state.page == "Admin Dashboard":
                     "User ID": r.get("USER ID", r.get("User ID", "N/A")),
                     "Student Name": r.get("User Name", "N/A"),
                     "Email Address": r.get("User Email", "N/A"),
-                    "Login/Test Time 🕒": r.get("Login Time", "N/A"),  # Read key matching precisely
+                    "Attempted Subject 📚": r.get("Selected Subject", "N/A"), # 📚 Student ka selected subject column
+                    "Login/Test Time 🕒": r.get("Login Time", "N/A"),
                     "Total Qs": res.get("Total Questions", 100),
                     "Max Marks": res.get("Total Marks", 400),
                     "Score Obtained": res.get("Obtained Marks", 0)
@@ -231,6 +233,14 @@ elif st.session_state.page == "Admin Dashboard":
             import pandas as pd
             df_results = pd.DataFrame(flattened_results)
             st.dataframe(df_results, use_container_width=True, hide_index=True)
+            
+            st.write("")
+            if st.button("Clear Submission Logs Databases", type="secondary", key="clear_res_admin_final"):
+                save_json("Result.json", [])
+                st.success("Ledger database cleared successfully!")
+                st.rerun()
+        else:
+            st.info("No candidates have evaluated or logged exams yet.")
 
 # # STUDENT AUTHENTICATION
 elif st.session_state.page == "Student Auth Menu":
@@ -548,15 +558,18 @@ elif st.session_state.page == "Grade Evaluation Processing":
         if not st.session_state.result_saved:
             results_db = load_json("Result.json")
             
-            # 🕒 AGAR LOGIN TIME SESSION STATE MEIN NA HO TO CURRENT TIME UTHA LE
-            from datetime import datetime
-            current_login = st.session_state.get("login_time", datetime.now().strftime("%I:%M %p (%d-%b)"))
+            # 🕒 User ka login time aur usne jo subject select kiya tha usko catch kiya
+            current_login = st.session_state.get("login_time", "N/A")
+            
+            # NOTE: "selected_subject" ki jagah aap apna exact variable name likhein jo aapne subject selection ke liye banaya hai
+            user_selected_subject = st.session_state.get("selected_subject", "Not Selected") 
             
             results_db.append({
                 "USER ID": student.get("User ID", "N/A"),
                 "User Name": student.get("User Name", "N/A"),
                 "User Email": student.get("Email", "N/A"),
-                "Login Time": current_login,  # Saved securely here
+                "Login Time": current_login,
+                "Selected Subject": user_selected_subject,  # 📚 User ka select kiya hua subject save ho gaya
                 "User Result": [{
                     "Total Questions": total_q,
                     "Total Marks": total_marks,
