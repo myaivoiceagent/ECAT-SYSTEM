@@ -233,10 +233,12 @@ elif st.session_state.page == "Admin Dashboard":
         else:
             st.info("No candidates have evaluated or logged exams yet.")
 
-# STUDENT AUTHENTICATION
+# # STUDENT AUTHENTICATION
 elif st.session_state.page == "Student Auth Menu":
-    st.subheader("🧑 Student Registration & Login")
-    mode = st.radio("Action:", ["User Login", "Create Account"])
+    st.subheader("🔑 Student Registration & Login")
+    
+    # 1. Radio buttons mein teesra option add kar diya
+    mode = st.radio("Action:", ["User Login", "Create Account", "Forget Password"])
     
     if mode == "User Login":
         login_email = st.text_input("Email:")
@@ -249,11 +251,13 @@ elif st.session_state.page == "Student Auth Menu":
                 if u["Email"].lower() == login_email.lower() and u["User Name"].lower() == login_user.lower() and u["Password"] == login_pass:
                     found = True
                     st.session_state.page = "Main Menu"
+                    st.session_state.logged_in_user = u  # Session state load ki
                     st.success("Login Successful!")
                     st.rerun()
             if not found:
                 st.error("Invalid Credentials.")
-    else:
+                
+    elif mode == "Create Account":
         reg_email = st.text_input("Email:")
         reg_name = st.text_input("Full Name:")
         reg_pass = st.text_input("Password:", type="password")
@@ -264,9 +268,43 @@ elif st.session_state.page == "Student Auth Menu":
             elif any(u["Email"].lower() == reg_email.lower() for u in users):
                 st.error("Email taken.")
             else:
-                users.append({"User ID": str(uuid.uuid4()), "User Name": reg_name, "Email": reg_email, "Password": reg_pass, "Login": []})
+                import uuid
+                users.append({
+                    "User ID": str(uuid.uuid4())[:8],  # Clean short ID mapping
+                    "User Name": reg_name,
+                    "Email": reg_email,
+                    "Password": reg_pass
+                })
                 save_json("Login.json", users)
                 st.success("Registered Successfully!")
+                st.rerun()
+
+    # 2. Forget Password ka naya sections yahan handle ho rha hai
+    elif mode == "Forget Password":
+        st.write("---")
+        st.markdown("#### 🔄 Recover Your Password")
+        forget_email = st.text_input("Enter Registered Email Address:")
+        forget_name = st.text_input("Enter Your Registered Username:")
+        
+        if st.button("Retrieve Password 🔍", type="primary", use_container_width=True):
+            if forget_email and forget_name:
+                users_list = load_json("Login.json")
+                found_user = None
+                
+                for u in users_list:
+                    if u.get("Email").lower() == forget_email.strip().lower() and u.get("User Name").lower() == forget_name.strip().lower():
+                        found_user = u
+                        break
+                        
+                if found_user:
+                    st.success("🔑 Account Verified Successfully!")
+                    st.info(f"Your Registered Password is: **{found_user.get('Password')}**")
+                else:
+                    st.error("❌ No matching profile found with these details.")
+            else:
+                st.warning("⚠️ Please fill out both fields.")
+
+    st.write("---")
     if st.button("Back"):
         st.session_state.page = "Main Menu"
         st.rerun()
