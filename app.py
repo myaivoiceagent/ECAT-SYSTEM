@@ -417,7 +417,7 @@ elif st.session_state.page == "Live Examination":
         st.warning("No dynamic questions resolved.")
 
 # ------------------------------------------------------------------------
-# GRADE EVALUATION PROCESSING (DYNAMIC: FIREWORKS VS CRYING FACE)
+# GRADE EVALUATION PROCESSING (UPDATED: EFFECTS ON DOWNSIDE & FULL SCREEN)
 # ------------------------------------------------------------------------
 elif st.session_state.page == "Grade Evaluation Processing":
     st.subheader("📊 Output Metric Breakdown")
@@ -442,7 +442,7 @@ elif st.session_state.page == "Grade Evaluation Processing":
                 
         total_q = len(questions)
         total_marks = total_q * 4
-        calculated_marks = (correct_count * 4) - (wrong_count * 4) 
+        calculated_marks = (correct_count * 4) - (wrong_count * 1) 
         final_score = max(0, calculated_marks)
         
         if not st.session_state.result_saved:
@@ -460,9 +460,24 @@ elif st.session_state.page == "Grade Evaluation Processing":
             save_json("Result.json", results_db)
             st.session_state.result_saved = True
 
-        # 🎯 CONDITION CHECK: Marks 100 ya 100 se zyada hain toh Fireworks chalengi
+        # 1️⃣ FIRST: SHOW METRICS & SUMMARY (ALWAYS ON TOP)
+        st.success("Test Logged Safely in Central Registry Ledger Databases.")
+        st.write("---")
+        
+        st.markdown("### 🏆 Exam Metric Performance Summary")
+        st.metric(label="Calculated Scale Output Grade", value=f"{final_score} / {total_marks}")
+        
+        col1, col2, col3, col4 = st.columns(4)
+        col1.metric("Total Items", total_q)
+        col2.metric("Correct ✔️", correct_count)
+        col3.metric("Wrong ❌", wrong_count)
+        col4.metric("Unanswered ⚪", unanswered_count)  
+        
+        st.write("---")
+
+        # 2️⃣ SECOND: EFFECTS DELIVERED ON THE DOWNSIDE
         if final_score >= 100:
-            # Full-screen Dynamic Fireworks
+            # Full-screen Dynamic Fireworks injected at the bottom layer
             st.markdown("""
             <style>
                 .real-sky-wrapper {
@@ -523,18 +538,15 @@ elif st.session_state.page == "Grade Evaluation Processing":
                 <div class="rocket-trail fw-mid-l"></div><div class="burst-matrix fw-mid-l"></div>
                 <div class="rocket-trail fw-mid-r"></div><div class="burst-matrix fw-mid-r"></div>
             </div>
-            """, unsafe_allow_html=True)
-
-            # Congratulations Banner
-            st.markdown("""
-            <div style="background-color: #0e1117; border: 2px solid #2e7d32; border-radius: 12px; padding: 25px; text-align: center; margin-bottom: 25px;">
+            
+            <div style="background-color: #0e1117; border: 2px solid #2e7d32; border-radius: 12px; padding: 25px; text-align: center; margin-top: 20px;">
                 <h1 style="color: #4caf50 !important; font-family: sans-serif; font-weight: bold; margin:0;">🎆 CONGRATULATIONS 🎆</h1>
                 <p style="color: white !important; margin: 5px 0 0 0;">Excellent work! You have successfully passed the threshold.</p>
             </div>
             """, unsafe_allow_html=True)
             
         else:
-            # 😭 ELSE: Marks 100 se kam hain toh Crying Face animation dikhegi
+            # Crying Face Banner placed down below the metrics
             st.markdown("""
             <style>
                 @keyframes tear-drop {
@@ -548,7 +560,7 @@ elif st.session_state.page == "Grade Evaluation Processing":
                     border-radius: 12px; 
                     padding: 25px; 
                     text-align: center; 
-                    margin-bottom: 25px;
+                    margin-top: 20px;
                 }
                 .sad-emoji-wrapper {
                     font-size: 70px;
@@ -576,20 +588,10 @@ elif st.session_state.page == "Grade Evaluation Processing":
             </div>
             """, unsafe_allow_html=True)
 
-        st.success("Test Logged Safely in Central Registry Ledger Databases.")
-        st.write("---")
-        
-        st.markdown("### 🏆 Exam Metric Performance Summary")
-        st.metric(label="Calculated Scale Output Grade", value=f"{final_score} / {total_marks}")
-        
-        col1, col2, col3, col4 = st.columns(4)
-        col1.metric("Total Items", total_q)
-        col2.metric("Correct ✔️", correct_count)
-        col3.metric("Wrong ❌", wrong_count)
-        col4.metric("Unanswered ⚪", unanswered_count)  
     else:
         st.error("Error generating score logs.")
 
+    st.write("")
     if st.button("Return Main Portal Home", type="secondary", use_container_width=True):
         st.session_state.page = "Main Menu"
         st.session_state.active_quiz = None
