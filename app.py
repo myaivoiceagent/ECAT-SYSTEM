@@ -461,7 +461,7 @@ elif st.session_state.page == "Grade Evaluation Processing":
                 
         total_q = len(questions)
         total_marks = total_q * 4
-        calculated_marks = (correct_count * 4) - (wrong_count * 1) 
+        calculated_marks = (correct_count * 4) - (wrong_count * 4) 
         final_score = max(0, calculated_marks)
         
         if not st.session_state.result_saved:
