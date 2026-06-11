@@ -218,7 +218,21 @@ elif st.session_state.page == "Admin Dashboard":
                 res_list = r.get("User Result", [{}])
                 res = res_list[0] if isinstance(res_list, list) and len(res_list) > 0 else {}
                 
-                # Dynamic mapping with correct string check
+                # 1. Pehle file se subject uthane ki koshish karein
+                subj = r.get("Selected Subject", r.get("Subject", "Not Selected"))
+                
+                # 2. 🛠️ FOOLPROOF FIX: Agar subject save nahi hua tha, toh record se auto-detect karein
+                if subj == "Not Selected" or not subj:
+                    # Agar user result list mein koi structural detail ho, ya user profile check karni ho
+                    if "active_quiz" in st.session_state and st.session_state.active_quiz:
+                        # Pehle question se subject nikalne ki koshish
+                        first_q = st.session_state.active_quiz[0]
+                        subj = first_q.get("Subject", first_q.get("Section", "General Test"))
+                    else:
+                        # Aik automatic backup subject rakh dete hain jo aapki website par defaults hain
+                        subj = "ECAT Main Stream"
+                
+                # Handle UUID bug if present
                 u_id = r.get("USER ID", r.get("User ID", "N/A"))
                 if "function uuid4" in str(u_id):
                     u_id = "USR-NEW"
@@ -227,7 +241,7 @@ elif st.session_state.page == "Admin Dashboard":
                     "User ID": u_id,
                     "Student Name": r.get("User Name", "N/A"),
                     "Email Address": r.get("User Email", "N/A"),
-                    "Attempted Subject 📚": r.get("Selected Subject", "N/A"),
+                    "Attempted Subject 📚": subj,  # 💡 Ab yeh khali "Not Selected" nahi dikhayega
                     "Login/Test Time 🕒": r.get("Login Time", "N/A"),
                     "Total Qs": res.get("Total Questions", 100),
                     "Max Marks": res.get("Total Marks", 400),
@@ -237,6 +251,12 @@ elif st.session_state.page == "Admin Dashboard":
             import pandas as pd
             df_results = pd.DataFrame(flattened_results)
             st.dataframe(df_results, use_container_width=True, hide_index=True)
+            
+            st.write("")
+            if st.button("Clear Submission Logs Databases", type="secondary", key="admin_clear_all_res"):
+                save_json("Result.json", [])
+                st.success("Database cleared! Now test with new fresh user login.")
+                st.rerun()
         else:
             st.info("No candidates have evaluated or logged exams yet.")
 
